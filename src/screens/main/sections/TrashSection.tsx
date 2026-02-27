@@ -20,10 +20,12 @@ import styles from '@/styles/main/SectionStyles';
 export default function TrashSection() {
     const { history, permanentlyDeleteEvent } = useHistory();
     const { restoreTaskFromTrash } = useTask();
+
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedEndDate, setSelectedEndDate] = useState('');
+
     const { selectionMode, selectedIds, enterSelectionMode, exitSelectionMode, toggleSelect } = useSelectionMode();
     const { fabAnim, handleScroll } = useFabScroll();
     const { translateY, opacity } = useEntranceAnim();
@@ -39,6 +41,7 @@ export default function TrashSection() {
         selectedEndDate,
         selectedStatus
     });
+
     const selectedCount = selectedIds.size;
     const handleBulkDelete = async () => {
         for (const id of selectedIds) await permanentlyDeleteEvent(id);

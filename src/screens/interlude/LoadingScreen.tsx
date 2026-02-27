@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { View, StyleSheet, Animated } from "react-native";
+
 import { PlayerText } from "@/components/fields/PlayerText";
 import { useLoadingText } from "@/hooks/main/useLoadingText";
 

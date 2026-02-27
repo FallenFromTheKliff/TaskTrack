@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Pressable, Modal, Animated } from 'react-native';
-import { PlayerText } from '@/components/fields/PlayerText';
 import { Ionicons } from '@expo/vector-icons';
+
+import { PlayerText } from '@/components/fields/PlayerText';
 import { getTodayString, toDateString, getMonthLabel, DAY_NAMES } from '@/utils/shared/dateUtils';
 
 import styles from '@/styles/components/CalendarStyles';

@@ -3,7 +3,7 @@ import { View, Pressable, Animated, Modal, ScrollView } from 'react-native';
 import { useForm } from 'react-hook-form';
 import { PlayerText } from '@/components/fields/PlayerText';
 import { Ionicons } from '@expo/vector-icons';
-import { validatePassword, validateConfirmPassword, validateNewPasswordDiffers } from '@/utils/auth/validationUtils';
+import { validatePassword, validateNewPassword, validatePasswordConfirmation } from '@/utils/auth/validationUtils';
 import { useOverlayAnim } from '@/hooks/animations/useOverlayAnim';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { useTimedMessage } from '@/hooks/auth/useTimedMessage';
@@ -29,17 +29,21 @@ export default function ChangePasswordModal({ isVisible, onCancel, onConfirm }: 
     const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
     const [isCurrentPasswordVisible, setIsCurrentPasswordVisible] = useState(false);
     const [isConfirmVisible, setIsConfirmVisible] = useState(false);
+
     const [isNewPasswordValid, setIsNewPasswordValid] = useState(false);
     const [newPasswordValue, setNewPasswordValue] = useState('');
     const [currentPasswordValue, setCurrentPasswordValue] = useState('');
+
     const [isNewPasswordFocused, setIsNewPasswordFocused] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const loadingText = useLoadingText('SAVING', isLoading);
-    const { message: errorText, showMessage: showError } = useTimedMessage();
     const { height: passRequirementsHeight, opacity: passRequirementsLight } = usePanelAnim({
         targetHeight: 210,
         visible: newPasswordValue.length > 0 && (isNewPasswordFocused || !isNewPasswordValid)
     });
+
+    const [isLoading, setIsLoading] = useState(false);
+    const loadingText = useLoadingText('SAVING', isLoading);
+    const { message: errorText, showMessage: showError } = useTimedMessage();
+
     const { control, handleSubmit, formState: { errors }, watch, reset } = useForm<ChangePasswordFormData>({
         defaultValues: { currentPassword: '', newPassword: '', confirmNewPassword: '' },
         mode: 'onChange'
@@ -53,6 +57,7 @@ export default function ChangePasswordModal({ isVisible, onCancel, onConfirm }: 
             setIsNewPasswordValid(false);
         }
     }, [isVisible]);
+
     const canSubmit = isNewPasswordValid && !isLoading;
     const onSubmit = async (data: ChangePasswordFormData) => {
         if (!canSubmit) return;
@@ -71,6 +76,7 @@ export default function ChangePasswordModal({ isVisible, onCancel, onConfirm }: 
         }
     };
     const saveLabel = isLoading ? loadingText : (errorText || 'SAVE');
+
     return (
         <Modal visible={isVisible} transparent>
             <Animated.View style={[styles.modalOverlay, { opacity: fadeAnim }]}>
@@ -80,7 +86,7 @@ export default function ChangePasswordModal({ isVisible, onCancel, onConfirm }: 
                         <InputField
                             control={control}
                             name="currentPassword"
-                            label="Confirm Password"
+                            label="Current Password"
                             placeholder="Enter your current password"
                             icon="lock-closed-outline"
                             validation={validatePassword}
@@ -94,7 +100,7 @@ export default function ChangePasswordModal({ isVisible, onCancel, onConfirm }: 
                             label="New Password"
                             placeholder="Enter your new password"
                             icon="key-outline"
-                            validation={(value) => validateNewPasswordDiffers(currentPasswordValue, value)}
+                            validation={(value) => validateNewPassword(currentPasswordValue, value)}
                             errors={errors}
                             onChangeValue={setNewPasswordValue}
                             onFocusChange={setIsNewPasswordFocused}
@@ -110,7 +116,7 @@ export default function ChangePasswordModal({ isVisible, onCancel, onConfirm }: 
                             label="Confirm New Password"
                             placeholder="Re-enter your new password"
                             icon="lock-closed-outline"
-                            validation={(value) => validateConfirmPassword(newPassword, value)}
+                            validation={(value) => validatePasswordConfirmation(newPassword, value)}
                             errors={errors}
                             toggleVisibility={{ isVisible: isConfirmVisible, setIsVisible: setIsConfirmVisible }}
                         />

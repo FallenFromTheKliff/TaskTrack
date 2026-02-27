@@ -1,10 +1,10 @@
 import { ReactNode, createContext, useContext, useState, useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { useAuth } from './AuthContext';
 import { useHistory } from './HistoryContext';
 import { generateId, getLocalDateString } from '@/utils/shared/contextUtils';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type Task = {
     id: string;

@@ -1,11 +1,13 @@
 import { View, Pressable, Animated, Modal, ScrollView } from 'react-native';
-import { PlayerText } from '@/components/fields/PlayerText';
 import { Ionicons } from '@expo/vector-icons';
+
 import { HistoryEvent } from '@/contexts/HistoryContext';
+import { PlayerText } from '@/components/fields/PlayerText';
 import { formatTimestamp, formatDateShort } from '@/utils/shared/dateUtils';
 import { capitalize } from '@/utils/auth/revisionUtils';
 import { STATUS_COLORS, STATUS_ICONS, PRIORITY_LABELS, PRIORITY_COLORS } from '@/utils/shared/constantUtils';
 import { useOverlayAnim } from '@/hooks/animations/useOverlayAnim';
+
 import styles from '@/styles/modals/TaskDetailsStyles';
 
 type DetailsModalProps = {

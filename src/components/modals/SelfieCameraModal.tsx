@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { View, Pressable, Image, Modal } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
+
 import { PlayerText } from '@/components/fields/PlayerText';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { useTimedMessage } from '@/hooks/auth/useTimedMessage';

@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { Animated } from 'react-native';
+
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
 
 export function useAuthEntrance() {

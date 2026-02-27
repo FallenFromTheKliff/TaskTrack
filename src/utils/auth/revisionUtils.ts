@@ -33,6 +33,14 @@ export const reviseFullName = (fullName: string) => {
     return { hasContent, hasTwoParts, hasValidCharacters, hasValidFirstName, hasValidLastName };
 };
 
+export const reviseEmail = (email: string) => {
+    const chopped = email?.trim() ?? '';
+    const [name = ''] = chopped.split('@');
+    const isValid = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{3,}$/i.test(chopped);
+    const hasMinNameLength = name.length >= 8;
+    return { email: chopped, name, isValid, hasMinNameLength };
+};
+
 export const hashPassword = async (password: string): Promise<string> => {
     return await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
 };

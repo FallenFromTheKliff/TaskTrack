@@ -1,6 +1,7 @@
 import { Animated } from 'react-native';
-import { PlayerText } from '@/components/fields/PlayerText';
 import { Ionicons } from '@expo/vector-icons';
+
+import { PlayerText } from '@/components/fields/PlayerText';
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
 
 import styles from '@/styles/main/SectionStyles';

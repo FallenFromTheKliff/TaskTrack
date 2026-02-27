@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+
 import { modalOverlay, modalBlur, modalPanel, cancelButton, cancelText, primaryButton } from '@/styles/shared/common';
 import { C } from '@/styles/shared/tokens';
 

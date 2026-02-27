@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { View, Pressable, Animated } from 'react-native';
-import { PlayerText } from '@/components/fields/PlayerText';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useForm } from 'react-hook-form';
 import { Ionicons } from "@expo/vector-icons";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+import { PlayerText } from '@/components/fields/PlayerText';
 import { useAuth } from '@/contexts/AuthContext';
 import { validateEmailLogin, validatePassword } from '@/utils/auth/validationUtils';
 import { useAuthEntrance } from '@/hooks/auth/useAuthEntrance';

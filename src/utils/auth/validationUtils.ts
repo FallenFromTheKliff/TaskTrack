@@ -1,3 +1,4 @@
+import { reviseEmail } from "@/utils/auth/revisionUtils";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const validateUsername = (userName: string) => {
@@ -13,17 +14,21 @@ export const validateFullName = (fullName: string) => {
     return true;
 };
 
+export const validateEmail = (email: string) => {
+    const checkEmail = reviseEmail(email);
+    if (!email) return 'Please enter your email address!';
+    if (!checkEmail.isValid) return 'Please enter a valid email address!';
+    if (!checkEmail.hasMinNameLength) return 'Email name needs at least 8 characters!';
+    return true;
+}
 export const validateEmailLogin = (email: string) => {
-    if (!email) return 'Please enter an email address!';
-    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{3,}$/i.test(email)) return 'Please enter a valid email address!';
+    if (!email) return 'Please enter your email address!';
     return true;
 };
-
 export const validateEmailRegister = async (email: string) => {
-    if (!email) return 'Please enter an email address!';
-    const [name] = email.split('@');
-    if (name.length <= 8) return 'Email name needs at least 8 characters!';
-    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{3,}$/i.test(email)) return 'Please enter a valid email address!';
+    const checkEmail = reviseEmail(email);
+    if (!email) return 'Please enter your email address!';
+    if (!checkEmail.isValid) return 'Please enter a valid email address!';
     try {
         const usersJSON = await AsyncStorage.getItem('users');
         const users = usersJSON ? JSON.parse(usersJSON) : [];
@@ -35,7 +40,7 @@ export const validateEmailRegister = async (email: string) => {
     return true;
 };
 
-export const validatePhoneNumberOptional = (phoneNumber: string) => {
+export const validatePhoneNumber = (phoneNumber: string) => {
     if (!phoneNumber || phoneNumber.trim() === '') return true;
     if (!/^09\d{9}$/.test(phoneNumber) || phoneNumber.length > 11) return 'Invalid phone number format!';
     return true;
@@ -45,16 +50,14 @@ export const validatePassword = (password: string) => {
     if (!password) return 'Please enter your password!';
     return true;
 };
-
-export const validateConfirmPassword = (password: string, confirmPassword: string) => {
-    if (!confirmPassword) return 'Please confirm your password!';
-    if (password !== confirmPassword) return 'Passwords do not match!';
-    return true;
-};
-
-export const validateNewPasswordDiffers = (currentPassword: string, newPassword: string) => {
+export const validateNewPassword = (currentPassword: string, newPassword: string) => {
     if (!newPassword) return 'Please enter your new password!';
     if (currentPassword === newPassword) return 'New password must be different from the current password!';
+    return true;
+};
+export const validatePasswordConfirmation = (password: string, confirmPassword: string) => {
+    if (!confirmPassword) return 'Please confirm your password!';
+    if (password !== confirmPassword) return 'Passwords do not match!';
     return true;
 };
 

@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
 import { View, ScrollView, Pressable, Animated } from 'react-native';
-import { PlayerText } from '@/components/fields/PlayerText';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+import { PlayerText } from '@/components/fields/PlayerText';
 import { Task, useTask } from '@/contexts/TaskContext';
 import { formatDateShort } from '@/utils/shared/dateUtils';
 import { filterByQuery, groupByKey, sortGroupsAsc } from '@/utils/shared/filterUtils';
@@ -31,6 +32,7 @@ export default function TaskSection({ navigation }: TaskSectionProps) {
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedEndDate, setSelectedEndDate] = useState('');
     const [selectedPriority, setSelectedPriority] = useState('');
+
     const { selectionMode, selectedIds, enterSelectionMode, exitSelectionMode, toggleSelect } = useSelectionMode();
     const { fabAnim, handleScroll } = useFabScroll();
     const { translateY, opacity } = useEntranceAnim();
@@ -38,15 +40,18 @@ export default function TaskSection({ navigation }: TaskSectionProps) {
     const fabRotation = fabToggleAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '135deg'] });
     const btnSlide = fabToggleAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -88] });
     const btn2Slide = fabToggleAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -148] });
+
     const closeFab = () => { if (isFabOpen) toggleFab(false); };
     const handleEnterSelectionMode = () => { closeFab(); enterSelectionMode(); };
     const handleMoveToTrash = async () => {
         for (const id of selectedIds) await moveTaskToTrash(id);
         exitSelectionMode();
     };
+
     const bulkAction = useBulkAction(handleMoveToTrash);
     const selectedCount = selectedIds.size;
     const allDatesMode = selectedDate === '';
+
     const { filteredTasks, grouped, showGroups } = useMemo(() => {
         let pool: Task[];
         if (allDatesMode) pool = tasks.filter(t => !t.completed);
@@ -61,6 +66,7 @@ export default function TaskSection({ navigation }: TaskSectionProps) {
         return { filteredTasks: result, grouped, showGroups };
     }, [tasks, getTasksByDate, getTasksInRange, selectedDate, selectedEndDate, selectedPriority, searchQuery, taskDisplayCount]);
     const noTasks = filteredTasks.length === 0;
+
     return (
         <View style={[styles.content, { flex: 1 }]}>
             <SearchFilter

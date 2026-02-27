@@ -2,9 +2,10 @@ import { useState, useRef } from 'react';
 import { View, Pressable, ScrollView, Image, Animated } from 'react-native';
 import { useForm } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
+
 import { PlayerText } from '@/components/fields/PlayerText';
 import { useAuth } from '@/contexts/AuthContext';
-import { validateUsername, validateFullName, validateEmailLogin, validatePhoneNumberOptional } from '@/utils/auth/validationUtils';
+import { validateUsername, validateFullName, validateEmail, validatePhoneNumber } from '@/utils/auth/validationUtils';
 import { capitalizeFullName } from '@/utils/auth/revisionUtils';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { useTimedMessage } from '@/hooks/auth/useTimedMessage';
@@ -31,19 +32,24 @@ type ProfileFormData = {
 
 export default function ProfileSection() {
     const { user, updateProfile, deleteUser, verifyAndChangePassword, logout } = useAuth();
-    const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [isTerminating, setIsTerminating] = useState(false);
-    const [isSecurityLogout, setIsSecurityLogout] = useState(false);
-    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-    const [isTerminateVisible, setIsTerminateVisible] = useState(false);
-    const [isSecurityVisible, setIsSecurityVisible] = useState(false);
+
+    const [isEditing, setIsEditing] = useState(false);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [profilePictureUri, setProfilePictureUri] = useState<string | null>(user?.profilePicture ?? null);
+
+    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
     const passwordChanged = useRef(false);
+
+    const [isTerminating, setIsTerminating] = useState(false);
+    const [isSecurityLogout, setIsSecurityLogout] = useState(false);
+    const [isTerminateVisible, setIsTerminateVisible] = useState(false);
+    const [isSecurityVisible, setIsSecurityVisible] = useState(false);
     const pendingSubmitData = useRef<ProfileFormData | null>(null);
+
     const { message: successText, showMessage: showSuccess } = useTimedMessage(2000);
     const { message: errorText, showMessage: showError } = useTimedMessage(2000);
+
     const dob = parseBirthday(user?.dateOfBirth);
     const [birthdayMonth, setBirthdayMonth] = useState(dob.month);
     const [birthdayDay, setBirthdayDay] = useState(dob.day);
@@ -51,12 +57,14 @@ export default function ProfileSection() {
     const [gender, setGender] = useState(user?.gender || '');
     const [fullNameValue, setFullNameValue] = useState(user?.fullName || '');
     const [isFullNameValid, setIsFullNameValid] = useState(false);
+
     const [nameRequirementsShown, setNameRequirementsShown] = useState(false);
     const showNameRequirements = isEditing && nameRequirementsShown;
     const { height: nameRequirementsHeight, opacity: nameRequirementsOpacity } = usePanelAnim({
         targetHeight: 180,
         visible: showNameRequirements
     });
+
     const { control, handleSubmit, formState: { errors }, reset } = useForm<ProfileFormData>({
         defaultValues: {
             userName: user?.userName || '',
@@ -66,6 +74,7 @@ export default function ProfileSection() {
         },
         mode: 'onChange'
     });
+
     const loadingText = useLoadingText('SAVING', isLoading);
     const { translateY, opacity } = useEntranceAnim();
 
@@ -93,7 +102,6 @@ export default function ProfileSection() {
         const uri = await pickImageFromLibrary();
         if (uri) setProfilePictureUri(uri);
     };
-
     const saveProfile = async (data: ProfileFormData) => {
         const dateOfBirth = composeBirthday(birthdayMonth, birthdayDay, birthdayYear) || undefined;
         await updateProfile({
@@ -106,7 +114,6 @@ export default function ProfileSection() {
             gender: gender || undefined
         });
     };
-
     const onSubmit = async (data: ProfileFormData) => {
         const emailChanged = data.email !== user?.email;
         if (emailChanged || passwordChanged.current) {
@@ -213,7 +220,7 @@ export default function ProfileSection() {
                             label="Email Address"
                             placeholder="e.g., canopy2@example.com"
                             icon="mail-outline"
-                            validation={validateEmailLogin}
+                            validation={validateEmail}
                             errors={errors}
                             keyboardType="email-address"
                             editable={isEditing}
@@ -225,7 +232,7 @@ export default function ProfileSection() {
                             placeholder="e.g., 09123456789"
                             icon="call-outline"
                             maxLength={11}
-                            validation={validatePhoneNumberOptional}
+                            validation={validatePhoneNumber}
                             errors={errors}
                             keyboardType="phone-pad"
                             editable={isEditing}

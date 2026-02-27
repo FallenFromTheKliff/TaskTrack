@@ -1,9 +1,9 @@
 import { ReactNode, createContext, useContext, useState, useEffect, useCallback } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { useAuth } from './AuthContext';
 import { generateId, getLocalDateString } from '@/utils/shared/contextUtils';
 import { Task } from './TaskContext';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type HistoryEventType = 'created' | 'edited' | 'completed' | 'deleted' | 'unfinished' | 'trashed';
 export type HistoryEvent = {

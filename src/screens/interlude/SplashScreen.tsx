@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, Animated } from "react-native";
-import { PlayerText } from '@/components/fields/PlayerText';
 import { Ionicons } from "@expo/vector-icons";
+
+import { PlayerText } from '@/components/fields/PlayerText';
 
 const styles = StyleSheet.create({
     outer: {

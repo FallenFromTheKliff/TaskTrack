@@ -1,13 +1,15 @@
 import { useEffect } from 'react';
 import { View } from 'react-native';
-import { PlayerText } from '@/components/fields/PlayerText';
 import { Ionicons } from '@expo/vector-icons';
+
+import { PlayerText } from '@/components/fields/PlayerText';
 import { reviseFullName } from '@/utils/auth/revisionUtils';
+
 import styles from '@/styles/components/RequirementStyles';
 
 type NameRequirementsProps = {
     fullName: string;
-    onValidationChange: (isValid: boolean) => void;
+    onValidationChange: (isValid: "" | boolean) => void;
 }
 
 export default function NameRequirements({ fullName, onValidationChange }: NameRequirementsProps) {

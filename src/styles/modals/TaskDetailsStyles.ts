@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+
 import { modalBlur, modalPanel, panelHeader, panelFooter, cancelButton, cardStyles } from '@/styles/shared/common';
 import { C, R, MAX_WIDTH } from '@/styles/shared/tokens';
 

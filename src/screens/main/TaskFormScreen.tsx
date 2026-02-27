@@ -3,11 +3,13 @@ import { View, Pressable, Animated, BackHandler } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+
 import { PlayerText } from '@/components/fields/PlayerText';
 import { useTask } from '@/contexts/TaskContext';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { DEFAULT_TASK_ICON } from '@/utils/shared/constantUtils';
 import { RootStackParamList } from '../../../App';
+
 import Scheduler, { SchedulerValues, SchedulerHandle } from '@/components/main/Scheduler';
 import styles from '@/styles/main/FormStyles';
 

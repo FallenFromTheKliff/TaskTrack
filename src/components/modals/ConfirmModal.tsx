@@ -1,6 +1,7 @@
 import { View, Pressable, Animated, Modal } from 'react-native';
-import { PlayerText } from '@/components/fields/PlayerText';
 import { Ionicons } from '@expo/vector-icons';
+
+import { PlayerText } from '@/components/fields/PlayerText';
 import { useOverlayAnim } from '@/hooks/animations/useOverlayAnim';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 

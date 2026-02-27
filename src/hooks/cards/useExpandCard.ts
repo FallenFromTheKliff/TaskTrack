@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { Animated } from 'react-native';
+
 import { useToggleAnim } from '@/hooks/animations/useToggleAnim';
 
 export function useExpandCard() {

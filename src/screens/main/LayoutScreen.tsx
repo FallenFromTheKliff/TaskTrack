@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
 import { PlayerText } from '@/components/fields/PlayerText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useScreen } from '@/contexts/ScreenContext';

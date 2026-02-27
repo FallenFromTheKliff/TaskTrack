@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { View, Pressable, ScrollView, Animated, Image } from 'react-native';
-import { PlayerText } from '@/components/fields/PlayerText';
 import { useForm } from 'react-hook-form';
 import { Ionicons } from "@expo/vector-icons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
 import { useAuth } from '@/contexts/AuthContext';
-import { validateUsername, validateFullName, validateEmailRegister, validatePassword, validateConfirmPassword, validatePhoneNumberOptional } from '@/utils/auth/validationUtils';
+import { PlayerText } from '@/components/fields/PlayerText';
+import { validateUsername, validateFullName, validateEmailRegister, validatePassword, validatePasswordConfirmation, validatePhoneNumber } from '@/utils/auth/validationUtils';
 import { capitalizeFullName } from '@/utils/auth/revisionUtils';
 import { useAuthEntrance } from '@/hooks/auth/useAuthEntrance';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
@@ -117,7 +118,6 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                 <Animated.View style={[styles.header, { marginBottom: 40, opacity: fadeIn, transform: [{ translateY: takeFlight }] }]}>
                     <PlayerText style={{ fontSize: 42 }}>Join the community!</PlayerText>
                 </Animated.View>
-
                 <Animated.View style={[styles.form, { opacity: fadeIn }]}>
                     <View style={{ alignItems: 'center', marginBottom: 20 }}>
                         <Pressable onPress={pickImage} disabled={navDisabled}>
@@ -132,7 +132,6 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                             Tap to upload a profile picture!
                         </PlayerText>
                     </View>
-
                     <InputField
                         control={control}
                         name="userName"
@@ -159,7 +158,6 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                     <Animated.View style={{ overflow: 'hidden', height: nameRequirementsHeight, opacity: nameRequirementsLight }}>
                         <NameRequirements fullName={fullNameValue} onValidationChange={setIsFullNameValid} />
                     </Animated.View>
-
                     <InputField
                         control={control}
                         name="email"
@@ -178,7 +176,7 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                         placeholder="e.g., 09123456789"
                         icon="call-outline"
                         maxLength={11}
-                        validation={validatePhoneNumberOptional}
+                        validation={validatePhoneNumber}
                         errors={errors}
                         keyboardType="phone-pad"
                         editable={!navDisabled}
@@ -200,19 +198,17 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                     <Animated.View style={{ overflow: 'hidden', height: passRequirementsHeight, opacity: passRequirementsLight }}>
                         <PasswordRequirements password={passwordValue} onValidationChange={setIsPasswordValid} />
                     </Animated.View>
-
                     <InputField
                         control={control}
                         name="confirmPassword"
                         label="Confirm Password"
                         placeholder="(Re-enter your password)"
                         icon="lock-closed-outline"
-                        validation={(value) => validateConfirmPassword(password, value)}
+                        validation={(value) => validatePasswordConfirmation(password, value)}
                         errors={errors}
                         editable={!navDisabled}
                         toggleVisibility={{ isVisible: isConfirmPasswordVisible, setIsVisible: setIsConfirmPasswordVisible }}
                     />
-
                     <Pressable
                         style={[styles.button, isLoading && { backgroundColor: '#6D8196' }]}
                         onPress={handleSubmit(onSubmit)}
@@ -220,7 +216,6 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                     >
                         <PlayerText style={styles.buttonText}>{buttonLabel}</PlayerText>
                     </Pressable>
-
                     <View style={{ alignItems: 'center', marginTop: 10 }}>
                         <PlayerText style={{ fontSize: 12, color: '#6D8196' }}>
                             Note: You can edit your profile details later!

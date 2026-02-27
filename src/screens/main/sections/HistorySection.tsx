@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, ScrollView, Animated } from 'react-native';
+
 import { PlayerText } from '@/components/fields/PlayerText';
 import { useHistory } from '@/contexts/HistoryContext';
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
