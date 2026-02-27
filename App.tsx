@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts } from 'expo-font';
+
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { HistoryProvider } from '@/contexts/HistoryContext';
 import { TaskProvider } from '@/contexts/TaskContext';
