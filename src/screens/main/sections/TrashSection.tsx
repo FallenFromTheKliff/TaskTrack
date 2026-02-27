@@ -21,11 +21,13 @@ export default function TrashSection() {
     const { history, permanentlyDeleteEvent } = useHistory();
     const { restoreTaskFromTrash } = useTask();
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedStatus, setSelectedStatus] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedEndDate, setSelectedEndDate] = useState('');
     const { selectionMode, selectedIds, enterSelectionMode, exitSelectionMode, toggleSelect } = useSelectionMode();
     const { fabAnim, handleScroll } = useFabScroll();
     const { translateY, opacity } = useEntranceAnim();
+
     const trashedEvents: HistoryEvent[] = useMemo(() =>
             history.filter(e => e.status === 'trashed' || e.status === 'unfinished'),
         [history]
@@ -34,7 +36,8 @@ export default function TrashSection() {
         events: trashedEvents,
         searchQuery,
         selectedDate,
-        selectedEndDate
+        selectedEndDate,
+        selectedStatus
     });
     const selectedCount = selectedIds.size;
     const handleBulkDelete = async () => {
@@ -42,6 +45,7 @@ export default function TrashSection() {
         exitSelectionMode();
     };
     const bulkAction = useBulkAction(handleBulkDelete);
+
     return (
         <View style={[styles.content, { flex: 1, position: 'relative' }]}>
             <SearchFilter
@@ -52,6 +56,8 @@ export default function TrashSection() {
                 onDateChange={setSelectedDate}
                 selectedEndDate={selectedEndDate}
                 onEndDateChange={setSelectedEndDate}
+                selectedStatus={selectedStatus}
+                onStatusChange={setSelectedStatus}
             />
             <Animated.View style={{ flex: 1, transform: [{ translateY }], opacity }}>
                 <ScrollView

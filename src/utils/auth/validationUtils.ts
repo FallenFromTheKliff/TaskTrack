@@ -1,4 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const validateUsername = (userName: string) => {
     if (!userName) return 'A username is required!';
@@ -25,12 +25,12 @@ export const validateEmailRegister = async (email: string) => {
     if (name.length <= 8) return 'Email name needs at least 8 characters!';
     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{3,}$/i.test(email)) return 'Please enter a valid email address!';
     try {
-        const usersJSON = await AsyncStorage.getItem("users");
+        const usersJSON = await AsyncStorage.getItem('users');
         const users = usersJSON ? JSON.parse(usersJSON) : [];
         const emailExists = users.some((u: any) => u.email === email);
         if (emailExists) return 'This email is already registered!';
     } catch (error) {
-        console.error("Error checking email:", error);
+        console.error('Error checking email:', error);
     }
     return true;
 };

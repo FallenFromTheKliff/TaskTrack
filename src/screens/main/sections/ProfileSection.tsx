@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { View, Pressable, ScrollView, Image, Animated } from 'react-native';
 import { useForm } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,14 +30,18 @@ type ProfileFormData = {
 };
 
 export default function ProfileSection() {
-    const { user, updateProfile, deleteUser, verifyAndChangePassword } = useAuth();
+    const { user, updateProfile, deleteUser, verifyAndChangePassword, logout } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isTerminating, setIsTerminating] = useState(false);
+    const [isSecurityLogout, setIsSecurityLogout] = useState(false);
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
     const [isTerminateVisible, setIsTerminateVisible] = useState(false);
+    const [isSecurityVisible, setIsSecurityVisible] = useState(false);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [profilePictureUri, setProfilePictureUri] = useState<string | null>(user?.profilePicture ?? null);
+    const passwordChanged = useRef(false);
+    const pendingSubmitData = useRef<ProfileFormData | null>(null);
     const { message: successText, showMessage: showSuccess } = useTimedMessage(2000);
     const { message: errorText, showMessage: showError } = useTimedMessage(2000);
     const dob = parseBirthday(user?.dateOfBirth);
@@ -48,7 +52,6 @@ export default function ProfileSection() {
     const [fullNameValue, setFullNameValue] = useState(user?.fullName || '');
     const [isFullNameValid, setIsFullNameValid] = useState(false);
     const [nameRequirementsShown, setNameRequirementsShown] = useState(false);
-
     const showNameRequirements = isEditing && nameRequirementsShown;
     const { height: nameRequirementsHeight, opacity: nameRequirementsOpacity } = usePanelAnim({
         targetHeight: 180,
@@ -65,9 +68,11 @@ export default function ProfileSection() {
     });
     const loadingText = useLoadingText('SAVING', isLoading);
     const { translateY, opacity } = useEntranceAnim();
+
     const handleCancelEdit = () => {
         setIsEditing(false);
         setNameRequirementsShown(false);
+        passwordChanged.current = false;
         const dob = parseBirthday(user?.dateOfBirth);
         setBirthdayMonth(dob.month);
         setBirthdayDay(dob.day);
@@ -83,23 +88,35 @@ export default function ProfileSection() {
             phoneNumber: user?.phoneNumber || ''
         });
     };
+
     const pickExistingPhoto = async () => {
         const uri = await pickImageFromLibrary();
         if (uri) setProfilePictureUri(uri);
     };
+
+    const saveProfile = async (data: ProfileFormData) => {
+        const dateOfBirth = composeBirthday(birthdayMonth, birthdayDay, birthdayYear) || undefined;
+        await updateProfile({
+            profilePicture: profilePictureUri,
+            userName: data.userName,
+            fullName: capitalizeFullName(data.fullName),
+            email: data.email,
+            phoneNumber: data.phoneNumber || undefined,
+            dateOfBirth,
+            gender: gender || undefined
+        });
+    };
+
     const onSubmit = async (data: ProfileFormData) => {
+        const emailChanged = data.email !== user?.email;
+        if (emailChanged || passwordChanged.current) {
+            pendingSubmitData.current = data;
+            setIsSecurityVisible(true);
+            return;
+        }
         try {
             setIsLoading(true);
-            const dateOfBirth = composeBirthday(birthdayMonth, birthdayDay, birthdayYear) || undefined;
-            await updateProfile({
-                profilePicture: profilePictureUri,
-                userName: data.userName,
-                fullName: capitalizeFullName(data.fullName),
-                email: data.email,
-                phoneNumber: data.phoneNumber || undefined,
-                dateOfBirth,
-                gender: gender || undefined
-            });
+            await saveProfile(data);
             showSuccess('Profile updated!');
             setIsEditing(false);
             setNameRequirementsShown(false);
@@ -109,12 +126,27 @@ export default function ProfileSection() {
             setIsLoading(false);
         }
     };
+
     const handleFullNameChange = (val: string) => {
         setFullNameValue(val);
         if (!nameRequirementsShown && val.length > 0) setNameRequirementsShown(true);
     };
     const handlePasswordChange = async (currentPassword: string, newPassword: string) => {
         await verifyAndChangePassword(currentPassword, newPassword);
+        passwordChanged.current = true;
+    };
+    const handleSecurityConfirm = async () => {
+        if (!pendingSubmitData.current) return;
+        try {
+            setIsSecurityLogout(true);
+            await saveProfile(pendingSubmitData.current);
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            await logout();
+        } catch {
+            setIsSecurityLogout(false);
+            setIsSecurityVisible(false);
+            showError('Failed to save. Please try again.');
+        }
     };
     const handleTerminateConfirm = async () => {
         try {
@@ -127,6 +159,7 @@ export default function ProfileSection() {
             showError('Failed to terminate account. Please try again.');
         }
     };
+
     return (
         <View style={styles.container}>
             <Animated.View style={{ flex: 1, transform: [{ translateY }], opacity }}>
@@ -251,6 +284,20 @@ export default function ProfileSection() {
                 </ScrollView>
             </Animated.View>
             <ChangePasswordModal isVisible={isPasswordModalOpen} onCancel={() => setIsPasswordModalOpen(false)} onConfirm={handlePasswordChange} />
+            <ConfirmModal
+                isVisible={isSecurityVisible}
+                title="Important Change(s) Detected."
+                message="Your account had its email or password changed. You will be logged out and must sign back in after saving changes."
+                yesLabel="Understood"
+                noLabel="Cancel"
+                yesIcon="shield-checkmark-outline"
+                yesPositive
+                isLoading={isSecurityLogout}
+                loadingLabel="LOGGING OUT"
+                loadingTitle="Alright, see ya later!"
+                onNo={() => setIsSecurityVisible(false)}
+                onYes={handleSecurityConfirm}
+            />
             <ConfirmModal
                 isVisible={isTerminateVisible}
                 title="Terminate Account?"

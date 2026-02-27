@@ -3,8 +3,7 @@ import { View, Pressable, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { PlayerText, PlayerTextInput } from '@/components/fields/PlayerText';
 import { formatDateShort, getTodayString } from '@/utils/shared/dateUtils';
-import { DISPLAY_OPTIONS, FILTER_PRIORITY_OPTIONS, FILTER_STATUS_OPTIONS, SEARCH_PLACEHOLDERS, FILTER_PANEL_HEIGHTS } from '@/utils/shared/constantUtils';
-
+import { DISPLAY_OPTIONS, FILTER_PRIORITY_OPTIONS, FILTER_STATUS_OPTIONS, FILTER_TRASH_STATUS_OPTIONS, SEARCH_PLACEHOLDERS, FILTER_PANEL_HEIGHTS } from '@/utils/shared/constantUtils';
 import CalendarModal from '@/components/modals/CalendarModal';
 import styles from '@/styles/components/SearchFilterStyles';
 
@@ -175,7 +174,30 @@ export default function SearchFilter({
                             <DateRangePickers />
                         </>
                     )}
-                    {variant === 'trash' && <DateRangePickers />}
+                    {variant === 'trash' && (
+                        <>
+                            <View style={styles.filterSection}>
+                                <PlayerText style={styles.filterLabel}>Status:</PlayerText>
+                                <View style={styles.filterOptions}>
+                                    {FILTER_TRASH_STATUS_OPTIONS.map((opt) => {
+                                        const isActive = selectedStatus === opt.value;
+                                        return (
+                                            <Pressable
+                                                key={opt.value}
+                                                style={[styles.filterOptionButton, isActive && { borderColor: opt.activeBorder, backgroundColor: opt.activeBg }]}
+                                                onPress={() => onStatusChange?.(opt.value)}
+                                            >
+                                                <PlayerText style={[styles.filterOptionText, isActive && { color: opt.activeText }]}>
+                                                    {opt.label}
+                                                </PlayerText>
+                                            </Pressable>
+                                        );
+                                    })}
+                                </View>
+                            </View>
+                            <DateRangePickers />
+                        </>
+                    )}
                 </View>
             </Animated.View>
             <CalendarModal

@@ -4,16 +4,16 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { PlayerText } from '@/components/fields/PlayerText';
-import { useTask, Task } from '@/contexts/TaskContext';
+import { useTask } from '@/contexts/TaskContext';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { DEFAULT_TASK_ICON } from '@/utils/shared/constantUtils';
-
+import { RootStackParamList } from '../../../App';
 import Scheduler, { SchedulerValues, SchedulerHandle } from '@/components/main/Scheduler';
 import styles from '@/styles/main/FormStyles';
 
 type TaskFormScreenProps = {
-    navigation: NativeStackNavigationProp<any>;
-    route: RouteProp<{ params: { task?: Task } }, 'params'>;
+    navigation: NativeStackNavigationProp<RootStackParamList, 'Task Details'>;
+    route: RouteProp<RootStackParamList, 'Task Details'>;
 };
 
 export default function TaskFormScreen({ navigation, route }: TaskFormScreenProps) {
@@ -22,7 +22,6 @@ export default function TaskFormScreen({ navigation, route }: TaskFormScreenProp
     const { createTask, updateTask, recordEditEvent } = useTask();
     const [isValid, setIsValid] = useState(isEditing);
     const [isLoading, setIsLoading] = useState(false);
-
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const schedulerRef = useRef<SchedulerHandle>(null);
     const loadingText = useLoadingText(isEditing ? 'UPDATING TASK' : 'CREATING TASK', isLoading);
@@ -77,6 +76,7 @@ export default function TaskFormScreen({ navigation, route }: TaskFormScreenProp
             setIsLoading(false);
         }
     };
+
     const disabled = !isValid || isLoading;
     const btnStyle = [
         styles.submitButton,

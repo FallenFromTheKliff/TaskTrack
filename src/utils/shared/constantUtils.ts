@@ -67,8 +67,12 @@ export const FILTER_STATUS_OPTIONS: { label: string; value: string; activeText: 
     { label: 'Created', value: 'created', activeText: '#7BAFD4', activeBorder: '#5B7FA6', activeBg: '#1A2535' },
     { label: 'Edited', value: 'edited', activeText: '#8A9BAD', activeBorder: '#5E6E7A', activeBg: '#1E2832' },
     { label: 'Completed', value: 'completed', activeText: '#6DC48A', activeBorder: '#4A8A5F', activeBg: '#1A2A1A' },
-    { label: 'Deleted', value: 'deleted', activeText: '#C47A7A', activeBorder: '#8A4545', activeBg: '#2A1515' },
-    { label: 'Unfinished', value: 'unfinished', activeText: '#C4A27A', activeBorder: '#8A6F45', activeBg: '#2A2010' }
+    { label: 'Deleted', value: 'deleted', activeText: '#C47A7A', activeBorder: '#8A4545', activeBg: '#2A1515' }
+];
+export const FILTER_TRASH_STATUS_OPTIONS: { label: string; value: string; activeText: string; activeBorder: string; activeBg: string }[] = [
+    { label: 'All', value: '', activeText: '#7BAFD4', activeBorder: '#5B7FA6', activeBg: '#1A2A3A' },
+    { label: 'Pending Deletion', value: 'trashed', activeText: '#C47A7A', activeBorder: '#8A4545', activeBg: '#2A1515' },
+    { label: 'Unfinished Task(s)', value: 'unfinished', activeText: '#C4A27A', activeBorder: '#8A6F45', activeBg: '#2A2010' }
 ];
 export const SEARCH_PLACEHOLDERS: Record<string, string> = {
     tasks: 'Search tasks...',
@@ -78,5 +82,5 @@ export const SEARCH_PLACEHOLDERS: Record<string, string> = {
 export const FILTER_PANEL_HEIGHTS: Record<string, number> = {
     tasks: 240,
     history: 170,
-    trash: 90
+    trash: 155
 };

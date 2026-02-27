@@ -1,19 +1,27 @@
-import { useState, useEffect } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useFonts } from "expo-font";
+import { useState, useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useFonts } from 'expo-font';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { HistoryProvider } from '@/contexts/HistoryContext';
 import { TaskProvider } from '@/contexts/TaskContext';
 import { ScreenProvider } from '@/contexts/ScreenContext';
+import { Task } from '@/contexts/TaskContext';
 
-import SplashScreen from "@/screens/interlude/SplashScreen";
+import SplashScreen from '@/screens/interlude/SplashScreen';
 import LoginScreen from '@/screens/auth/LoginScreen';
 import RegisterScreen from '@/screens/auth/RegisterScreen';
-import LayoutScreen from "@/screens/main/LayoutScreen";
-import TaskFormScreen from "@/screens/main/TaskFormScreen";
+import LayoutScreen from '@/screens/main/LayoutScreen';
+import TaskFormScreen from '@/screens/main/TaskFormScreen';
 
-const Stack = createNativeStackNavigator();
+export type RootStackParamList = {
+    Home: undefined;
+    'Task Details': { task?: Task };
+    Login: undefined;
+    Register: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 const SPLASH_MIN_DURATION = 2000;
 
 function CompassNeedle() {

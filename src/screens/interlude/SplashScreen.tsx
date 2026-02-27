@@ -3,8 +3,6 @@ import { View, StyleSheet, Animated } from "react-native";
 import { PlayerText } from '@/components/fields/PlayerText';
 import { Ionicons } from "@expo/vector-icons";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 const styles = StyleSheet.create({
     outer: {
         flex: 1,
@@ -35,25 +33,6 @@ export default function SplashScreen() {
     const fadeAnim  = useRef(new Animated.Value(1)).current;
     const [displayedTitle, setDisplayedTitle] = useState('');
     const projectTitle = "TaskTrack";
-
-    useEffect(() => {
-        const clearUsers = async () => {
-            try {
-                const users = await AsyncStorage.getItem('users');
-                if (users) {
-                    console.log('📦 Found users:', JSON.parse(users));
-                    await AsyncStorage.removeItem('users');
-                    await AsyncStorage.removeItem('currentUser');
-                    console.log('All users wiped from AsyncStorage!');
-                } else {
-                    console.log('No users found in AsyncStorage');
-                }
-            } catch (error) {
-                console.error('Failed to clear users:', error);
-            }
-        };
-        clearUsers();
-    }, []);
 
     useEffect(() => {
         Animated.spring(scaleAnim, { toValue: 1, friction: 10, tension: 40, useNativeDriver: true }).start(() => {

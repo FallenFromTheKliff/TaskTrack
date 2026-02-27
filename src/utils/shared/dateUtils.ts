@@ -39,9 +39,11 @@ export const formatTimestamp = (isoString: string): string => {
     const month = MONTH_NAMES_SHORT[date.getMonth()];
     const day = date.getDate();
     const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
+    const rawHours = date.getHours();
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${month} ${day}, ${year} ${hours}:${minutes}`;
+    const period = rawHours >= 12 ? 'PM' : 'AM';
+    const hours = rawHours % 12 === 0 ? 12 : rawHours % 12;
+    return `${month} ${day}, ${year} ${hours}:${minutes} ${period}`;
 };
 
 export const parseBirthday = (dob?: string): { month: string; day: string; year: string } => {
