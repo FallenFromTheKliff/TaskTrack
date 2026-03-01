@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { useAuth } from '@/contexts/AuthContext';
-import { PlayerText } from '@/components/fields/PlayerText';
+import { AuthText } from '@/components/fields/PlayerText';
 import { validateUsername, validateFullName, validateEmailRegister, validatePassword, validatePasswordConfirmation, validatePhoneNumber } from '@/utils/auth/validationUtils';
 import { capitalizeFullName } from '@/utils/auth/revisionUtils';
 import { useAuthEntrance } from '@/hooks/auth/useAuthEntrance';
@@ -13,11 +13,12 @@ import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { useTimedMessage } from '@/hooks/auth/useTimedMessage';
 import { usePanelAnim } from '@/hooks/animations/usePanelAnim';
 import { getProfileImageSource, pickImageFromLibrary } from "@/utils/auth/imageUtils";
+import { makeAuthStyles } from '@/styles/auth/AuthStyles';
+import { useTheme } from "@/contexts/ThemeContext";
 
 import InputField from '@/components/fields/InputField';
 import NameRequirements from '@/components/requirements/NameRequirements';
 import PasswordRequirements from '@/components/requirements/PasswordRequirements';
-import styles from '@/styles/auth/AuthStyles';
 
 type RegisterFormData = {
     userName: string;
@@ -41,6 +42,7 @@ type RegisterFormProps = {
 
 export default function RegisterScreen({ navigation }: RegisterFormProps) {
     const { register } = useAuth();
+    const { colors } = useTheme();
     const [isLoading, setIsLoading] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
@@ -107,6 +109,8 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
         }
     };
 
+    const styles = makeAuthStyles(colors);
+
     return (
         <View style={styles.container}>
             <ScrollView
@@ -116,7 +120,7 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                 scrollEnabled={!navDisabled}
             >
                 <Animated.View style={[styles.header, { marginBottom: 40, opacity: fadeIn, transform: [{ translateY: takeFlight }] }]}>
-                    <PlayerText style={{ fontSize: 42 }}>Join the community!</PlayerText>
+                    <AuthText style={{ fontSize: 42, color: colors.textPrimary }}>Join the community!</AuthText>
                 </Animated.View>
                 <Animated.View style={[styles.form, { opacity: fadeIn }]}>
                     <View style={{ alignItems: 'center', marginBottom: 20 }}>
@@ -128,9 +132,9 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                                 </View>
                             </View>
                         </Pressable>
-                        <PlayerText style={{ fontSize: 12, color: '#6D8196', marginTop: 8 }}>
+                        <AuthText style={{ fontSize: 12, color: colors.textMuted, marginTop: 8 }}>
                             Tap to upload a profile picture!
-                        </PlayerText>
+                        </AuthText>
                     </View>
                     <InputField
                         control={control}
@@ -210,21 +214,21 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                         toggleVisibility={{ isVisible: isConfirmPasswordVisible, setIsVisible: setIsConfirmPasswordVisible }}
                     />
                     <Pressable
-                        style={[styles.button, isLoading && { backgroundColor: '#6D8196' }]}
+                        style={[styles.button, isLoading && { backgroundColor: colors.textMuted }]}
                         onPress={handleSubmit(onSubmit)}
                         disabled={navDisabled}
                     >
-                        <PlayerText style={styles.buttonText}>{buttonLabel}</PlayerText>
+                        <AuthText style={styles.buttonText}>{buttonLabel}</AuthText>
                     </Pressable>
                     <View style={{ alignItems: 'center', marginTop: 10 }}>
-                        <PlayerText style={{ fontSize: 12, color: '#6D8196' }}>
+                        <AuthText style={{ fontSize: 12, color: colors.textMuted }}>
                             Note: You can edit your profile details later!
-                        </PlayerText>
+                        </AuthText>
                     </View>
                     <View style={styles.footer}>
-                        <PlayerText style={{ fontSize: 18 }}>Already have an account?</PlayerText>
+                        <AuthText style={{ fontSize: 18, color: colors.textPrimary }}>Already have an account?</AuthText>
                         <Pressable onPress={() => !navDisabled && navigation.replace('Login')} disabled={navDisabled}>
-                            <PlayerText style={[styles.link, navDisabled && { color: '#4E5D6D' }]}>Sign in!</PlayerText>
+                            <AuthText style={[styles.link, navDisabled && { color: colors.textDisabled }]}>Sign in!</AuthText>
                         </Pressable>
                     </View>
                 </Animated.View>

@@ -1,4 +1,4 @@
-import { reviseEmail } from "@/utils/auth/revisionUtils";
+import { reviseEmail } from '@/utils/auth/revisionUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const validateUsername = (userName: string) => {
@@ -20,11 +20,13 @@ export const validateEmail = (email: string) => {
     if (!checkEmail.isValid) return 'Please enter a valid email address!';
     if (!checkEmail.hasMinNameLength) return 'Email name needs at least 8 characters!';
     return true;
-}
+};
+
 export const validateEmailLogin = (email: string) => {
     if (!email) return 'Please enter your email address!';
     return true;
 };
+
 export const validateEmailRegister = async (email: string) => {
     const checkEmail = reviseEmail(email);
     if (!email) return 'Please enter your email address!';
@@ -48,6 +50,19 @@ export const validatePhoneNumber = (phoneNumber: string) => {
 
 export const validatePassword = (password: string) => {
     if (!password) return 'Please enter your password!';
+    return true;
+};
+export const validatePasswordWithEmail = async (email: string, password: string): Promise<string | true> => {
+    if (!password) return 'Please enter your password!';
+    if (!email) return true;
+    try {
+        const { hashPassword } = await import('@/utils/auth/revisionUtils');
+        const usersJSON = await AsyncStorage.getItem('users');
+        const users: any[] = usersJSON ? JSON.parse(usersJSON) : [];
+        const hashed = await hashPassword(password);
+        const match = users.find(u => u.email === email && u.password === hashed);
+        if (!match) return 'Invalid Password!';
+    } catch { }
     return true;
 };
 export const validateNewPassword = (currentPassword: string, newPassword: string) => {

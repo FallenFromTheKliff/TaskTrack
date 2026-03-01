@@ -4,10 +4,10 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 
 import { PlayerText } from '@/components/fields/PlayerText';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { useTimedMessage } from '@/hooks/auth/useTimedMessage';
-
-import styles from '@/styles/modals/SelfieCameraStyles';
+import { makeSelfieCameraStyles } from '@/styles/modals/SelfieCameraStyles';
 
 type SelfieCameraModalProps = {
     isVisible: boolean;
@@ -16,6 +16,8 @@ type SelfieCameraModalProps = {
 };
 
 export default function SelfieCameraModal({ isVisible, onCancel, onCapture }: SelfieCameraModalProps) {
+    const { colors } = useTheme();
+    const styles = makeSelfieCameraStyles(colors);
     const [permission, requestPermission] = useCameraPermissions();
     const [isSaving, setIsSaving] = useState(false);
     const [frozenUri, setFrozenUri] = useState<string | null>(null);

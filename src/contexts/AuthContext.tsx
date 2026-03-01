@@ -50,6 +50,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const TASKS_KEY = '@tasktrack_tasks';
+const HISTORY_KEY = '@tasktrack_history';
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
@@ -63,9 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const loadStoredUser = async () => {
         try {
             const storedUser = await AsyncStorage.getItem('currentUser');
-            if (storedUser) {
-                setUser(JSON.parse(storedUser));
-            }
+            if (storedUser) setUser(JSON.parse(storedUser));
         } catch (error) {
             console.error('Failed to load stored user:', error);
         } finally {
@@ -73,20 +74,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const login = async (email: string, password: string) => {
-        try {
-            const usersJSON = await AsyncStorage.getItem('users');
-            const users: StoredUser[] = usersJSON ? JSON.parse(usersJSON) : [];
-            const hashed = await hashPassword(password);
-            const foundUser = users.find(u => u.email === email && u.password === hashed);
-            if (!foundUser) return undefined;
-            const { password: _, ...userWithoutPassword } = foundUser;
-            await AsyncStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
-            pendingUser.current = userWithoutPassword;
-            return userWithoutPassword;
-        } catch (error) {
-            console.error('Login failed:', error);
-        }
+    const login = async (email: string, password: string): Promise<User | undefined> => {
+        const usersJSON = await AsyncStorage.getItem('users');
+        const users: StoredUser[] = usersJSON ? JSON.parse(usersJSON) : [];
+        const hashed = await hashPassword(password);
+        const foundUser = users.find(u => u.email === email && u.password === hashed);
+        if (!foundUser) return undefined;
+        const { password: _, ...userWithoutPassword } = foundUser;
+        await AsyncStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
+        pendingUser.current = userWithoutPassword;
+        return userWithoutPassword;
     };
 
     const commitLogin = () => {
@@ -96,61 +93,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const register = async (userData: RegisterData) => {
-        try {
-            const usersJSON = await AsyncStorage.getItem('users');
-            const users: StoredUser[] = usersJSON ? JSON.parse(usersJSON) : [];
-            const emailExists = users.some(u => u.email === userData.email);
-            if (emailExists) throw new Error('Email already exists');
-            const newUser: User = {
-                id: Date.now().toString(),
-                profilePicture: userData.profilePicture,
-                userName: userData.userName,
-                fullName: userData.fullName,
-                email: userData.email,
-                phoneNumber: userData.phoneNumber,
-                createdAt: new Date().toISOString()
-            };
-            const hashed = await hashPassword(userData.password);
-            const storedNew: StoredUser = { ...newUser, password: hashed };
-            users.push(storedNew);
-            await AsyncStorage.setItem('users', JSON.stringify(users));
-            return newUser;
-        } catch (error) {
-            console.error('Registration failed:', error);
-            throw error;
-        }
+    const register = async (userData: RegisterData): Promise<User | undefined> => {
+        const usersJSON = await AsyncStorage.getItem('users');
+        const users: StoredUser[] = usersJSON ? JSON.parse(usersJSON) : [];
+        if (users.some(u => u.email === userData.email)) throw new Error('Email already exists');
+        const newUser: User = {
+            id: Date.now().toString(),
+            profilePicture: userData.profilePicture,
+            userName: userData.userName,
+            fullName: userData.fullName,
+            email: userData.email,
+            phoneNumber: userData.phoneNumber,
+            createdAt: new Date().toISOString()
+        };
+        const storedNew: StoredUser = { ...newUser, password: await hashPassword(userData.password) };
+        users.push(storedNew);
+        await AsyncStorage.setItem('users', JSON.stringify(users));
+        return newUser;
     };
 
-    const updateProfile = async (userData: UpdateProfileData) => {
-        try {
-            if (!user) throw new Error('No user logged in');
-            const usersJSON = await AsyncStorage.getItem('users');
-            const users: StoredUser[] = usersJSON ? JSON.parse(usersJSON) : [];
-            const userIndex = users.findIndex(u => u.id === user.id);
-            if (userIndex === -1) throw new Error('User not found');
-            const existing = users[userIndex];
-            const updatedUser: StoredUser = {
-                ...existing,
-                profilePicture: 'profilePicture' in userData ? (userData.profilePicture ?? null) : existing.profilePicture,
-                userName: userData.userName !== undefined ? userData.userName : existing.userName,
-                fullName: userData.fullName !== undefined ? userData.fullName : existing.fullName,
-                email: userData.email !== undefined ? userData.email : existing.email,
-                phoneNumber: userData.phoneNumber !== undefined ? userData.phoneNumber : existing.phoneNumber,
-                dateOfBirth: userData.dateOfBirth !== undefined ? userData.dateOfBirth : existing.dateOfBirth,
-                gender: userData.gender !== undefined ? userData.gender : existing.gender,
-                password: userData.password ? await hashPassword(userData.password) : existing.password,
-            };
-            users[userIndex] = updatedUser;
-            await AsyncStorage.setItem('users', JSON.stringify(users));
-            const { password: _, ...userWithoutPassword } = updatedUser;
-            await AsyncStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
-            setUser(userWithoutPassword);
-            return userWithoutPassword;
-        } catch (error) {
-            console.error('Update failed:', error);
-            throw error;
-        }
+    const updateProfile = async (userData: UpdateProfileData): Promise<User | undefined> => {
+        if (!user) throw new Error('No user logged in');
+        const usersJSON = await AsyncStorage.getItem('users');
+        const users: StoredUser[] = usersJSON ? JSON.parse(usersJSON) : [];
+        const userIndex = users.findIndex(u => u.id === user.id);
+        if (userIndex === -1) throw new Error('User not found');
+        const existing = users[userIndex];
+        const updatedUser: StoredUser = {
+            ...existing,
+            profilePicture: 'profilePicture' in userData ? (userData.profilePicture ?? null) : existing.profilePicture,
+            userName: userData.userName !== undefined ? userData.userName : existing.userName,
+            fullName: userData.fullName !== undefined ? userData.fullName : existing.fullName,
+            email: userData.email !== undefined ? userData.email : existing.email,
+            phoneNumber: userData.phoneNumber !== undefined ? userData.phoneNumber : existing.phoneNumber,
+            dateOfBirth: userData.dateOfBirth !== undefined ? userData.dateOfBirth : existing.dateOfBirth,
+            gender: userData.gender !== undefined ? userData.gender : existing.gender,
+            password: userData.password ? await hashPassword(userData.password) : existing.password
+        };
+        users[userIndex] = updatedUser;
+        await AsyncStorage.setItem('users', JSON.stringify(users));
+        const { password: _, ...userWithoutPassword } = updatedUser;
+        await AsyncStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
+        setUser(userWithoutPassword);
+        return userWithoutPassword;
     };
 
     const verifyAndChangePassword = async (currentPassword: string, newPassword: string) => {
@@ -167,29 +152,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const deleteUser = async () => {
-        try {
-            if (!user) throw new Error('No user logged in');
-            const usersJSON = await AsyncStorage.getItem('users');
-            const users: StoredUser[] = usersJSON ? JSON.parse(usersJSON) : [];
-            const filtered = users.filter(u => u.id !== user.id);
-            await AsyncStorage.setItem('users', JSON.stringify(filtered));
-            await AsyncStorage.removeItem(`@tasktrack_tasks_${user.id}`);
-            await AsyncStorage.removeItem(`@tasktrack_history_${user.id}`);
-            await AsyncStorage.removeItem('currentUser');
-            setUser(null);
-        } catch (error) {
-            console.error('Delete failed:', error);
-            throw error;
-        }
+        if (!user) throw new Error('No user logged in');
+        const usersJSON = await AsyncStorage.getItem('users');
+        const users: StoredUser[] = usersJSON ? JSON.parse(usersJSON) : [];
+        await AsyncStorage.setItem('users', JSON.stringify(users.filter(u => u.id !== user.id)));
+        await AsyncStorage.removeItem(`${TASKS_KEY}_${user.id}`);
+        await AsyncStorage.removeItem(`${HISTORY_KEY}_${user.id}`);
+        await AsyncStorage.removeItem('currentUser');
+        setUser(null);
     };
 
     const logout = async () => {
-        try {
-            await AsyncStorage.removeItem('currentUser');
-            setUser(null);
-        } catch (error) {
-            console.error('Logout failed:', error);
-        }
+        await AsyncStorage.removeItem('currentUser');
+        setUser(null);
     };
 
     return (

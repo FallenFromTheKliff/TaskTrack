@@ -3,9 +3,9 @@ import { View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { PlayerText } from '@/components/fields/PlayerText';
+import { useTheme } from '@/contexts/ThemeContext';
 import { revisePassword } from '@/utils/auth/revisionUtils';
-
-import styles from '@/styles/components/RequirementStyles';
+import { makeRequirementStyles } from '@/styles/components/content/RequirementStyles';
 
 type PasswordRequirementsProps = {
     password: string;
@@ -13,7 +13,10 @@ type PasswordRequirementsProps = {
 }
 
 export default function PasswordRequirements({ password, onValidationChange }: PasswordRequirementsProps) {
+    const { colors, activeIconColor } = useTheme();
     const requirements = revisePassword(password);
+    const s = makeRequirementStyles(colors);
+
     const allRequirementsMet =
         requirements.minLength &&
         requirements.hasUppercase &&
@@ -25,61 +28,59 @@ export default function PasswordRequirements({ password, onValidationChange }: P
         onValidationChange(allRequirementsMet);
     }, [allRequirementsMet]);
 
-    return (
-        <View style={[styles.container, { borderColor: allRequirementsMet ? '#4E5D6D' : '#FF6B6B' }]}>
-            <PlayerText style={styles.header}>Password Requirements:</PlayerText>
+    const metColor = activeIconColor ?? colors.accentBlue;
+    const unmetColor = colors.errorRed;
 
-            <View style={styles.requirement}>
+    return (
+        <View style={[s.container, { borderColor: allRequirementsMet ? colors.borderMid : colors.errorRed }]}>
+            <PlayerText style={s.header}>Password Requirements:</PlayerText>
+            <View style={s.requirement}>
                 <Ionicons
-                    name={requirements.minLength ? "checkmark-circle" : "close-circle"}
+                    name={requirements.minLength ? 'checkmark-circle' : 'close-circle'}
                     size={16}
-                    color={requirements.minLength ? "#8EA7C1" : "#FF6B6B"}
+                    color={requirements.minLength ? metColor : unmetColor}
                 />
-                <PlayerText style={[styles.requirementText, requirements.minLength && { color: '#8EA7C1', fontWeight: '600' }]}>
+                <PlayerText style={[s.requirementText, requirements.minLength && { color: metColor, fontWeight: '600' }]}>
                     Minimum 8 characters
                 </PlayerText>
             </View>
-
-            <View style={styles.requirement}>
+            <View style={s.requirement}>
                 <Ionicons
-                    name={requirements.hasUppercase ? "checkmark-circle" : "close-circle"}
+                    name={requirements.hasUppercase ? 'checkmark-circle' : 'close-circle'}
                     size={16}
-                    color={requirements.hasUppercase ? "#8EA7C1" : "#FF6B6B"}
+                    color={requirements.hasUppercase ? metColor : unmetColor}
                 />
-                <PlayerText style={[styles.requirementText, requirements.hasUppercase && { color: '#8EA7C1', fontWeight: '600' }]}>
+                <PlayerText style={[s.requirementText, requirements.hasUppercase && { color: metColor, fontWeight: '600' }]}>
                     At least one uppercase letter (A-Z)
                 </PlayerText>
             </View>
-
-            <View style={styles.requirement}>
+            <View style={s.requirement}>
                 <Ionicons
-                    name={requirements.hasLowercase ? "checkmark-circle" : "close-circle"}
+                    name={requirements.hasLowercase ? 'checkmark-circle' : 'close-circle'}
                     size={16}
-                    color={requirements.hasLowercase ? "#8EA7C1" : "#FF6B6B"}
+                    color={requirements.hasLowercase ? metColor : unmetColor}
                 />
-                <PlayerText style={[styles.requirementText, requirements.hasLowercase && { color: '#8EA7C1', fontWeight: '600' }]}>
+                <PlayerText style={[s.requirementText, requirements.hasLowercase && { color: metColor, fontWeight: '600' }]}>
                     At least one lowercase letter (a-z)
                 </PlayerText>
             </View>
-
-            <View style={styles.requirement}>
+            <View style={s.requirement}>
                 <Ionicons
-                    name={requirements.hasNumber ? "checkmark-circle" : "close-circle"}
+                    name={requirements.hasNumber ? 'checkmark-circle' : 'close-circle'}
                     size={16}
-                    color={requirements.hasNumber ? "#8EA7C1" : "#FF6B6B"}
+                    color={requirements.hasNumber ? metColor : unmetColor}
                 />
-                <PlayerText style={[styles.requirementText, requirements.hasNumber && { color: '#8EA7C1', fontWeight: '600' }]}>
+                <PlayerText style={[s.requirementText, requirements.hasNumber && { color: metColor, fontWeight: '600' }]}>
                     At least one number (0-9)
                 </PlayerText>
             </View>
-
-            <View style={styles.requirement}>
+            <View style={s.requirement}>
                 <Ionicons
-                    name={requirements.hasSpecial ? "checkmark-circle" : "close-circle"}
+                    name={requirements.hasSpecial ? 'checkmark-circle' : 'close-circle'}
                     size={16}
-                    color={requirements.hasSpecial ? "#8EA7C1" : "#FF6B6B"}
+                    color={requirements.hasSpecial ? metColor : unmetColor}
                 />
-                <PlayerText style={[styles.requirementText, requirements.hasSpecial && { color: '#8EA7C1' }]}>
+                <PlayerText style={[s.requirementText, requirements.hasSpecial && { color: metColor }]}>
                     At least one special character (@$!%*?&)
                 </PlayerText>
             </View>

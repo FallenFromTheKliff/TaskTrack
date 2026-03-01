@@ -5,6 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { PlayerText } from '@/components/fields/PlayerText';
 import { Task, useTask } from '@/contexts/TaskContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { formatDateShort } from '@/utils/shared/dateUtils';
 import { filterByQuery, groupByKey, sortGroupsAsc } from '@/utils/shared/filterUtils';
 import { useFabScroll } from '@/hooks/main/sections/useFabScroll';
@@ -12,14 +13,14 @@ import { useSelectionMode } from '@/hooks/main/sections/useSelectionMode';
 import { useToggleAnim } from '@/hooks/animations/useToggleAnim';
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
 import { useBulkAction } from '@/hooks/main/useBulkAction';
+import { makeSectionStyles } from '@/styles/components/main/SectionStyles';
+import { makeGroupStyles } from '@/styles/cards/GroupStyles';
 
-import SearchFilter from '@/components/main/layout/SearchFilter';
+import SearchFilter from '@/components/layout/SearchFilter';
 import TaskCard from '@/components/cards/TaskCard';
-import NoContent from '@/components/main/sections/NoContent';
-import SelectionFooter from '@/components/main/sections/SelectionFooter';
+import NoContent from '@/components/main/NoContent';
+import SelectionFooter from '@/components/main/SelectionFooter';
 import ConfirmModal from '@/components/modals/ConfirmModal';
-import styles from '@/styles/main/SectionStyles';
-import groupStyles from '@/styles/cards/GroupStyles';
 
 type TaskSectionProps = {
     navigation: NativeStackNavigationProp<any>;
@@ -27,6 +28,8 @@ type TaskSectionProps = {
 
 export default function TaskSection({ navigation }: TaskSectionProps) {
     const { tasks, getTasksByDate, getTasksInRange, moveTaskToTrash } = useTask();
+    const { colors, activeIconColor } = useTheme();
+
     const [searchQuery, setSearchQuery] = useState('');
     const [taskDisplayCount, setTaskDisplayCount] = useState(-1);
     const [selectedDate, setSelectedDate] = useState('');
@@ -40,6 +43,9 @@ export default function TaskSection({ navigation }: TaskSectionProps) {
     const fabRotation = fabToggleAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '135deg'] });
     const btnSlide = fabToggleAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -88] });
     const btn2Slide = fabToggleAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -148] });
+
+    const styles = makeSectionStyles(colors, activeIconColor);
+    const groupStyles = makeGroupStyles(colors);
 
     const closeFab = () => { if (isFabOpen) toggleFab(false); };
     const handleEnterSelectionMode = () => { closeFab(); enterSelectionMode(); };
@@ -134,19 +140,19 @@ export default function TaskSection({ navigation }: TaskSectionProps) {
                 <Animated.View style={[styles.fabContainer, { opacity: fabAnim }]}>
                     <Animated.View style={[styles.fabAction, { transform: [{ translateY: btn2Slide }], opacity: fabToggleAnim }]}>
                         <Pressable style={styles.fabActionButton} onPress={handleEnterSelectionMode}>
-                            <Ionicons name="trash-outline" size={24} color="#C47A7A" />
+                            <Ionicons name="trash-outline" size={24} color={colors.accentRed} />
                             <PlayerText style={styles.fabActionTextRemove}>Move to Trash</PlayerText>
                         </Pressable>
                     </Animated.View>
                     <Animated.View style={[styles.fabAction, { transform: [{ translateY: btnSlide }], opacity: fabToggleAnim }]}>
                         <Pressable style={styles.fabActionButton} onPress={() => { closeFab(); navigation.navigate('Task Details'); }}>
-                            <Ionicons name="add-circle-outline" size={24} color="#6DC48A" />
+                            <Ionicons name="add-circle-outline" size={24} color={colors.accentGreen} />
                             <PlayerText style={styles.fabActionTextCreate}>Create New Task</PlayerText>
                         </Pressable>
                     </Animated.View>
                     <Pressable style={styles.fab} onPress={() => toggleFab()}>
                         <Animated.View style={{ transform: [{ rotate: fabRotation }] }}>
-                            <Ionicons name="add" size={48} color="#313B46" />
+                            <Ionicons name="add" size={48} color={colors.bgDeep} />
                         </Animated.View>
                     </Pressable>
                 </Animated.View>

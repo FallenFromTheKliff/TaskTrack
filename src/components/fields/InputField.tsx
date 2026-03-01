@@ -1,10 +1,10 @@
 import { View, Pressable } from 'react-native';
-import { PlayerText, PlayerTextInput } from '@/components/fields/PlayerText';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
 
-import authStyles from '@/styles/auth/AuthStyles';
-import schedulerStyles from '@/styles/main/SchedulerStyles';
+import { PlayerText, PlayerTextInput } from '@/components/fields/PlayerText';
+import { useTheme } from '@/contexts/ThemeContext';
+import { makeInputFieldStyles } from '@/styles/components/fields/InputFieldStyles';
 
 type InputFieldProps = {
     control: Control<any>;
@@ -35,28 +35,16 @@ const filterForKeyboard = (text: string, keyboardType: string) =>
     keyboardType === 'phone-pad' ? text.replace(/[^0-9]/g, '') : text;
 
 export default function InputField({
-    control,
-    name,
-    label,
-    placeholder,
-    icon,
-    iconSize = 20,
-    validation,
-    errors,
-    secureTextEntry = false,
-    keyboardType = 'default',
-    onChangeValue,
-    onFocusChange,
-    showRedBorder = false,
-    editable = true,
-    optional = false,
-    multiline = false,
-    maxLength,
-    schedulerStyle = false,
-    toggleVisibility
+    control, name, label, placeholder, icon, iconSize = 20, validation, errors,
+    secureTextEntry = false, keyboardType = 'default', onChangeValue, onFocusChange,
+    showRedBorder = false, editable = true, optional = false, multiline = false,
+    maxLength, schedulerStyle = false, toggleVisibility
 }: InputFieldProps) {
+    const { colors, activeIconColor } = useTheme();
+    const s = makeInputFieldStyles(colors, activeIconColor);
     const error = errors[name];
     const shouldShowRedBorder = editable && (!!error || showRedBorder);
+
     if (schedulerStyle) {
         return (
             <Controller
@@ -64,36 +52,37 @@ export default function InputField({
                 name={name}
                 rules={validation ? { validate: validation } : undefined}
                 render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={schedulerStyles.fieldBlock}>
-                        <View style={schedulerStyles.fieldLabelRow}>
-                            <PlayerText style={schedulerStyles.fieldLabel}>{label}</PlayerText>
+                    <View style={s.schedulerFieldBlock}>
+                        <View style={s.schedulerFieldLabelRow}>
+                            <PlayerText style={s.schedulerFieldLabel}>{label}</PlayerText>
                             {optional && (
-                                <PlayerText style={schedulerStyles.fieldLabelOptional}>(optional)</PlayerText>
+                                <PlayerText style={s.schedulerFieldLabelOptional}>(optional)</PlayerText>
                             )}
                         </View>
                         <View style={[
-                            schedulerStyles.inputBox,
-                            multiline && schedulerStyles.textAreaBox,
-                            shouldShowRedBorder && { borderColor: '#FF6B6B' }
+                            s.schedulerInputBox,
+                            { backgroundColor: colors.bgPanel, borderColor: colors.borderSub },
+                            multiline && s.schedulerTextAreaBox,
+                            shouldShowRedBorder && { borderColor: colors.errorRed }
                         ]}>
                             <PlayerTextInput
                                 placeholder={placeholder}
                                 onBlur={() => { onBlur(); onFocusChange?.(false); }}
                                 onFocus={() => onFocusChange?.(true)}
-                                onChangeText={(text) => {
+                                onChangeText={text => {
                                     const filtered = filterForKeyboard(text, keyboardType);
                                     onChange(filtered);
                                     onChangeValue?.(filtered);
                                 }}
                                 value={value}
                                 multiline={multiline}
-                                style={multiline ? schedulerStyles.textArea : undefined}
+                                style={multiline ? s.schedulerTextArea : undefined}
                                 keyboardType={keyboardType}
                                 maxLength={maxLength}
                             />
                         </View>
                         {error && (
-                            <PlayerText style={{ color: '#FF6B6B', fontSize: 10, marginLeft: 5, marginTop: 4 }}>
+                            <PlayerText style={[s.errorText, { color: colors.errorRed }]}>
                                 {error.message as string}
                             </PlayerText>
                         )}
@@ -102,6 +91,7 @@ export default function InputField({
             />
         );
     }
+
     return (
         <Controller
             control={control}
@@ -109,26 +99,31 @@ export default function InputField({
             rules={validation ? { validate: validation } : undefined}
             render={({ field: { onChange, onBlur, value } }) => (
                 <View>
-                    <PlayerText style={[authStyles.label, !editable && { color: '#4E5D6D' }]}>{label}</PlayerText>
+                    <PlayerText style={[s.label, { color: editable ? (activeIconColor ?? colors.accentBlue) : colors.textDisabled }]}>
+                        {label}
+                    </PlayerText>
                     <View style={[
-                        authStyles.inputField,
-                        !editable && { backgroundColor: '#252D36', borderColor: '#313B46' },
-                        shouldShowRedBorder && { borderColor: '#FF6B6B' }
+                        s.inputField,
+                        {
+                            backgroundColor: editable ? colors.fieldBg : colors.fieldDisabledBg,
+                            borderColor: editable ? colors.fieldBorder : colors.fieldDisabledBorder
+                        },
+                        shouldShowRedBorder && { borderColor: colors.errorRed }
                     ]}>
                         {icon && (
                             <Ionicons
                                 name={icon}
                                 size={iconSize}
-                                color={editable ? '#8EA7C1' : '#4E5D6D'}
+                                color={editable ? colors.textSecondary : colors.textDisabled}
                                 style={{ marginRight: 10 }}
                             />
                         )}
                         <PlayerTextInput
                             placeholder={placeholder}
-                            placeholderTextColor={editable ? '#6D8196' : '#4E5D6D'}
+                            placeholderTextColor={editable ? colors.textMuted : colors.textDisabled}
                             onBlur={() => { onBlur(); onFocusChange?.(false); }}
                             onFocus={() => onFocusChange?.(true)}
-                            onChangeText={(text) => {
+                            onChangeText={text => {
                                 const filtered = filterForKeyboard(text, keyboardType);
                                 onChange(filtered);
                                 onChangeValue?.(filtered);
@@ -139,7 +134,7 @@ export default function InputField({
                             editable={editable}
                             maxLength={maxLength}
                             multiline={multiline}
-                            style={!editable ? { color: '#4E5D6D' } : undefined}
+                            style={!editable ? { color: colors.textDisabled } : undefined}
                         />
                         {toggleVisibility && editable && (
                             <View onStartShouldSetResponder={() => true}>
@@ -150,15 +145,15 @@ export default function InputField({
                                     <Ionicons
                                         name={toggleVisibility.isVisible ? 'eye-off-outline' : 'eye-outline'}
                                         size={18}
-                                        color="#8EA7C1"
+                                        color={colors.textSecondary}
                                     />
                                 </Pressable>
                             </View>
                         )}
                     </View>
-                    <View style={authStyles.inputError}>
+                    <View style={s.inputError}>
                         {error && editable && (
-                            <PlayerText style={{ color: '#FF6B6B', fontSize: 10 }}>
+                            <PlayerText style={[s.errorText, { color: colors.errorRed }]}>
                                 {error.message as string}
                             </PlayerText>
                         )}

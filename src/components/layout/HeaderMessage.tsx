@@ -1,10 +1,11 @@
 import { useRef, useEffect } from 'react';
 import { View, Animated } from 'react-native';
+
 import { PlayerText } from '@/components/fields/PlayerText';
+import { useTheme } from '@/contexts/ThemeContext';
 import { ScreenKey } from '@/contexts/ScreenContext';
 import { useTask } from '@/contexts/TaskContext';
-
-import styles from '@/styles/components/HeaderMessageStyles';
+import { makeHeaderMessageStyles } from '@/styles/components/layout/HeaderMessageStyles';
 
 type HeaderMessageProps = {
     activeScreen: ScreenKey;
@@ -25,11 +26,13 @@ function getQuadrantAngles(percent: number) {
         ne: clamp((percent / 25) * 90),
         se: clamp(((percent - 25) / 25) * 90),
         sw: clamp(((percent - 50) / 25) * 90),
-        nw: clamp(((percent - 75) / 25) * 90),
+        nw: clamp(((percent - 75) / 25) * 90)
     };
 }
 
 function ProgressCircle({ completed, total }: { completed: number; total: number }) {
+    const { colors } = useTheme();
+    const s = makeHeaderMessageStyles(colors);
     const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
     const allDone = total > 0 && completed === total;
     const angles = getQuadrantAngles(percent);
@@ -51,24 +54,24 @@ function ProgressCircle({ completed, total }: { completed: number; total: number
     const makeRotation = (anim: Animated.Value) =>
         anim.interpolate({ inputRange: [0, 90], outputRange: ['0deg', '90deg'] });
 
-    const ringStyle = allDone ? styles.ringDone : undefined;
+    const ringColor = allDone ? colors.accentGreen : colors.accentBlue;
 
     return (
-        <View style={styles.circleWrapper}>
-            <View style={styles.circleBackground} />
-            <View style={[styles.quadrant, styles.quadrantNE]}>
-                <Animated.View style={[styles.quadrantInner, styles.quadrantInnerNE, ringStyle, { transform: [{ rotate: makeRotation(neAnim) }] }]} />
+        <View style={s.circleWrapper}>
+            <View style={s.circleBackground} />
+            <View style={[s.quadrant, s.quadrantNE]}>
+                <Animated.View style={[s.quadrantInner, s.quadrantInnerNE, { borderColor: ringColor, transform: [{ rotate: makeRotation(neAnim) }] }]} />
             </View>
-            <View style={[styles.quadrant, styles.quadrantSE]}>
-                <Animated.View style={[styles.quadrantInner, styles.quadrantInnerSE, ringStyle, { transform: [{ rotate: makeRotation(seAnim) }] }]} />
+            <View style={[s.quadrant, s.quadrantSE]}>
+                <Animated.View style={[s.quadrantInner, s.quadrantInnerSE, { borderColor: ringColor, transform: [{ rotate: makeRotation(seAnim) }] }]} />
             </View>
-            <View style={[styles.quadrant, styles.quadrantSW]}>
-                <Animated.View style={[styles.quadrantInner, styles.quadrantInnerSW, ringStyle, { transform: [{ rotate: makeRotation(swAnim) }] }]} />
+            <View style={[s.quadrant, s.quadrantSW]}>
+                <Animated.View style={[s.quadrantInner, s.quadrantInnerSW, { borderColor: ringColor, transform: [{ rotate: makeRotation(swAnim) }] }]} />
             </View>
-            <View style={[styles.quadrant, styles.quadrantNW]}>
-                <Animated.View style={[styles.quadrantInner, styles.quadrantInnerNW, ringStyle, { transform: [{ rotate: makeRotation(nwAnim) }] }]} />
+            <View style={[s.quadrant, s.quadrantNW]}>
+                <Animated.View style={[s.quadrantInner, s.quadrantInnerNW, { borderColor: ringColor, transform: [{ rotate: makeRotation(nwAnim) }] }]} />
             </View>
-            <PlayerText style={[styles.percentText, allDone && styles.percentTextDone]}>
+            <PlayerText style={[s.percentText, allDone && { color: colors.accentGreen }]}>
                 {percent}%
             </PlayerText>
         </View>
@@ -76,15 +79,17 @@ function ProgressCircle({ completed, total }: { completed: number; total: number
 }
 
 export default function HeaderMessage({ activeScreen, selectedDate }: HeaderMessageProps) {
+    const { colors } = useTheme();
     const { getTasksByDate } = useTask();
+    const s = makeHeaderMessageStyles(colors);
 
     const dateTasks = getTasksByDate(selectedDate);
     const completed = dateTasks.filter(t => t.completed).length;
     const total = dateTasks.length;
 
     return (
-        <View style={styles.container}>
-            <PlayerText style={styles.message} numberOfLines={1}>
+        <View style={s.container}>
+            <PlayerText style={s.message} numberOfLines={1}>
                 {MESSAGES[activeScreen]}
             </PlayerText>
             {activeScreen === 'tasks' && (

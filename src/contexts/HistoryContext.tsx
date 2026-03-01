@@ -28,6 +28,7 @@ type HistoryContextType = {
     permanentlyDeleteEvent: (eventId: string) => Promise<void>;
     restoreTaskFromTrash: (eventId: string, onRestore: (task: Task) => Promise<void>) => Promise<void>;
     reconcileUnfinished: (allTasks: Task[], today: string, now: string) => Promise<{ remainingTasks: Task[] }>;
+    clearAllHistory: () => Promise<void>;
 };
 
 const HistoryContext = createContext<HistoryContextType | undefined>(undefined);
@@ -78,19 +79,12 @@ export const HistoryProvider = ({ children }: { children: ReactNode }) => {
         await saveHistory(history.filter(e => e.id !== eventId));
     }, [history, saveHistory]);
 
-    // Called when permanently deleting from TrashSection — removes trash entry and adds a 'deleted' history record
     const permanentlyDeleteEvent = useCallback(async (eventId: string) => {
         const event = history.find(e => e.id === eventId);
         if (!event) return;
         const now = new Date().toISOString();
-        const deletedRecord: HistoryEvent = {
-            ...event,
-            id: generateId('hist'),
-            status: 'deleted',
-            updatedAt: now
-        };
-        const remaining = history.filter(e => e.id !== eventId);
-        await saveHistory([deletedRecord, ...remaining]);
+        const deletedRecord: HistoryEvent = { ...event, id: generateId('hist'), status: 'deleted', updatedAt: now };
+        await saveHistory([deletedRecord, ...history.filter(e => e.id !== eventId)]);
     }, [history, saveHistory]);
 
     const restoreTaskFromTrash = useCallback(async (eventId: string, onRestore: (task: Task) => Promise<void>) => {
@@ -142,8 +136,14 @@ export const HistoryProvider = ({ children }: { children: ReactNode }) => {
         return { remainingTasks: remaining };
     }, [user]);
 
+    const clearAllHistory = useCallback(async () => {
+        if (!user) return;
+        await AsyncStorage.setItem(`${HISTORY_STORAGE_KEY}_${user.id}`, JSON.stringify([]));
+        setHistory([]);
+    }, [user]);
+
     return (
-        <HistoryContext.Provider value={{ history, addHistoryEvent, deleteHistoryEvent, permanentlyDeleteEvent, restoreTaskFromTrash, reconcileUnfinished }}>
+        <HistoryContext.Provider value={{ history, addHistoryEvent, deleteHistoryEvent, permanentlyDeleteEvent, restoreTaskFromTrash, reconcileUnfinished, clearAllHistory }}>
             {children}
         </HistoryContext.Provider>
     );

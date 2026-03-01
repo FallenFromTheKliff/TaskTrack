@@ -1,25 +1,28 @@
 import { useState, useMemo } from 'react';
 import { View, ScrollView, Pressable, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
 import { useTask } from '@/contexts/TaskContext';
 import { useHistory, HistoryEvent } from '@/contexts/HistoryContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useFilteredHistory } from '@/hooks/main/sections/useFilteredHistory';
 import { useFabScroll } from '@/hooks/main/sections/useFabScroll';
 import { useSelectionMode } from '@/hooks/main/sections/useSelectionMode';
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
 import { useBulkAction } from '@/hooks/main/useBulkAction';
+import { makeSectionStyles } from '@/styles/components/main/SectionStyles';
 
 import RecordCard from '@/components/cards/RecordCard';
-import SearchFilter from '@/components/main/layout/SearchFilter';
-import NoContent from '@/components/main/sections/NoContent';
-import SelectionFooter from '@/components/main/sections/SelectionFooter';
-import SelectableCardRow from '@/components/main/sections/SelectableCardRow';
+import SearchFilter from '@/components/layout/SearchFilter';
+import NoContent from '@/components/main/NoContent';
+import SelectionFooter from '@/components/main/SelectionFooter';
+import SelectableCardRow from '@/components/main/SelectableCardRow';
 import ConfirmModal from '@/components/modals/ConfirmModal';
-import styles from '@/styles/main/SectionStyles';
 
 export default function TrashSection() {
     const { history, permanentlyDeleteEvent } = useHistory();
     const { restoreTaskFromTrash } = useTask();
+    const { colors, activeIconColor } = useTheme();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('');
@@ -29,6 +32,7 @@ export default function TrashSection() {
     const { selectionMode, selectedIds, enterSelectionMode, exitSelectionMode, toggleSelect } = useSelectionMode();
     const { fabAnim, handleScroll } = useFabScroll();
     const { translateY, opacity } = useEntranceAnim();
+    const styles = makeSectionStyles(colors, activeIconColor);
 
     const trashedEvents: HistoryEvent[] = useMemo(() =>
             history.filter(e => e.status === 'trashed' || e.status === 'unfinished'),
@@ -105,8 +109,8 @@ export default function TrashSection() {
                 />
             ) : (
                 <Animated.View style={[styles.fabContainer, { opacity: fabAnim }]}>
-                    <Pressable style={[styles.fab, { backgroundColor: '#8EA7C1' }]} onPress={enterSelectionMode}>
-                        <Ionicons name="trash-outline" size={32} color="#313B46" />
+                    <Pressable style={[styles.fab, { backgroundColor: activeIconColor ?? colors.accentBlue }]} onPress={enterSelectionMode}>
+                        <Ionicons name="trash-outline" size={32} color={colors.bgDeep} />
                     </Pressable>
                 </Animated.View>
             )}

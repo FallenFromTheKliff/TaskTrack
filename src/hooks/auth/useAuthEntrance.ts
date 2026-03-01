@@ -1,13 +1,16 @@
 import { useRef, useEffect } from 'react';
 import { Animated } from 'react-native';
 
+import { useTheme } from '@/contexts/ThemeContext';
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
 
 export function useAuthEntrance() {
+    const { settings } = useTheme();
     const { opacity: fadeIn } = useEntranceAnim();
     const takeFlight = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
+        if (!settings.useAnimations) return;
         const timeout = setTimeout(() => {
             Animated.loop(
                 Animated.sequence([
@@ -17,7 +20,7 @@ export function useAuthEntrance() {
             ).start();
         }, 150);
         return () => clearTimeout(timeout);
-    }, []);
+    }, [settings.useAnimations]);
 
     return { fadeIn, takeFlight };
 }

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { View, StyleSheet, Animated } from "react-native";
 
-import { PlayerText } from "@/components/fields/PlayerText";
+import { AuthText } from "@/components/fields/PlayerText";
 import { useLoadingText } from "@/hooks/main/useLoadingText";
 
 const styles = StyleSheet.create({
@@ -43,9 +43,9 @@ export default function LoadingScreen({ onDone }: LoadingScreenProps) {
         <View style={styles.outer}>
             <View style={styles.inner}>
                 <Animated.View style={{ opacity: fadeAnim }}>
-                    <PlayerText style={{ fontSize: 36, color: '#8EA7C1' }}>
+                    <AuthText style={{ fontSize: 36, color: '#8EA7C1' }}>
                         {loadingText}
-                    </PlayerText>
+                    </AuthText>
                 </Animated.View>
             </View>
         </View>

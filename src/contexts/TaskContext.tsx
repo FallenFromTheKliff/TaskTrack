@@ -35,6 +35,7 @@ type TaskContextType = {
     toggleTaskCompletion: (taskId: string) => Promise<void>;
     recordEditEvent: (task: Task) => Promise<void>;
     restoreTaskFromTrash: (eventId: string) => Promise<void>;
+    clearAllTasks: () => Promise<void>;
 };
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -42,7 +43,7 @@ const TASKS_STORAGE_KEY = '@tasktrack_tasks';
 
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const { user } = useAuth();
-    const { addHistoryEvent, reconcileUnfinished, restoreTaskFromTrash: restoreFromHistory } = useHistory();
+    const { addHistoryEvent, reconcileUnfinished, restoreTaskFromTrash: restoreFromHistory, clearAllHistory } = useHistory();
     const [tasks, setTasks] = useState<Task[]>([]);
     const lastReconcileDate = useRef<string>('');
 
@@ -128,6 +129,13 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         });
     };
 
+    const clearAllTasks = async () => {
+        if (!user) return;
+        await AsyncStorage.setItem(`${TASKS_STORAGE_KEY}_${user.id}`, JSON.stringify([]));
+        setTasks([]);
+        await clearAllHistory();
+    };
+
     return (
         <TaskContext.Provider value={{
             tasks,
@@ -139,6 +147,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             toggleTaskCompletion,
             recordEditEvent,
             restoreTaskFromTrash,
+            clearAllTasks
         }}>
             {children}
         </TaskContext.Provider>

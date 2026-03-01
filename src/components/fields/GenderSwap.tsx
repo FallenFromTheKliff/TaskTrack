@@ -1,30 +1,9 @@
-import { View, Pressable } from 'react-native';
-import { StyleSheet } from 'react-native';
-import { PlayerText } from '@/components/fields/PlayerText';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { C, R } from '@/styles/shared/tokens';
 
-const styles = StyleSheet.create({
-    row: { flexDirection: 'row', gap: 8 },
-    button: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 6,
-        backgroundColor: C.bgInput,
-        borderRadius: R.md,
-        paddingVertical: 14,
-        paddingHorizontal: 8,
-        borderWidth: 2,
-        borderColor: C.borderStrong
-    },
-    buttonActive: { backgroundColor: C.bgInputDark, borderColor: C.accentBlue },
-    buttonDisabled: { backgroundColor: C.bgInputDark, borderColor: C.borderSub },
-    label: { fontSize: 14, color: C.textMuted },
-    labelActive: { color: C.textPrimary },
-    labelDisabled: { color: C.textDisabled }
-});
+import { PlayerText } from '@/components/fields/PlayerText';
+import { useTheme } from '@/contexts/ThemeContext';
+import { R } from '@/styles/shared/tokens';
 
 type GenderSwapProps = {
     value: string;
@@ -39,35 +18,47 @@ const GENDER_OPTIONS: { label: string; icon: keyof typeof Ionicons.glyphMap }[] 
 ];
 
 export default function GenderSwap({ value, isEditable, onSelect }: GenderSwapProps) {
-    const handlePress = (label: string) => {
-        if (!isEditable) return;
-        onSelect(label);
-    };
+    const { colors, activeIconColor } = useTheme();
+
+    const s = StyleSheet.create({
+        row: { flexDirection: 'row', gap: 8 },
+        button: {
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            backgroundColor: colors.bgInput,
+            borderRadius: R.md,
+            paddingVertical: 14,
+            paddingHorizontal: 8,
+            borderWidth: 2,
+            borderColor: colors.borderStrong
+        },
+        buttonActive: { backgroundColor: colors.bgInputDark, borderColor: activeIconColor ?? colors.accentBlue },
+        buttonDisabled: { backgroundColor: colors.bgInputDark, borderColor: colors.borderSub },
+        label: { fontSize: 14, color: colors.textMuted },
+        labelActive: { color: colors.textPrimary },
+        labelDisabled: { color: colors.textDisabled }
+    });
+
     return (
-        <View style={styles.row}>
+        <View style={s.row}>
             {GENDER_OPTIONS.map(({ label, icon }) => {
                 const isActive = value === label;
                 return (
                     <Pressable
                         key={label}
-                        style={[
-                            styles.button,
-                            isActive && styles.buttonActive,
-                            !isEditable && styles.buttonDisabled
-                        ]}
-                        onPress={() => handlePress(label)}
+                        style={[s.button, isActive && s.buttonActive, !isEditable && s.buttonDisabled]}
+                        onPress={() => { if (isEditable) onSelect(label); }}
                         disabled={!isEditable}
                     >
                         <Ionicons
                             name={icon}
                             size={16}
-                            color={!isEditable ? C.textDisabled : isActive ? C.textPrimary : C.textMuted}
+                            color={!isEditable ? colors.textDisabled : isActive ? colors.textPrimary : colors.textMuted}
                         />
-                        <PlayerText style={[
-                            styles.label,
-                            isActive && styles.labelActive,
-                            !isEditable && styles.labelDisabled
-                        ]}>
+                        <PlayerText style={[s.label, isActive && s.labelActive, !isEditable && s.labelDisabled]}>
                             {label}
                         </PlayerText>
                     </Pressable>

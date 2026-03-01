@@ -3,23 +3,30 @@ import { View, ScrollView, Animated } from 'react-native';
 
 import { PlayerText } from '@/components/fields/PlayerText';
 import { useHistory } from '@/contexts/HistoryContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
 import { useFilteredHistory } from '@/hooks/main/sections/useFilteredHistory';
 import { formatDateShort } from '@/utils/shared/dateUtils';
+import { makeSectionStyles } from '@/styles/components/main/SectionStyles';
+import { makeGroupStyles } from '@/styles/cards/GroupStyles';
 
 import RecordCard from '@/components/cards/RecordCard';
-import SearchFilter from '@/components/main/layout/SearchFilter';
-import NoContent from '@/components/main/sections/NoContent';
-import styles from '@/styles/main/SectionStyles';
-import groupStyles from '@/styles/cards/GroupStyles';
+import SearchFilter from '@/components/layout/SearchFilter';
+import NoContent from '@/components/main/NoContent';
 
 export default function HistorySection() {
     const { history } = useHistory();
+    const { colors } = useTheme();
+
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedEndDate, setSelectedEndDate] = useState('');
+
     const { translateY, opacity } = useEntranceAnim();
+    const styles = makeSectionStyles(colors);
+    const groupStyles = makeGroupStyles(colors);
+
     const historyEvents = history.filter(e => e.status !== 'trashed');
     const { filtered, grouped, showGroups } = useFilteredHistory({
         events: historyEvents,
@@ -30,6 +37,7 @@ export default function HistorySection() {
         searchFields: ['title', 'description', 'status'],
         withGroups: true
     });
+
     return (
         <View style={styles.content}>
             <SearchFilter

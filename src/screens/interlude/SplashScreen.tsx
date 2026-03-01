@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { AuthText } from '@/components/fields/PlayerText';
 
 const styles = StyleSheet.create({
     outer: {
@@ -57,7 +57,7 @@ export default function SplashScreen() {
             <View style={styles.inner}>
                 <Animated.View style={[styles.splash, { transform: [{ scale: scaleAnim }], opacity: fadeAnim }]}>
                     <Ionicons name="folder-open-sharp" size={56} color='#BFCDDC' />
-                    <PlayerText style={styles.title}>{displayedTitle}</PlayerText>
+                    <AuthText style={styles.title}>{displayedTitle}</AuthText>
                 </Animated.View>
             </View>
         </View>

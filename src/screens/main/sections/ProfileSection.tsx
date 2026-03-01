@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { PlayerText } from '@/components/fields/PlayerText';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useScreen } from '@/contexts/ScreenContext';
 import { validateUsername, validateFullName, validateEmail, validatePhoneNumber } from '@/utils/auth/validationUtils';
 import { capitalizeFullName } from '@/utils/auth/revisionUtils';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
@@ -13,6 +15,7 @@ import { usePanelAnim } from '@/hooks/animations/usePanelAnim';
 import { parseBirthday, composeBirthday, MONTH_NAMES_FULL, DAYS, YEARS } from '@/utils/shared/dateUtils';
 import { getProfileImageSource, pickImageFromLibrary } from '@/utils/auth/imageUtils';
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
+import { makeProfileSectionStyles } from '@/styles/components/main/ProfileSectionStyles';
 
 import InputField from '@/components/fields/InputField';
 import BirthdayDropdown from '@/components/fields/BirthdayDropdown';
@@ -21,7 +24,6 @@ import NameRequirements from '@/components/requirements/NameRequirements';
 import ChangePasswordModal from '@/components/modals/ChangePasswordModal';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 import SelfieCameraModal from '@/components/modals/SelfieCameraModal';
-import styles from '@/styles/main/ProfileSectionStyles';
 
 type ProfileFormData = {
     userName: string;
@@ -32,6 +34,10 @@ type ProfileFormData = {
 
 export default function ProfileSection() {
     const { user, updateProfile, deleteUser, verifyAndChangePassword, logout } = useAuth();
+    const { colors, activeIconColor } = useTheme();
+    const { setActiveScreen } = useScreen();
+    const { setAppearance } = useTheme();
+    const styles = makeProfileSectionStyles(colors, activeIconColor);
     const [isLoading, setIsLoading] = useState(false);
 
     const [isEditing, setIsEditing] = useState(false);
@@ -81,52 +87,69 @@ export default function ProfileSection() {
     const handleCancelEdit = () => {
         setIsEditing(false);
         setNameRequirementsShown(false);
-        passwordChanged.current = false;
-        const dob = parseBirthday(user?.dateOfBirth);
-        setBirthdayMonth(dob.month);
-        setBirthdayDay(dob.day);
-        setBirthdayYear(dob.year);
-        setGender(user?.gender || '');
-        setFullNameValue(user?.fullName || '');
-        setIsFullNameValid(false);
-        setProfilePictureUri(user?.profilePicture ?? null);
         reset({
             userName: user?.userName || '',
             fullName: user?.fullName || '',
             email: user?.email || '',
             phoneNumber: user?.phoneNumber || ''
         });
+        setProfilePictureUri(user?.profilePicture ?? null);
+        setFullNameValue(user?.fullName || '');
+        setBirthdayMonth(dob.month);
+        setBirthdayDay(dob.day);
+        setBirthdayYear(dob.year);
+        setGender(user?.gender || '');
+        passwordChanged.current = false;
+    };
+
+    const handleFullNameChange = (value: string) => {
+        setFullNameValue(value);
+        if (!nameRequirementsShown && value.length > 0) setNameRequirementsShown(true);
+    };
+
+    const handlePasswordChange = async (currentPassword: string, newPassword: string) => {
+        try {
+            await verifyAndChangePassword(currentPassword, newPassword);
+            passwordChanged.current = true;
+            setIsPasswordModalOpen(false);
+            showSuccess('Password updated.');
+        } catch (err: any) {
+            throw err;
+        }
     };
 
     const pickExistingPhoto = async () => {
         const uri = await pickImageFromLibrary();
         if (uri) setProfilePictureUri(uri);
     };
-    const saveProfile = async (data: ProfileFormData) => {
-        const dateOfBirth = composeBirthday(birthdayMonth, birthdayDay, birthdayYear) || undefined;
-        await updateProfile({
-            profilePicture: profilePictureUri,
-            userName: data.userName,
-            fullName: capitalizeFullName(data.fullName),
-            email: data.email,
-            phoneNumber: data.phoneNumber || undefined,
-            dateOfBirth,
-            gender: gender || undefined
-        });
-    };
+
     const onSubmit = async (data: ProfileFormData) => {
-        const emailChanged = data.email !== user?.email;
-        if (emailChanged || passwordChanged.current) {
+        const hasEmailChange = data.email !== user?.email;
+        const hasSecurityChange = hasEmailChange || passwordChanged.current;
+        if (hasSecurityChange) {
             pendingSubmitData.current = data;
             setIsSecurityVisible(true);
             return;
         }
+        await doSave(data);
+    };
+
+    const doSave = async (data: ProfileFormData) => {
+        setIsLoading(true);
         try {
-            setIsLoading(true);
-            await saveProfile(data);
-            showSuccess('Profile updated!');
+            await updateProfile({
+                userName: data.userName,
+                fullName: capitalizeFullName(data.fullName),
+                email: data.email,
+                phoneNumber: data.phoneNumber,
+                dateOfBirth: composeBirthday(birthdayMonth, birthdayDay, birthdayYear),
+                gender,
+                profilePicture: profilePictureUri
+            });
             setIsEditing(false);
             setNameRequirementsShown(false);
+            passwordChanged.current = false;
+            showSuccess('Profile saved!');
         } catch {
             showError('Failed to save. Please try again.');
         } finally {
@@ -134,31 +157,23 @@ export default function ProfileSection() {
         }
     };
 
-    const handleFullNameChange = (val: string) => {
-        setFullNameValue(val);
-        if (!nameRequirementsShown && val.length > 0) setNameRequirementsShown(true);
-    };
-    const handlePasswordChange = async (currentPassword: string, newPassword: string) => {
-        await verifyAndChangePassword(currentPassword, newPassword);
-        passwordChanged.current = true;
-    };
     const handleSecurityConfirm = async () => {
-        if (!pendingSubmitData.current) return;
-        try {
+        if (pendingSubmitData.current) {
             setIsSecurityLogout(true);
-            await saveProfile(pendingSubmitData.current);
             await new Promise(resolve => setTimeout(resolve, 3000));
+            setActiveScreen('tasks');
+            setAppearance('navy', 'blrrpix', 'default');
+            await doSave(pendingSubmitData.current);
             await logout();
-        } catch {
-            setIsSecurityLogout(false);
-            setIsSecurityVisible(false);
-            showError('Failed to save. Please try again.');
         }
     };
+
     const handleTerminateConfirm = async () => {
         try {
             setIsTerminating(true);
             await new Promise(resolve => setTimeout(resolve, 3000));
+            setActiveScreen('tasks');
+            setAppearance('navy', 'blrrpix', 'default');
             await deleteUser();
         } catch {
             setIsTerminating(false);
@@ -166,6 +181,9 @@ export default function ProfileSection() {
             showError('Failed to terminate account. Please try again.');
         }
     };
+
+    const ic = activeIconColor ?? colors.accentBlue;
+    const icMuted = activeIconColor ?? colors.textMuted;
 
     return (
         <View style={styles.container}>
@@ -177,7 +195,7 @@ export default function ProfileSection() {
                                 <View style={{ position: 'relative' }}>
                                     <Image source={getProfileImageSource(profilePictureUri)} style={styles.avatar} />
                                     <View style={styles.avatarBomb}>
-                                        <Ionicons name="camera" size={16} color="#313B46" />
+                                        <Ionicons name="camera" size={16} color={colors.bgDeep} />
                                     </View>
                                 </View>
                             </Pressable>
@@ -189,7 +207,7 @@ export default function ProfileSection() {
                         <View style={styles.photoActionRow}>
                             {isEditing ? (
                                 <Pressable style={styles.photoActionButton} onPress={() => setIsCameraOpen(true)}>
-                                    <Ionicons name="camera-outline" size={16} color="#8EA7C1" />
+                                    <Ionicons name="camera-outline" size={16} color={ic} />
                                     <PlayerText style={styles.photoActionText}>Take a Picture</PlayerText>
                                 </Pressable>
                             ) : (
@@ -198,7 +216,16 @@ export default function ProfileSection() {
                         </View>
                     </View>
                     <View style={styles.form}>
-                        <InputField control={control} name="userName" label="Username" placeholder="e.g., _kLIFF23" icon="person-outline" validation={validateUsername} errors={errors} editable={isEditing} />
+                        <InputField
+                            control={control}
+                            name="userName"
+                            label="Username"
+                            placeholder="e.g., _kLIFF23"
+                            icon="person-outline"
+                            validation={validateUsername}
+                            errors={errors}
+                            editable={isEditing}
+                        />
                         <InputField
                             control={control}
                             name="fullName"
@@ -238,11 +265,11 @@ export default function ProfileSection() {
                             editable={isEditing}
                         />
                         <View style={styles.fieldBlock}>
-                            <PlayerText style={[styles.fieldLabel, !isEditing && { color: '#4E5D6D' }]}>Gender</PlayerText>
+                            <PlayerText style={[styles.fieldLabel, !isEditing && { color: colors.textDisabled }]}>Gender</PlayerText>
                             <GenderSwap value={gender} isEditable={isEditing} onSelect={setGender} />
                         </View>
                         <View style={[styles.fieldBlock, { zIndex: 200 }]}>
-                            <PlayerText style={[styles.fieldLabel, !isEditing && { color: '#4E5D6D' }]}>Date of Birth</PlayerText>
+                            <PlayerText style={[styles.fieldLabel, !isEditing && { color: colors.textDisabled }]}>Date of Birth</PlayerText>
                             <View style={styles.birthdayRow}>
                                 <BirthdayDropdown label="Month" value={birthdayMonth} options={MONTH_NAMES_FULL} isEditable={isEditing} onSelect={setBirthdayMonth} />
                                 <BirthdayDropdown label="Day" value={birthdayDay} options={DAYS} isEditable={isEditing} onSelect={setBirthdayDay} />
@@ -250,16 +277,16 @@ export default function ProfileSection() {
                             </View>
                         </View>
                         <View style={[styles.fieldBlock, { zIndex: 1 }]}>
-                            <PlayerText style={[styles.fieldLabel, !isEditing && { color: '#4E5D6D' }]}>Password</PlayerText>
+                            <PlayerText style={[styles.fieldLabel, !isEditing && { color: colors.textDisabled }]}>Password</PlayerText>
                             <Pressable
                                 style={[styles.passwordButton, !isEditing && styles.passwordButtonDisabled]}
                                 onPress={() => { if (isEditing) setIsPasswordModalOpen(true); }}
                             >
-                                <Ionicons name="lock-closed-outline" size={20} color={isEditing ? '#8EA7C1' : '#4E5D6D'} style={{ marginRight: 10 }} />
+                                <Ionicons name="lock-closed-outline" size={20} color={isEditing ? ic : colors.textDisabled} style={{ marginRight: 10 }} />
                                 <PlayerText style={[styles.passwordButtonText, !isEditing && styles.passwordButtonTextDisabled]}>
                                     {isEditing ? 'Change Password...' : '••••••••'}
                                 </PlayerText>
-                                {isEditing && <Ionicons name="chevron-forward" size={16} color="#6D8196" style={{ marginLeft: 'auto' }} />}
+                                {isEditing && <Ionicons name="chevron-forward" size={16} color={icMuted} style={{ marginLeft: 'auto' }} />}
                             </Pressable>
                         </View>
                     </View>
@@ -269,11 +296,11 @@ export default function ProfileSection() {
                         {!isEditing ? (
                             <>
                                 <Pressable style={styles.editButton} onPress={() => setIsEditing(true)}>
-                                    <Ionicons name="pencil-outline" size={18} color="#8EA7C1" />
+                                    <Ionicons name="pencil-outline" size={18} color={ic} />
                                     <PlayerText style={styles.editButtonText}>Edit Profile</PlayerText>
                                 </Pressable>
                                 <Pressable style={styles.terminateButton} onPress={() => setIsTerminateVisible(true)}>
-                                    <Ionicons name="skull-outline" size={18} color="#FF6B6B" />
+                                    <Ionicons name="skull-outline" size={18} color={colors.accentRed} />
                                     <PlayerText style={styles.terminateButtonText}>TERMINATE ACCOUNT</PlayerText>
                                 </Pressable>
                             </>

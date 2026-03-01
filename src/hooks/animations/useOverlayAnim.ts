@@ -1,15 +1,24 @@
 import { useRef, useEffect } from 'react';
 import { Animated } from 'react-native';
 
+import { useTheme } from '@/contexts/ThemeContext';
+
 type OverlayAnimMode = 'scale' | 'slideUp';
 
 export function useOverlayAnim(isVisible: boolean, mode: OverlayAnimMode = 'scale') {
+    const { settings } = useTheme();
     const opacity = useRef(new Animated.Value(0)).current;
     const scale = useRef(new Animated.Value(0.92)).current;
     const translateY = useRef(new Animated.Value(60)).current;
 
     useEffect(() => {
         if (isVisible) {
+            if (!settings.useAnimations) {
+                opacity.setValue(1);
+                scale.setValue(1);
+                translateY.setValue(0);
+                return;
+            }
             opacity.setValue(0);
             if (mode === 'scale') {
                 scale.setValue(0.92);
@@ -25,6 +34,12 @@ export function useOverlayAnim(isVisible: boolean, mode: OverlayAnimMode = 'scal
                 ]).start();
             }
         } else {
+            if (!settings.useAnimations) {
+                opacity.setValue(0);
+                scale.setValue(0.92);
+                translateY.setValue(60);
+                return;
+            }
             if (mode === 'scale') {
                 Animated.parallel([
                     Animated.timing(opacity, { toValue: 0, duration: 180, useNativeDriver: true }),
@@ -37,7 +52,7 @@ export function useOverlayAnim(isVisible: boolean, mode: OverlayAnimMode = 'scal
                 ]).start();
             }
         }
-    }, [isVisible]);
+    }, [isVisible, settings.useAnimations]);
 
     return { opacity, scale, translateY };
 }

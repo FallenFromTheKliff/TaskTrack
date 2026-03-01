@@ -1,177 +1,128 @@
-import { useState, useEffect, useRef } from 'react';
-import { View, Pressable, Modal, Animated } from 'react-native';
+import { useState } from 'react';
+import { View, Modal, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { PlayerText } from '@/components/fields/PlayerText';
-import { getTodayString, toDateString, getMonthLabel, DAY_NAMES } from '@/utils/shared/dateUtils';
+import { useTheme } from '@/contexts/ThemeContext';
+import { MONTH_NAMES_FULL, DAY_NAMES, getTodayString } from '@/utils/shared/dateUtils';
+import { makeCalendarStyles } from '@/styles/modals/CalendarStyles';
 
-import styles from '@/styles/components/CalendarStyles';
-
-type CalendarProps = {
+type CalendarModalProps = {
     isVisible: boolean;
     selectedDate: string;
-    onDateSelect: (date: string) => void;
+    minDate?: string;
+    blockToday?: boolean;
+    onSelect: (date: string) => void;
     onClose: () => void;
     onReset?: () => void;
     allowPastDates?: boolean;
-    minDate?: string;
-    blockToday?: boolean;
 };
 
-export default function CalendarModal({ isVisible, selectedDate, onDateSelect, onClose, onReset, allowPastDates = false, minDate, blockToday = false }: CalendarProps) {
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    const slideAnim = useRef(new Animated.Value(-50)).current;
-    const monthSlideAnim = useRef(new Animated.Value(0)).current;
-    const monthFadeAnim = useRef(new Animated.Value(1)).current;
+function parseYMD(dateStr: string): { year: number; month: number; day: number } {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return { year, month, day };
+}
+function formatYMD(year: number, month: number, day: number): string {
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+function getDaysInMonth(year: number, month: number): number {
+    return new Date(year, month, 0).getDate();
+}
+function getFirstDayOfWeek(year: number, month: number): number {
+    return new Date(year, month - 1, 1).getDay();
+}
 
-    const todayString = getTodayString();
-    const activeDate = selectedDate || '';
+export default function CalendarModal({ isVisible, selectedDate, minDate, blockToday = false, onSelect, onClose, onReset, allowPastDates }: CalendarModalProps) {
+    const { colors, activeIconColor } = useTheme();
+    const s = makeCalendarStyles(colors);
 
-    const getMonthFromDateString = (ds: string) => {
-        if (!ds) {
-            const now = new Date();
-            return new Date(now.getFullYear(), now.getMonth(), 1);
-        }
-        const [y, m] = ds.split('-').map(Number);
-        return new Date(y, m - 1, 1);
+    const today = selectedDate || new Date().toISOString().split('T')[0];
+    const { year: initYear, month: initMonth } = parseYMD(today);
+    const [viewYear, setViewYear] = useState(initYear);
+    const [viewMonth, setViewMonth] = useState(initMonth);
+
+    const daysInMonth = getDaysInMonth(viewYear, viewMonth);
+    const firstDow = getFirstDayOfWeek(viewYear, viewMonth);
+
+    const handlePrevMonth = () => {
+        if (viewMonth === 1) { setViewMonth(12); setViewYear(y => y - 1); }
+        else setViewMonth(m => m - 1);
+    };
+    const handleNextMonth = () => {
+        if (viewMonth === 12) { setViewMonth(1); setViewYear(y => y + 1); }
+        else setViewMonth(m => m + 1);
     };
 
-    const [currentMonth, setCurrentMonth] = useState(() => getMonthFromDateString(selectedDate));
-    const [displayedLabel, setDisplayedLabel] = useState(() => getMonthLabel(getMonthFromDateString(selectedDate)));
+    const isDisabled = (day: number) => {
+        const dateStr = formatYMD(viewYear, viewMonth, day);
+        if (blockToday && dateStr === getTodayString()) return true;
+        return !!(!allowPastDates && minDate && dateStr < minDate);
 
-    useEffect(() => {
-        if (isVisible) {
-            const month = getMonthFromDateString(selectedDate);
-            setCurrentMonth(month);
-            setDisplayedLabel(getMonthLabel(month));
-            monthSlideAnim.setValue(0);
-            monthFadeAnim.setValue(1);
-            fadeAnim.setValue(0);
-            slideAnim.setValue(-50);
-            Animated.parallel([
-                Animated.timing(fadeAnim, { toValue: 1, duration: 300, useNativeDriver: true }),
-                Animated.spring(slideAnim, { toValue: 0, friction: 8, tension: 40, useNativeDriver: true })
-            ]).start();
-        } else {
-            Animated.parallel([
-                Animated.timing(fadeAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
-                Animated.timing(slideAnim, { toValue: -50, duration: 200, useNativeDriver: true })
-            ]).start();
-        }
-    }, [isVisible]);
-
-    const isDateDisabled = (year: number, month: number, day: number) => {
-        const dateStr = toDateString(year, month, day);
-        if (minDate) return dateStr <= minDate;
-        if (blockToday && dateStr === todayString) return true;
-        if (!allowPastDates) return dateStr < todayString;
-        return false;
     };
 
-    const animateMonthLabel = (direction: number, newDate: Date) => {
-        const newLabel = getMonthLabel(newDate);
-        const exitTo = direction > 0 ? -40 : 40;
-        const enterFrom = direction > 0 ? 40 : -40;
-        Animated.parallel([
-            Animated.timing(monthSlideAnim, { toValue: exitTo, duration: 180, useNativeDriver: true }),
-            Animated.timing(monthFadeAnim, { toValue: 0, duration: 180, useNativeDriver: true })
-        ]).start(() => {
-            setDisplayedLabel(newLabel);
-            monthSlideAnim.setValue(enterFrom);
-            Animated.parallel([
-                Animated.timing(monthSlideAnim, { toValue: 0, duration: 180, useNativeDriver: true }),
-                Animated.timing(monthFadeAnim, { toValue: 1, duration: 180, useNativeDriver: true })
-            ]).start();
-        });
-    };
-
-    const changeMonth = (direction: number) => {
-        const newDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + direction, 1);
-        animateMonthLabel(direction, newDate);
-        setCurrentMonth(newDate);
-    };
-
-    const handleDatePress = (day: number) => {
-        const year = currentMonth.getFullYear();
-        const month = currentMonth.getMonth();
-        if (isDateDisabled(year, month, day)) return;
-        const dateString = toDateString(year, month, day);
-        onDateSelect(dateString);
-        onClose();
-    };
-
-    const handleReset = () => {
-        onReset?.();
-        onClose();
-    };
-
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth();
-    const firstDayOfWeek = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    const renderDays = () => {
-        const days = [];
-        for (let i = 0; i < firstDayOfWeek; i++) {
-            days.push(<View key={`e-${i}`} style={styles.calendarDayEmpty} />);
-        }
-        for (let day = 1; day <= daysInMonth; day++) {
-            const disabled = isDateDisabled(year, month, day);
-            const dateString = toDateString(year, month, day);
-            const isSelected = activeDate !== '' && dateString === activeDate;
-            days.push(
-                <Pressable
-                    key={day}
-                    style={[styles.calendarDay, disabled && styles.calendarDayDisabled, isSelected && styles.calendarDaySelected]}
-                    onPress={() => handleDatePress(day)}
-                    disabled={disabled}
-                >
-                    <PlayerText style={[styles.calendarDayText, disabled && styles.calendarDayTextDisabled, isSelected && styles.calendarDayTextSelected]}>
-                        {day}
-                    </PlayerText>
-                </Pressable>
-            );
-        }
-        return days;
-    };
+    const isSelected = (day: number) => selectedDate === formatYMD(viewYear, viewMonth, day);
+    const ic = activeIconColor ?? colors.accentBlue;
 
     return (
-        <Modal visible={isVisible} transparent>
-            <Animated.View style={[styles.modalOverlay, { opacity: fadeAnim }]}>
-                <View style={styles.modalBlur} />
-                <Animated.View style={[styles.calendarContainer, { transform: [{ translateY: slideAnim }] }]}>
-                    <View style={styles.calendarHeader}>
-                        <Pressable onPress={() => changeMonth(-1)} style={styles.calendarNavButton}>
-                            <Ionicons name="chevron-back" size={24} color="#8EA7C1" />
+        <Modal visible={isVisible} transparent animationType="fade" onRequestClose={onClose}>
+            <View style={s.modalOverlay}>
+                <Pressable style={s.modalBlur} onPress={onClose} />
+                <View style={s.calendarContainer}>
+                    <View style={s.calendarHeader}>
+                        <Pressable style={s.calendarNavButton} onPress={handlePrevMonth}>
+                            <Ionicons name="chevron-back" size={24} color={ic} />
                         </Pressable>
-                        <Animated.View style={{ transform: [{ translateX: monthSlideAnim }], opacity: monthFadeAnim }}>
-                            <PlayerText style={styles.calendarMonthText}>{displayedLabel}</PlayerText>
-                        </Animated.View>
-                        <Pressable onPress={() => changeMonth(1)} style={styles.calendarNavButton}>
-                            <Ionicons name="chevron-forward" size={24} color="#8EA7C1" />
+                        <PlayerText style={s.calendarMonthText}>
+                            {MONTH_NAMES_FULL[viewMonth - 1]} {viewYear}
+                        </PlayerText>
+                        <Pressable style={s.calendarNavButton} onPress={handleNextMonth}>
+                            <Ionicons name="chevron-forward" size={24} color={ic} />
                         </Pressable>
                     </View>
-                    <View style={styles.calendarDayNames}>
-                        {DAY_NAMES.map(name => (
-                            <View key={name} style={styles.calendarDayName}>
-                                <PlayerText style={styles.calendarDayNameText}>{name}</PlayerText>
+                    <View style={s.calendarDayNames}>
+                        {DAY_NAMES.map(d => (
+                            <View key={d} style={s.calendarDayName}>
+                                <PlayerText style={s.calendarDayNameText}>{d}</PlayerText>
                             </View>
                         ))}
                     </View>
-                    <View style={styles.calendarGrid}>{renderDays()}</View>
-                    <View style={styles.calendarFooter}>
+                    <View style={s.calendarGrid}>
+                        {Array.from({ length: firstDow }).map((_, i) => (
+                            <View key={`empty-${i}`} style={s.calendarDayEmpty} />
+                        ))}
+                        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
+                            const disabled = isDisabled(day);
+                            const selected = isSelected(day);
+                            return (
+                                <Pressable
+                                    key={day}
+                                    style={[s.calendarDay, disabled && s.calendarDayDisabled, selected && s.calendarDaySelected]}
+                                    onPress={() => !disabled && onSelect(formatYMD(viewYear, viewMonth, day))}
+                                    disabled={disabled}
+                                >
+                                    <PlayerText style={[
+                                        s.calendarDayText,
+                                        disabled && s.calendarDayTextDisabled,
+                                        selected && s.calendarDayTextSelected
+                                    ]}>
+                                        {day}
+                                    </PlayerText>
+                                </Pressable>
+                            );
+                        })}
+                    </View>
+                    <View style={s.calendarFooter}>
                         {onReset && (
-                            <Pressable style={[styles.calendarCloseButton, styles.calendarResetButton]} onPress={handleReset}>
-                                <Ionicons name="refresh-outline" size={18} color='#C47A7A' style={{ marginRight: 6 }} />
-                                <PlayerText style={styles.calendarResetText}>Reset</PlayerText>
+                            <Pressable style={[s.calendarCloseButton, s.calendarResetButton]} onPress={onReset}>
+                                <PlayerText style={[s.calendarCloseText, s.calendarResetText]}>Clear</PlayerText>
                             </Pressable>
                         )}
-                        <Pressable style={styles.calendarCloseButton} onPress={onClose}>
-                            <PlayerText style={styles.calendarCloseText}>Close</PlayerText>
+                        <Pressable style={s.calendarCloseButton} onPress={onClose}>
+                            <PlayerText style={s.calendarCloseText}>Done</PlayerText>
                         </Pressable>
                     </View>
-                </Animated.View>
-            </Animated.View>
+                </View>
+            </View>
         </Modal>
     );
 }

@@ -2,10 +2,10 @@ import { View, Pressable, Animated, FlatList, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { PlayerText } from '@/components/fields/PlayerText';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useOverlayAnim } from '@/hooks/animations/useOverlayAnim';
 import { TASK_ICONS, PRIORITY_COLORS, PRIORITY_BG, PRIORITY_BORDER } from '@/utils/shared/constantUtils';
-
-import styles from '@/styles/modals/TaskIconStyles';
+import { makeTaskIconStyles } from '@/styles/modals/TaskIconStyles';
 
 export const formatIconName = (icon: string) =>
     icon.replace('-outline', '').split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
@@ -19,6 +19,8 @@ type TaskIconModalProps = {
 };
 
 export default function TaskIconModal({ isVisible, selectedIcon, priority, onSelect, onClose }: TaskIconModalProps) {
+    const { colors } = useTheme();
+    const styles = makeTaskIconStyles(colors);
     const { opacity, scale } = useOverlayAnim(isVisible);
     const color = PRIORITY_COLORS[priority];
     const bg = PRIORITY_BG[priority];

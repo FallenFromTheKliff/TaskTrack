@@ -1,34 +1,49 @@
-import { Text, TextProps, TextInput, TextInputProps, TextStyle, StyleSheet, StyleProp } from 'react-native';
+import { StyleSheet, Text, TextProps, TextInput, TextInputProps } from 'react-native';
 
-const styles = StyleSheet.create({
-    playerText: {
-        fontFamily: 'Blrrpix',
-        color: '#BFCDDC'
-    },
-    playerTextInput: {
-        fontFamily: 'Blrrpix',
-        color: '#BFCDDC',
-        flex: 1,
-        paddingVertical: 15,
-        paddingHorizontal: 5,
-        fontSize: 18
-    }
-})
+import { useTheme, FONT_FAMILIES } from '@/contexts/ThemeContext';
 
-interface PlayerTextProps extends TextProps {
-    style?: StyleProp<TextStyle>;
+export function PlayerText({ style, ...props }: TextProps) {
+    const { activeFont, activeFontColor, colors } = useTheme();
+    const flatStyle = StyleSheet.flatten(style);
+    const hasColorOverride = flatStyle?.color !== undefined && flatStyle.color !== colors.textPrimary;
+    return (
+        <Text
+            {...props}
+            style={[
+                { fontFamily: FONT_FAMILIES[activeFont], color: colors.textPrimary },
+                style,
+                activeFontColor && !hasColorOverride ? { color: activeFontColor } : undefined
+            ]}
+        />
+    );
 }
 
-interface PlayerTextInputProps extends TextInputProps {
-    style?: StyleProp<TextStyle>;
+export function AuthText({ style, ...props }: TextProps) {
+    const { colors } = useTheme();
+    return (
+        <Text
+            {...props}
+            style={[{ fontFamily: FONT_FAMILIES.blrrpix, color: colors.textPrimary }, style]}
+        />
+    );
 }
 
-function PlayerText({ style, ...props }: PlayerTextProps) {
-    return <Text style={[ styles.playerText, style ]} {...props} />
+export function PlayerTextInput({ style, ...props }: TextInputProps) {
+    const { activeFont, activeFontColor, colors } = useTheme();
+    const flatStyle = StyleSheet.flatten(style);
+    const hasColorOverride = flatStyle?.color !== undefined && flatStyle.color !== colors.textPrimary;
+    return (
+        <TextInput
+            style={[{
+                fontFamily: FONT_FAMILIES[activeFont],
+                color: colors.textPrimary,
+                flex: 1,
+                paddingVertical: 15,
+                paddingHorizontal: 5,
+                fontSize: 18
+            }, style, activeFontColor && !hasColorOverride ? { color: activeFontColor } : undefined]}
+            placeholderTextColor={colors.textMuted}
+            {...props}
+        />
+    );
 }
-
-function PlayerTextInput({ style, ...props }: PlayerTextInputProps) {
-    return <TextInput style={[ styles.playerTextInput, style ]} placeholderTextColor="#6D8196" {...props} />
-}
-
-export { PlayerText, PlayerTextInput };

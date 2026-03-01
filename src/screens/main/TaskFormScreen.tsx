@@ -1,131 +1,121 @@
-import { useState, useRef, useEffect } from 'react';
-import { View, Pressable, Animated, BackHandler } from 'react-native';
+import { useRef, useState, useEffect, useCallback } from 'react';
+import { View, Pressable, Animated } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { PlayerText } from '@/components/fields/PlayerText';
-import { useTask } from '@/contexts/TaskContext';
+import { useTask, Task } from '@/contexts/TaskContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useAuthEntrance } from '@/hooks/auth/useAuthEntrance';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
-import { DEFAULT_TASK_ICON } from '@/utils/shared/constantUtils';
-import { RootStackParamList } from '../../../App';
+import { makeFormStyles } from '@/styles/components/main/FormStyles';
 
-import Scheduler, { SchedulerValues, SchedulerHandle } from '@/components/main/Scheduler';
-import styles from '@/styles/main/FormStyles';
+import Scheduler, { SchedulerHandle, SchedulerValues } from '@/components/main/Scheduler';
 
-type TaskFormScreenProps = {
-    navigation: NativeStackNavigationProp<RootStackParamList, 'Task Details'>;
-    route: RouteProp<RootStackParamList, 'Task Details'>;
+type TaskFormProps = {
+    navigation: NativeStackNavigationProp<any>;
+    route: RouteProp<{ 'Task Details': { task?: Task } }, 'Task Details'>;
 };
 
-export default function TaskFormScreen({ navigation, route }: TaskFormScreenProps) {
-    const existingTask = route.params?.task ?? null;
-    const isEditing = !!existingTask;
+export default function TaskFormScreen({ navigation, route }: TaskFormProps) {
     const { createTask, updateTask, recordEditEvent } = useTask();
-    const [isValid, setIsValid] = useState(isEditing);
-    const [isLoading, setIsLoading] = useState(false);
-    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const { colors, activeIconColor } = useTheme();
+    const { fadeIn } = useAuthEntrance();
+
+    const task = route.params?.task;
+    const isEditing = !!task;
+
     const schedulerRef = useRef<SchedulerHandle>(null);
-    const loadingText = useLoadingText(isEditing ? 'UPDATING TASK' : 'CREATING TASK', isLoading);
+    const pendingSubmit = useRef(false);
+    const [canSubmit, setCanSubmit] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const disabled = !canSubmit || isLoading;
+    const s = makeFormStyles(colors, isEditing, disabled, activeIconColor);
+
+    const loadingText = useLoadingText(isEditing ? 'UPDATING' : 'CREATING', isLoading);
+    const buttonLabel = isLoading ? loadingText : (isEditing ? 'UPDATE TASK' : 'CREATE TASK');
 
     useEffect(() => {
-        Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
-    }, []);
-    useEffect(() => {
-        const sub = BackHandler.addEventListener('hardwareBackPress', () => isLoading);
-        return () => sub.remove();
-    }, [isLoading]);
-    useEffect(() => {
-        navigation.setOptions({ gestureEnabled: !isLoading });
+        if (isLoading && pendingSubmit.current) {
+            pendingSubmit.current = false;
+            schedulerRef.current?.submit();
+        }
     }, [isLoading]);
 
-    const handleSubmit = async (values: SchedulerValues) => {
-        if (!isValid || isLoading) return;
+    const handleSubmitPress = () => {
+        if (disabled) return;
+        pendingSubmit.current = true;
         setIsLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 0));
+    };
+
+    const onSubmit = useCallback(async (values: SchedulerValues) => {
         try {
-            if (isEditing) {
-                await Promise.all([
-                    updateTask(existingTask.id, {
-                        title: values.title,
-                        description: values.description,
-                        notes: values.notes,
-                        icon: values.icon,
-                        priority: values.priority,
-                        date: values.date,
-                        duration: values.durationType === 'timed' ? { type: 'timed', endDate: values.endDate } : { type: 'indefinite' }
-                    }).then(() => recordEditEvent({ ...existingTask, title: values.title, description: values.description })),
-                    new Promise(resolve => setTimeout(resolve, 2000))
-                ]);
+            if (isEditing && task) {
+                await updateTask(task.id, {
+                    title: values.title,
+                    description: values.description,
+                    notes: values.notes,
+                    icon: values.icon,
+                    priority: values.priority,
+                    date: values.date,
+                    duration: values.durationType === 'timed' ? { type: 'timed', endDate: values.endDate } : { type: 'indefinite' }
+                });
+                await recordEditEvent({ ...task, title: values.title, description: values.description, notes: values.notes });
             } else {
-                await Promise.all([
-                    createTask({
-                        title: values.title,
-                        description: values.description,
-                        notes: values.notes,
-                        icon: values.icon,
-                        date: values.date,
-                        completed: false,
-                        priority: values.priority,
-                        duration: values.durationType === 'timed' ? { type: 'timed', endDate: values.endDate } : { type: 'indefinite' }
-                    }),
-                    new Promise(resolve => setTimeout(resolve, 2000))
-                ]);
+                await createTask({
+                    title: values.title,
+                    description: values.description,
+                    notes: values.notes,
+                    icon: values.icon,
+                    priority: values.priority,
+                    date: values.date,
+                    completed: false,
+                    duration: values.durationType === 'timed' ? { type: 'timed', endDate: values.endDate } : { type: 'indefinite' }
+                });
             }
-            setIsLoading(false);
-            navigation.replace('Home');
+            setTimeout(() => navigation.replace('Home'), 2000);
         } catch {
             setIsLoading(false);
         }
-    };
+    }, [isEditing, task, updateTask, recordEditEvent, createTask, navigation]);
 
-    const disabled = !isValid || isLoading;
-    const btnStyle = [
-        styles.submitButton,
-        isEditing && styles.submitButtonUpdate,
-        disabled && styles.submitButtonDisabled
-    ];
-    const txtStyle = [
-        styles.submitText,
-        isEditing && styles.submitTextUpdate,
-        disabled && styles.submitTextDisabled
-    ];
-    const iconColor = disabled ? '#4E5D6D' : isEditing ? '#7BAFD4' : '#6DC48A';
-    const iconName = isEditing ? 'pencil-outline' : 'checkmark-circle-outline';
-    const label = isLoading ? loadingText : isEditing ? 'UPDATE TASK' : 'CREATE TASK';
+    const initialValues: Partial<SchedulerValues> | undefined = task ? {
+        title: task.title,
+        description: task.description,
+        notes: task.notes ?? '',
+        icon: task.icon ?? '',
+        priority: task.priority,
+        date: task.date,
+        durationType: task.duration.type,
+        endDate: task.duration.type === 'timed' ? (task.duration.endDate ?? '') : ''
+    } : undefined;
 
     return (
-        <View style={styles.container}>
-            <View style={styles.topBar}>
-                <Pressable style={styles.backButton} onPress={() => navigation.goBack()} disabled={isLoading}>
-                    <Ionicons name="arrow-back" size={26} color={isLoading ? '#4E5D6D' : '#BFCDDC'} />
+        <View style={s.container}>
+            <View style={s.topBar}>
+                <Pressable style={s.backButton} onPress={() => navigation.goBack()} disabled={isLoading}>
+                    <Ionicons name="arrow-back" size={24} color={isLoading ? colors.textDisabled : colors.textPrimary} />
                 </Pressable>
-                <PlayerText style={styles.screenTitle}>
-                    {isEditing ? 'Edit Task' : 'New Task'}
-                </PlayerText>
+                <PlayerText style={s.screenTitle}>{isEditing ? 'Edit Task' : 'New Task'}</PlayerText>
             </View>
-            <Animated.View style={[styles.scrollArea, { opacity: fadeAnim }]}>
+            <Animated.View style={[s.scrollArea, { opacity: fadeIn }]}>
                 <Scheduler
                     ref={schedulerRef}
-                    initialValues={isEditing ? {
-                        title: existingTask.title,
-                        description: existingTask.description,
-                        notes: existingTask.notes ?? '',
-                        icon: existingTask.icon ?? DEFAULT_TASK_ICON,
-                        priority: existingTask.priority,
-                        date: existingTask.date,
-                        durationType: existingTask.duration.type,
-                        endDate: existingTask.duration.endDate ?? ''
-                    } : undefined}
-                    onSubmit={handleSubmit}
-                    onValidChange={setIsValid}
-                    isLoading={isLoading}
+                    initialValues={initialValues}
+                    onSubmit={onSubmit}
+                    onValidChange={setCanSubmit}
                 />
             </Animated.View>
-            <View style={styles.footer}>
-                <Pressable style={btnStyle} onPress={() => schedulerRef.current?.submit()} disabled={disabled}>
-                    <Ionicons name={iconName} size={20} color={iconColor} />
-                    <PlayerText style={txtStyle}>{label}</PlayerText>
+            <View style={s.footer}>
+                <Pressable style={s.submitButton} onPress={handleSubmitPress} disabled={disabled}>
+                    <Ionicons
+                        name={isEditing ? 'create-outline' : 'checkmark-circle-outline'}
+                        size={22}
+                        color={disabled ? colors.textDisabled : isEditing ? (activeIconColor ?? colors.accentBlue) : colors.accentGreen}
+                    />
+                    <PlayerText style={s.submitText}>{buttonLabel}</PlayerText>
                 </Pressable>
             </View>
         </View>
