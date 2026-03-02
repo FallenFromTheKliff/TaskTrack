@@ -3,35 +3,28 @@ import { View, StyleSheet, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 import { AuthText } from '@/components/fields/PlayerText';
+import { useTheme, THEMES } from '@/contexts/ThemeContext';
 
+const NAVY = THEMES.navy;
 const styles = StyleSheet.create({
-    outer: {
-        flex: 1,
-        backgroundColor: '#FFFFFF',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    inner: {
-        flex: 1,
-        width: '100%',
-        maxWidth: 450,
-        backgroundColor: '#161C24',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    splash: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-    title: {
-        fontSize: 52,
-        marginLeft: 8
-    }
+    outer: { flex: 1, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' },
+    inner: { flex: 1, width: '100%', maxWidth: 450, justifyContent: 'center', alignItems: 'center' },
+    splash: { flexDirection: 'row', alignItems: 'center' },
+    title: { fontSize: 52, marginLeft: 8 }
 });
 
-export default function SplashScreen() {
+type SplashScreenProps = {
+    isAuthenticated: boolean;
+};
+
+export default function SplashScreen({ isAuthenticated }: SplashScreenProps) {
+    const { colors, activeIconColor } = useTheme();
+    const bgColor   = isAuthenticated ? colors.bgDeep   : NAVY.bgDeep;
+    const iconColor = isAuthenticated ? (activeIconColor ?? colors.accentBlue) : NAVY.accentBlue;
+
     const scaleAnim = useRef(new Animated.Value(0.6)).current;
     const fadeAnim  = useRef(new Animated.Value(1)).current;
+
     const [displayedTitle, setDisplayedTitle] = useState('');
     const projectTitle = "TaskTrack";
 
@@ -54,9 +47,9 @@ export default function SplashScreen() {
 
     return (
         <View style={styles.outer}>
-            <View style={styles.inner}>
+            <View style={[styles.inner, { backgroundColor: bgColor }]}>
                 <Animated.View style={[styles.splash, { transform: [{ scale: scaleAnim }], opacity: fadeAnim }]}>
-                    <Ionicons name="folder-open-sharp" size={56} color='#BFCDDC' />
+                    <Ionicons name="folder-open-sharp" size={56} color={iconColor} />
                     <AuthText style={styles.title}>{displayedTitle}</AuthText>
                 </Animated.View>
             </View>

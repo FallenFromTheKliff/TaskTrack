@@ -6,6 +6,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthText } from '@/components/fields/PlayerText';
+import { THEMES } from '@/contexts/ThemeContext';
 import { validateUsername, validateFullName, validateEmailRegister, validatePassword, validatePasswordConfirmation, validatePhoneNumber } from '@/utils/auth/validationUtils';
 import { capitalizeFullName } from '@/utils/auth/revisionUtils';
 import { useAuthEntrance } from '@/hooks/auth/useAuthEntrance';
@@ -14,44 +15,32 @@ import { useTimedMessage } from '@/hooks/auth/useTimedMessage';
 import { usePanelAnim } from '@/hooks/animations/usePanelAnim';
 import { getProfileImageSource, pickImageFromLibrary } from "@/utils/auth/imageUtils";
 import { makeAuthStyles } from '@/styles/auth/AuthStyles';
-import { useTheme } from "@/contexts/ThemeContext";
 
 import InputField from '@/components/fields/InputField';
 import NameRequirements from '@/components/requirements/NameRequirements';
 import PasswordRequirements from '@/components/requirements/PasswordRequirements';
 
+const NAVY = THEMES.navy;
+
 type RegisterFormData = {
-    userName: string;
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-    password: string;
-    confirmPassword: string;
+    userName: string; fullName: string; email: string;
+    phoneNumber: string; password: string; confirmPassword: string;
 };
 type RegisterData = {
-    profilePicture: string | null;
-    userName: string;
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-    password: string;
+    profilePicture: string | null; userName: string; fullName: string;
+    email: string; phoneNumber: string; password: string;
 };
-type RegisterFormProps = {
-    navigation: NativeStackNavigationProp<any>;
-};
+type RegisterFormProps = { navigation: NativeStackNavigationProp<any>; };
 
 export default function RegisterScreen({ navigation }: RegisterFormProps) {
     const { register } = useAuth();
-    const { colors } = useTheme();
     const [isLoading, setIsLoading] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
     const [profilePictureUri, setProfilePictureUri] = useState<string | null>(null);
-
     const [passwordValue, setPasswordValue] = useState('');
     const [isPasswordValid, setIsPasswordValid] = useState(false);
     const [isPasswordFocused, setIsPasswordFocused] = useState(false);
-
     const [fullNameValue, setFullNameValue] = useState('');
     const [isFullNameValid, setIsFullNameValid] = useState(false);
     const [isFullNameFocused, setIsFullNameFocused] = useState(false);
@@ -109,7 +98,7 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
         }
     };
 
-    const styles = makeAuthStyles(colors);
+    const styles = makeAuthStyles(NAVY);
 
     return (
         <View style={styles.container}>
@@ -120,7 +109,7 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                 scrollEnabled={!navDisabled}
             >
                 <Animated.View style={[styles.header, { marginBottom: 40, opacity: fadeIn, transform: [{ translateY: takeFlight }] }]}>
-                    <AuthText style={{ fontSize: 42, color: colors.textPrimary }}>Join the community!</AuthText>
+                    <AuthText style={{ fontSize: 42, color: NAVY.textPrimary }}>Join the community!</AuthText>
                 </Animated.View>
                 <Animated.View style={[styles.form, { opacity: fadeIn }]}>
                     <View style={{ alignItems: 'center', marginBottom: 20 }}>
@@ -132,7 +121,7 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                                 </View>
                             </View>
                         </Pressable>
-                        <AuthText style={{ fontSize: 12, color: colors.textMuted, marginTop: 8 }}>
+                        <AuthText style={{ fontSize: 12, color: NAVY.textMuted, marginTop: 8 }}>
                             Tap to upload a profile picture!
                         </AuthText>
                     </View>
@@ -214,21 +203,20 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                         toggleVisibility={{ isVisible: isConfirmPasswordVisible, setIsVisible: setIsConfirmPasswordVisible }}
                     />
                     <Pressable
-                        style={[styles.button, isLoading && { backgroundColor: colors.textMuted }]}
-                        onPress={handleSubmit(onSubmit)}
-                        disabled={navDisabled}
+                        style={[styles.button, isLoading && { backgroundColor: NAVY.textMuted }]}
+                        onPress={handleSubmit(onSubmit)} disabled={navDisabled}
                     >
                         <AuthText style={styles.buttonText}>{buttonLabel}</AuthText>
                     </Pressable>
                     <View style={{ alignItems: 'center', marginTop: 10 }}>
-                        <AuthText style={{ fontSize: 12, color: colors.textMuted }}>
+                        <AuthText style={{ fontSize: 12, color: NAVY.textMuted }}>
                             Note: You can edit your profile details later!
                         </AuthText>
                     </View>
                     <View style={styles.footer}>
-                        <AuthText style={{ fontSize: 18, color: colors.textPrimary }}>Already have an account?</AuthText>
+                        <AuthText style={{ fontSize: 18, color: NAVY.textPrimary }}>Already have an account?</AuthText>
                         <Pressable onPress={() => !navDisabled && navigation.replace('Login')} disabled={navDisabled}>
-                            <AuthText style={[styles.link, navDisabled && { color: colors.textDisabled }]}>Sign in!</AuthText>
+                            <AuthText style={[styles.link, navDisabled && { color: NAVY.textDisabled }]}>Sign in!</AuthText>
                         </Pressable>
                     </View>
                 </Animated.View>

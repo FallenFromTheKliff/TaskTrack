@@ -17,12 +17,13 @@ export default function NameRequirements({ fullName, onValidationChange }: NameR
     const requirements = reviseFullName(fullName);
     const s = makeRequirementStyles(colors);
 
-    const allRequirementsMet =
+    const allRequirementsMet: boolean = !!(
         requirements.hasContent &&
         requirements.hasTwoParts &&
         requirements.hasValidCharacters &&
         requirements.hasValidFirstName &&
-        requirements.hasValidLastName;
+        requirements.hasValidLastName
+    );
 
     useEffect(() => {
         onValidationChange(allRequirementsMet);

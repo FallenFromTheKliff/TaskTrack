@@ -34,7 +34,8 @@ function CompassNeedle() {
         const timer = setTimeout(() => setMinTimeElapsed(true), SPLASH_MIN_DURATION);
         return () => clearTimeout(timer);
     }, []);
-    if (loading || !minTimeElapsed) return <SplashScreen />;
+
+    if (loading || !minTimeElapsed) return <SplashScreen isAuthenticated={isAuthenticated} />;
 
     return (
         <NavigationContainer>

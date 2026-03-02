@@ -3,10 +3,10 @@ import { StyleSheet } from 'react-native';
 import { ThemeColors } from '@/contexts/ThemeContext';
 import { R } from '@/styles/shared/tokens';
 
-export function makeSettingsDropdownStyles(colors: ThemeColors, activeIconColor?: string | null) {
+export function makeSettingsDropdownStyles(colors: ThemeColors) {
     return StyleSheet.create({
         wrapper: { position: 'relative', marginBottom: 12 },
-        fieldLabel: { fontSize: 14, color: activeIconColor ?? colors.accentBlue, marginBottom: 6, marginLeft: 2 },
+        fieldLabel: { fontSize: 14, color: colors.accentBlue, marginBottom: 6, marginLeft: 2 },
         button: {
             flexDirection: 'row',
             alignItems: 'center',
@@ -27,7 +27,7 @@ export function makeSettingsDropdownStyles(colors: ThemeColors, activeIconColor?
             backgroundColor: colors.bgPanel,
             borderRadius: R.md,
             borderWidth: 2,
-            borderColor: colors.borderSub,
+            borderColor: colors.borderStrong,
             marginTop: 4,
             maxHeight: 160,
             zIndex: 9999,

@@ -1,10 +1,10 @@
 import { useRef, useEffect } from 'react';
-import { View, Pressable, Animated, Modal, Image } from 'react-native';
+import { View, Pressable, Animated, Modal, Image, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { PlayerText } from '@/components/fields/PlayerText';
 import { useScreen, ScreenKey } from '@/contexts/ScreenContext';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useTheme, FONT_FAMILIES } from '@/contexts/ThemeContext';
 import { getProfileImageSource } from '@/utils/auth/imageUtils';
 import { makeSidebarStyles, SIDEBAR_WIDTH } from '@/styles/components/layout/SidebarStyles';
 
@@ -29,7 +29,7 @@ const NAV_ITEMS: { key: ScreenKey; label: string; icon: string }[] = [
 
 export default function Sidebar({ isVisible, user, onClose, onLogoutPress }: SidebarProps) {
     const { activeScreen, setActiveScreen } = useScreen();
-    const { colors, settings, activeIconColor } = useTheme();
+    const { colors, settings, activeIconColor, activeFont } = useTheme();
     const s = makeSidebarStyles(colors);
 
     const backdropAnim = useRef(new Animated.Value(0)).current;
@@ -80,10 +80,12 @@ export default function Sidebar({ isVisible, user, onClose, onLogoutPress }: Sid
                         >
                             <Image source={getProfileImageSource(user.profilePicture)} style={s.profilePicture} />
                             <View style={s.profileInfo}>
-                                <PlayerText style={s.profileUsername} numberOfLines={1}>{user.userName}</PlayerText>
+                                <Text style={[s.profileUsername, { fontFamily: FONT_FAMILIES[activeFont] }]}>
+                                    {user.userName}
+                                </Text>
                                 <PlayerText style={s.profileEmail} numberOfLines={1}>{user.email}</PlayerText>
                                 <View style={s.profileEditHint}>
-                                    <Ionicons name="pencil-outline" size={11} color={activeColor} />
+                                    <Ionicons name="pencil-outline" size={11} color={colors.accentBlue} />
                                     <PlayerText style={s.profileEditHintText}>Change Profile Details</PlayerText>
                                 </View>
                             </View>

@@ -1,24 +1,14 @@
 import { useEffect, useRef } from "react";
 import { View, StyleSheet, Animated } from "react-native";
 
-import { AuthText } from "@/components/fields/PlayerText";
 import { useLoadingText } from "@/hooks/main/useLoadingText";
+import { useTheme, THEMES } from "@/contexts/ThemeContext";
 
+const NAVY = THEMES.navy;
 const styles = StyleSheet.create({
-    outer: {
-        flex: 1,
-        backgroundColor: '#FFFFFF',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    inner: {
-        flex: 1,
-        width: '100%',
-        maxWidth: 450,
-        backgroundColor: '#161C24',
-        justifyContent: 'center',
-        alignItems: 'center'
-    }
+    outer: { flex: 1, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' },
+    inner: { flex: 1, width: '100%', maxWidth: 450, backgroundColor: NAVY.bgDeep, justifyContent: 'center', alignItems: 'center' },
+    text: { fontFamily: 'Blrrpix', fontSize: 36 }
 });
 
 type LoadingScreenProps = {
@@ -26,28 +16,35 @@ type LoadingScreenProps = {
 };
 
 export default function LoadingScreen({ onDone }: LoadingScreenProps) {
-    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const { colors, activeFontColor } = useTheme();
     const loadingText = useLoadingText('Loading', true);
 
+    const targetBg = colors.bgDeep;
+    const targetText = activeFontColor || colors.accentBlue;
+
+    const themeAnim = useRef(new Animated.Value(0)).current;
+
+    const bgColor = themeAnim.interpolate({ inputRange: [0, 1], outputRange: [NAVY.bgDeep, targetBg] });
+    const textColor = themeAnim.interpolate({ inputRange: [0, 1], outputRange: [NAVY.accentBlue, targetText] });
+
     useEffect(() => {
-        Animated.timing(fadeAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start();
-
-        const exitTimer = setTimeout(() => {
-            Animated.timing(fadeAnim, { toValue: 0, duration: 400, useNativeDriver: true }).start(() => onDone());
-        }, 1100);
-
-        return () => clearTimeout(exitTimer);
+        const themeTimer = setTimeout(() => {
+            Animated.timing(themeAnim, { toValue: 1, duration: 1000, useNativeDriver: false }).start();
+        }, 1000);
+        const exitTimer = setTimeout(() => { onDone(); }, 2200);
+        return () => {
+            clearTimeout(themeTimer);
+            clearTimeout(exitTimer);
+        };
     }, []);
 
     return (
         <View style={styles.outer}>
-            <View style={styles.inner}>
-                <Animated.View style={{ opacity: fadeAnim }}>
-                    <AuthText style={{ fontSize: 36, color: '#8EA7C1' }}>
-                        {loadingText}
-                    </AuthText>
-                </Animated.View>
-            </View>
+            <Animated.View style={[styles.inner, { backgroundColor: bgColor }]}>
+                <Animated.Text style={[styles.text, { color: textColor }]}>
+                    {loadingText}
+                </Animated.Text>
+            </Animated.View>
         </View>
     );
 }

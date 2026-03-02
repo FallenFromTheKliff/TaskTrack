@@ -40,7 +40,7 @@ const SECTION_NOTES: Record<string, string> = {
 export default function LayoutScreen({ navigation }: LayoutScreenProps) {
     const { user, logout } = useAuth();
     const { activeScreen, setActiveScreen } = useScreen();
-    const { colors } = useTheme();
+    const { colors, resetAppearance } = useTheme();
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isLogoutVisible, setIsLogoutVisible] = useState(false);
@@ -54,6 +54,7 @@ export default function LayoutScreen({ navigation }: LayoutScreenProps) {
     const handleLogoutConfirm = async () => {
         setIsLogoutVisible(false);
         setActiveScreen('tasks');
+        resetAppearance();
         await logout();
     };
 

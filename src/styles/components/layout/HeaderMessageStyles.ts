@@ -23,7 +23,7 @@ export function makeHeaderMessageStyles(colors: ThemeColors) {
             height: CIRCLE_SIZE,
             borderRadius: CIRCLE_HALF,
             borderWidth: CIRCLE_BORDER,
-            borderColor: colors.borderSub
+            borderColor: colors.borderMid
         },
         quadrant: { position: 'absolute', width: CIRCLE_HALF, height: CIRCLE_HALF, overflow: 'hidden' },
         quadrantNE: { top: 0, left: CIRCLE_HALF },

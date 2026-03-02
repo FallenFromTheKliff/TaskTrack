@@ -31,7 +31,7 @@ function getQuadrantAngles(percent: number) {
 }
 
 function ProgressCircle({ completed, total }: { completed: number; total: number }) {
-    const { colors } = useTheme();
+    const { colors, activeIconColor } = useTheme();
     const s = makeHeaderMessageStyles(colors);
     const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
     const allDone = total > 0 && completed === total;
@@ -53,8 +53,7 @@ function ProgressCircle({ completed, total }: { completed: number; total: number
 
     const makeRotation = (anim: Animated.Value) =>
         anim.interpolate({ inputRange: [0, 90], outputRange: ['0deg', '90deg'] });
-
-    const ringColor = allDone ? colors.accentGreen : colors.accentBlue;
+    const ringColor = allDone ? (activeIconColor ?? colors.accentBlue) : colors.accentBlue;
 
     return (
         <View style={s.circleWrapper}>
@@ -71,7 +70,7 @@ function ProgressCircle({ completed, total }: { completed: number; total: number
             <View style={[s.quadrant, s.quadrantNW]}>
                 <Animated.View style={[s.quadrantInner, s.quadrantInnerNW, { borderColor: ringColor, transform: [{ rotate: makeRotation(nwAnim) }] }]} />
             </View>
-            <PlayerText style={[s.percentText, allDone && { color: colors.accentGreen }]}>
+            <PlayerText style={[s.percentText, allDone && { color: activeIconColor ?? colors.accentBlue }]}>
                 {percent}%
             </PlayerText>
         </View>
