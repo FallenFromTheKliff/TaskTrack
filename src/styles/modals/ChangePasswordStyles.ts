@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
-import type { ThemeColors } from '@/contexts/ThemeContext';
+
+import { ThemeColors } from '@/contexts/ThemeContext';
 import { makeModalBaseStyles } from '@/styles/shared/common';
 
 export function makeChangePasswordStyles(colors: ThemeColors) {

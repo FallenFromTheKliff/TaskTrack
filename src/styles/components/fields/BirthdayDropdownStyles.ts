@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
-import type { ThemeColors } from '@/contexts/ThemeContext';
+
+import { ThemeColors } from '@/contexts/ThemeContext';
 import { R } from '@/styles/shared/tokens';
 
 export function makeBirthdayDropdownStyles(colors: ThemeColors, activeIconColor?: string | null) {

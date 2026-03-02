@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
-import type { ThemeColors } from '@/contexts/ThemeContext';
+
+import { ThemeColors } from '@/contexts/ThemeContext';
 
 export const CIRCLE_SIZE = 44;
 export const CIRCLE_HALF = CIRCLE_SIZE / 2;

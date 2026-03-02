@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+
 import { ThemeColors } from '@/contexts/ThemeContext';
 import { makeModalBaseStyles } from '@/styles/shared/common';
 import { R, MAX_WIDTH } from '@/styles/shared/tokens';

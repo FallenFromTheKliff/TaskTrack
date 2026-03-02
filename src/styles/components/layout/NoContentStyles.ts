@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
-import type { ThemeColors } from '@/contexts/ThemeContext';
+
+import { ThemeColors } from '@/contexts/ThemeContext';
 
 export function makeNoContentStyles(colors: ThemeColors) {
     return StyleSheet.create({
