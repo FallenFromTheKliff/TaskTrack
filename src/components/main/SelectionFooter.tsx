@@ -1,9 +1,7 @@
-import { View, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View } from 'react-native';
 
-import { PlayerText } from '@/components/fields/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
-import { makeSelectionFooterStyles } from '@/styles/components/content/SelectionFooterStyles';
+import PlayerButton from '@/components/fields/PlayerButton';
 
 type SelectionFooterProps = {
     selectedCount: number;
@@ -14,20 +12,17 @@ type SelectionFooterProps = {
 
 export default function SelectionFooter({ selectedCount, actionLabel, onCancel, onAction }: SelectionFooterProps) {
     const { colors } = useTheme();
-    const s = makeSelectionFooterStyles(colors, selectedCount > 0);
     return (
-        <View style={s.footerRow}>
-            <Pressable style={s.cancelButton} onPress={onCancel}>
-                <PlayerText style={s.cancelText}>Cancel</PlayerText>
-            </Pressable>
-            <Pressable
-                style={s.deleteButton}
-                onPress={selectedCount > 0 ? onAction : undefined}
+        <View style={{ flexDirection: 'row', gap: 10, padding: 14, borderTopWidth: 2, borderTopColor: colors.borderSub, backgroundColor: colors.bgDeep }}>
+            <PlayerButton variant="ghost" label="Cancel" onPress={onCancel} flex={1} />
+            <PlayerButton
+                variant="danger"
+                label={`${actionLabel} (${selectedCount})`}
+                onPress={selectedCount > 0 ? onAction : () => {}}
+                icon="trash-outline"
                 disabled={selectedCount === 0}
-            >
-                <Ionicons name="trash-outline" size={18} color={selectedCount > 0 ? '#FFCCCB' : colors.textDisabled} />
-                <PlayerText style={s.deleteText}>{actionLabel} ({selectedCount})</PlayerText>
-            </Pressable>
+                flex={2}
+            />
         </View>
     );
 }

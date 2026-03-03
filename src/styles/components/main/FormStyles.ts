@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
 
 import { ThemeColors } from '@/contexts/ThemeContext';
-import { R, MAX_WIDTH } from '@/styles/shared/tokens';
+import { MAX_WIDTH } from '@/styles/shared/tokens';
 
-export function makeFormStyles(colors: ThemeColors, isEditing: boolean, disabled: boolean, activeIconColor?: string | null) {
+export function makeFormStyles(colors: ThemeColors) {
     return StyleSheet.create({
         container: {
             flex: 1,
@@ -32,21 +32,6 @@ export function makeFormStyles(colors: ThemeColors, isEditing: boolean, disabled
             backgroundColor: colors.bgDeep,
             borderTopWidth: 2,
             borderTopColor: colors.borderSub
-        },
-        submitButton: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: disabled ? colors.bgDivider : isEditing ? colors.bgInputDark : colors.greenBg,
-            borderRadius: R.md,
-            borderWidth: 2,
-            borderColor: disabled ? colors.borderSub : isEditing ? colors.borderMid : colors.greenBorder,
-            paddingVertical: 15,
-            gap: 8
-        },
-        submitText: {
-            fontSize: 22,
-            color: disabled ? colors.textDisabled : isEditing ? (activeIconColor ?? colors.accentBlue) : colors.accentGreen
         }
     });
 }

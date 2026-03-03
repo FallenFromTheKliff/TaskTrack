@@ -17,6 +17,7 @@ import { getProfileImageSource, pickImageFromLibrary } from "@/utils/auth/imageU
 import { makeAuthStyles } from '@/styles/auth/AuthStyles';
 
 import InputField from '@/components/fields/InputField';
+import PlayerButton from '@/components/fields/PlayerButton';
 import NameRequirements from '@/components/requirements/NameRequirements';
 import PasswordRequirements from '@/components/requirements/PasswordRequirements';
 
@@ -226,22 +227,25 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                         colorsOverride={NAVY}
                         iconColorOverride={NAVY.accentBlue}
                     />
-                    <Pressable
-                        style={[styles.button, isLoading && { backgroundColor: NAVY.textMuted }]}
-                        onPress={handleSubmit(onSubmit)} disabled={navDisabled}
-                    >
-                        <AuthText style={styles.buttonText}>{buttonLabel}</AuthText>
-                    </Pressable>
+                    <PlayerButton
+                        variant="auth"
+                        label={buttonLabel}
+                        onPress={handleSubmit(onSubmit)}
+                        disabled={navDisabled}
+                    />
                     <View style={{ alignItems: 'center', marginTop: 10 }}>
                         <AuthText style={{ fontSize: 12, color: NAVY.textMuted }}>
                             Note: You can edit your profile details later!
                         </AuthText>
                     </View>
                     <View style={styles.footer}>
-                        <AuthText style={{ fontSize: 18, color: NAVY.textPrimary }}>Already have an account?</AuthText>
-                        <Pressable onPress={() => !navDisabled && navigation.replace('Login')} disabled={navDisabled}>
-                            <AuthText style={[styles.link, navDisabled && { color: NAVY.textDisabled }]}>Sign in!</AuthText>
-                        </Pressable>
+                        <AuthText style={{ fontSize: 18, color: NAVY.textPrimary }}>Already have an account? </AuthText>
+                        <PlayerButton
+                            variant="link"
+                            label="Sign in!"
+                            onPress={() => navigation.replace('Login')}
+                            disabled={navDisabled}
+                        />
                     </View>
                 </Animated.View>
             </ScrollView>

@@ -7,6 +7,8 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { MONTH_NAMES_FULL, DAY_NAMES, getTodayString } from '@/utils/shared/dateUtils';
 import { makeCalendarStyles } from '@/styles/modals/CalendarStyles';
 
+import PlayerButton from '@/components/fields/PlayerButton';
+
 type CalendarModalProps = {
     isVisible: boolean;
     selectedDate: string;
@@ -124,13 +126,9 @@ export default function CalendarModal({ isVisible, selectedDate, minDate, blockT
                     </View>
                     <View style={s.calendarFooter}>
                         {onReset && (
-                            <Pressable style={[s.calendarCloseButton, s.calendarResetButton]} onPress={onReset}>
-                                <PlayerText style={[s.calendarCloseText, s.calendarResetText]}>Clear</PlayerText>
-                            </Pressable>
+                            <PlayerButton variant="ghost" label="Clear" onPress={onReset} flex={1} />
                         )}
-                        <Pressable style={s.calendarCloseButton} onPress={onClose}>
-                            <PlayerText style={s.calendarCloseText}>Done</PlayerText>
-                        </Pressable>
+                        <PlayerButton variant="primary" label="Done" onPress={onClose} flex={1} />
                     </View>
                 </View>
             </View>

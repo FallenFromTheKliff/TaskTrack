@@ -11,16 +11,6 @@ export function makeChangePasswordStyles(colors: ThemeColors) {
         container: { ...modal.panel, width: '90%', maxWidth: 420, maxHeight: '85%', padding: 24 },
         title: { fontSize: 26, color: colors.textPrimary, marginBottom: 16 },
         body: { gap: 0 },
-        actions: { flexDirection: 'row', gap: 12, marginTop: 16 },
-        cancelButton: modal.cancelButton,
-        cancelText: modal.cancelText,
-        confirmButton: modal.confirmButton,
-        confirmButtonDisabled: {
-            ...modal.confirmButton,
-            backgroundColor: colors.bgPanel,
-            borderColor: colors.borderSub
-        },
-        confirmText: modal.confirmText,
-        confirmTextDisabled: { ...modal.confirmText, color: colors.textDisabled }
+        actions: { flexDirection: 'row', gap: 12, marginTop: 16 }
     });
 }

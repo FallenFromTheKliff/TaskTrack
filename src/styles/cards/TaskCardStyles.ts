@@ -42,16 +42,6 @@ export function makeTaskCardStyles(colors: ThemeColors, activeIconColor?: string
         notesLabel: base.detailLabel,
         notesText: { fontSize: 14, color: colors.textMuted, fontStyle: 'italic', lineHeight: 20 },
         cardActions: { flexDirection: 'row', gap: 8 },
-        actionButton: {
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingVertical: 10,
-            borderRadius: R.md,
-            borderWidth: 2,
-            gap: 6
-        },
         completeButton: { backgroundColor: colors.greenBg, borderColor: colors.greenBorder },
         completeButtonDone: { backgroundColor: colors.bgDivider, borderColor: colors.borderSub },
         editButton: { backgroundColor: colors.bgInputDark, borderColor: colors.borderMid },

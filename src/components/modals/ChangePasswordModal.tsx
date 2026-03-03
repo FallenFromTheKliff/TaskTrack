@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { View, Modal, Pressable, ScrollView, Animated } from 'react-native';
 import { useForm } from 'react-hook-form';
-import { Ionicons } from '@expo/vector-icons';
 
 import { PlayerText } from '@/components/fields/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -12,6 +11,7 @@ import { usePanelAnim } from '@/hooks/animations/usePanelAnim';
 import { makeChangePasswordStyles } from '@/styles/modals/ChangePasswordStyles';
 
 import InputField from '@/components/fields/InputField';
+import PlayerButton from '@/components/fields/PlayerButton';
 import PasswordRequirements from '@/components/requirements/PasswordRequirements';
 
 type FormData = {
@@ -121,23 +121,17 @@ export default function ChangePasswordModal({ isVisible, onCancel, onConfirm }: 
                         ) : null}
                     </ScrollView>
                     <View style={s.actions}>
-                        <Pressable style={s.cancelButton} onPress={handleClose} disabled={isLoading}>
-                            <PlayerText style={s.cancelText}>Cancel</PlayerText>
-                        </Pressable>
-                        <Pressable
-                            style={canSubmit ? s.confirmButton : s.confirmButtonDisabled}
-                            onPress={handleSubmit(onSubmit)}
-                            disabled={!canSubmit}
-                        >
-                            <Ionicons
-                                name="checkmark-outline"
-                                size={18}
-                                color={canSubmit ? colors.bgDeep : colors.textDisabled}
+                        <View style={s.actions}>
+                            <PlayerButton variant="ghost" label="CANCEL" onPress={handleClose} disabled={isLoading} flex={1} />
+                            <PlayerButton
+                                variant="primary"
+                                label={isLoading ? loadingText : 'SAVE PASSWORD'}
+                                onPress={handleSubmit(onSubmit)}
+                                icon="checkmark-outline"
+                                disabled={!canSubmit}
+                                flex={1}
                             />
-                            <PlayerText style={canSubmit ? s.confirmText : s.confirmTextDisabled}>
-                                {isLoading ? loadingText : 'Save Password'}
-                            </PlayerText>
-                        </Pressable>
+                        </View>
                     </View>
                 </View>
             </View>

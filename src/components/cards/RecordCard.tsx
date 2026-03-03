@@ -11,6 +11,7 @@ import { capitalize } from '@/utils/auth/revisionUtils';
 import { STATUS_COLORS, STATUS_ICONS } from '@/utils/shared/constantUtils';
 import { makeRecordCardStyles } from '@/styles/cards/RecordCardStyles';
 
+import PlayerButton from '@/components/fields/PlayerButton';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 import TaskDetailsModal from '@/components/modals/TaskDetailsModal';
 
@@ -76,33 +77,34 @@ export default function RecordCard({ event, statusOverride, selectionMode = fals
                                         ))}
                                     </View>
                                     <View style={s.cardActions}>
-                                        <Pressable style={s.detailsButton} onPress={() => setDetailVisible(true)}>
-                                            <Ionicons name="expand-outline" size={16} color={ic} />
-                                            <PlayerText style={s.detailsButtonText}>Details</PlayerText>
-                                        </Pressable>
+                                        <PlayerButton
+                                            variant="action"
+                                            label="DETAILS"
+                                            onPress={() => setDetailVisible(true)}
+                                            icon="expand-outline"
+                                            flex={1}
+                                        />
                                     </View>
                                 </>
                             )}
                             {isTrashCard && (
                                 <>
                                     <View style={s.cardActions}>
-                                        <Pressable style={s.detailsButton} onPress={() => setDetailVisible(true)}>
-                                            <Ionicons name="expand-outline" size={16} color={ic} />
-                                            <PlayerText style={s.detailsButtonText}>Details</PlayerText>
-                                        </Pressable>
+                                        <PlayerButton variant="action" label="DETAILS" onPress={() => setDetailVisible(true)} icon="expand-outline" flex={1} />
                                     </View>
                                     <View style={s.trashActions}>
                                         {onRestore && (
-                                            <Pressable style={s.restoreButton} onPress={() => setRestoreVisible(true)}>
-                                                <Ionicons name="arrow-undo-outline" size={16} color={colors.accentGold} />
-                                                <PlayerText style={s.restoreButtonText}>Restore</PlayerText>
-                                            </Pressable>
+                                            <PlayerButton variant="restore" label="DETAILS" onPress={() => setRestoreVisible(true)} icon="arrow-undo-outline" flex={1} />
                                         )}
                                         {onDelete && (
-                                            <Pressable style={s.deleteButton} onPress={() => setDeleteVisible(true)}>
-                                                <Ionicons name="trash-outline" size={16} color={colors.accentRed} />
-                                                <PlayerText style={s.deleteButtonText}>Delete</PlayerText>
-                                            </Pressable>
+                                            <PlayerButton
+                                                variant="danger"
+                                                label="DELETE"
+                                                onPress={() => setDeleteVisible(true)}
+                                                icon="trash-outline"
+                                                flex={1}
+                                                style={{ paddingVertical: 10, borderWidth: 1 }}
+                                            />
                                         )}
                                     </View>
                                 </>
@@ -122,10 +124,10 @@ export default function RecordCard({ event, statusOverride, selectionMode = fals
                     isVisible={restoreVisible}
                     title="Restore Task?"
                     message={`"${event.title}" will be restored to your Tasks.`}
-                    yesLabel="Restore"
-                    noLabel="Cancel"
+                    yesLabel="RESTORE"
+                    noLabel="CANCEL"
                     yesIcon="arrow-undo-outline"
-                    yesPositive
+                    yesRestore
                     onNo={() => setRestoreVisible(false)}
                     onYes={() => { setRestoreVisible(false); onRestore(event.id); }}
                 />
@@ -135,8 +137,8 @@ export default function RecordCard({ event, statusOverride, selectionMode = fals
                     isVisible={deleteVisible}
                     title="Delete Permanently?"
                     message={`"${event.title}" will be permanently deleted. This cannot be undone.`}
-                    yesLabel="Delete"
-                    noLabel="Cancel"
+                    yesLabel="DELETE"
+                    noLabel="CANCEL"
                     yesIcon="trash-outline"
                     yesDestructive
                     onNo={() => setDeleteVisible(false)}

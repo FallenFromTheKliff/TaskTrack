@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
 
 import { ThemeColors } from '@/contexts/ThemeContext';
-import { R } from '@/styles/shared/tokens';
 
 export function makeAuthStyles(colors: ThemeColors) {
     return StyleSheet.create({
@@ -41,21 +40,6 @@ export function makeAuthStyles(colors: ThemeColors) {
             borderColor: colors.borderSub
         },
         form: { width: '100%', maxWidth: 350, alignSelf: 'center' },
-        button: {
-            backgroundColor: colors.accentBlue,
-            paddingVertical: 15,
-            borderRadius: R.md,
-            marginTop: 15,
-            marginBottom: 5,
-            alignItems: 'center'
-        },
-        buttonText: { color: colors.bgDivider, fontSize: 24 },
-        footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 40 },
-        link: {
-            color: colors.accentBlue,
-            fontSize: 18,
-            textDecorationLine: 'underline',
-            marginLeft: 5
-        }
+        footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 40 }
     });
 }

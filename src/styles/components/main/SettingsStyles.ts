@@ -34,33 +34,6 @@ export function makeSettingsStyles(colors: ThemeColors) {
         },
         dirtyBannerText: { fontSize: 13, flex: 1 },
         appearanceActions: { flexDirection: 'row', gap: 10, marginBottom: 10 },
-        revertButton: {
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            paddingVertical: 13,
-            borderRadius: 8,
-            borderWidth: 2,
-            borderColor: colors.accentRedLightBorder,
-            backgroundColor: colors.accentRedLight
-        },
-        revertText: { fontSize: 16, color: colors.accentRed },
-        saveButton: {
-            flex: 2,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            paddingVertical: 13,
-            borderRadius: 8,
-            borderWidth: 2,
-            borderColor: colors.greenBorder,
-            backgroundColor: colors.greenBg
-        },
-        saveText: { fontSize: 16, color: colors.accentGreen },
-        actionButtonDisabled: { backgroundColor: colors.bgDivider, borderColor: colors.borderSub },
         toggleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
         toggleInfo: { flex: 1, gap: 4 },
         toggleButton: { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 4 },
@@ -74,18 +47,6 @@ export function makeSettingsStyles(colors: ThemeColors) {
             overflow: 'hidden'
         },
         placeholderFill: { height: '100%', backgroundColor: colors.textDisabled, borderRadius: 3 },
-        comingSoon: { fontSize: 12, color: colors.textDisabled, fontStyle: 'italic' },
-        dangerButton: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            paddingVertical: 12,
-            borderRadius: 8,
-            borderWidth: 2,
-            borderColor: colors.accentRedLightBorder,
-            backgroundColor: colors.accentRedLight
-        },
-        dangerButtonText: { fontSize: 16, color: colors.accentRed }
+        comingSoon: { fontSize: 12, color: colors.textDisabled, fontStyle: 'italic' }
     });
 }

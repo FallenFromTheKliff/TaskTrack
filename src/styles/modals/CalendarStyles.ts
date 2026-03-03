@@ -55,25 +55,6 @@ export function makeCalendarStyles(colors: ThemeColors, activeIconColor?: string
             borderTopColor: colors.borderSub,
             flexDirection: 'row',
             gap: 10
-        },
-        calendarCloseButton: {
-            flex: 1,
-            flexDirection: 'row',
-            backgroundColor: colors.bgInputDark,
-            paddingVertical: 8,
-            borderRadius: R.md,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderWidth: 2,
-            borderColor: colors.borderMid
-        },
-        calendarCloseText: { fontSize: 24, color: ic },
-        calendarResetButton: {
-            flex: 1,
-            paddingHorizontal: 4,
-            backgroundColor: colors.accentRedLight,
-            borderColor: colors.accentRedLightBorder
-        },
-        calendarResetText: { fontSize: 20, color: colors.accentRed }
+        }
     });
 }

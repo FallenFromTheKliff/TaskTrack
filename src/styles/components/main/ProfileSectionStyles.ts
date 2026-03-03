@@ -45,55 +45,6 @@ export function makeProfileSectionStyles(colors: ThemeColors, activeIconColor?: 
         passwordButtonText: { fontSize: 18, color: activeIconColor ?? colors.accentBlue },
         passwordButtonTextDisabled: { color: colors.textDisabled },
         actionBar: { marginTop: 8, gap: 8 },
-        editButton: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: colors.greenBg,
-            borderRadius: R.md,
-            borderWidth: 2,
-            borderColor: colors.greenBorder,
-            paddingVertical: 12,
-            gap: 8
-        },
-        editButtonSaved: { borderColor: colors.accentGreen },
-        editButtonText: { fontSize: 18, color: colors.accentGreen },
-        editButtonErrorText: { fontSize: 18, color: colors.accentRed },
-        terminateButton: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: colors.accentRedLight,
-            borderRadius: R.md,
-            borderWidth: 2,
-            borderColor: colors.accentRedLightBorder,
-            paddingVertical: 12,
-            gap: 8
-        },
-        terminateButtonText: { fontSize: 18, color: colors.accentRed },
-        editingButtons: { flexDirection: 'row', gap: 10 },
-        cancelButton: {
-            flex: 1,
-            backgroundColor: colors.bgInputDark,
-            paddingVertical: 12,
-            borderRadius: R.md,
-            alignItems: 'center',
-            borderWidth: 2,
-            borderColor: colors.borderMid
-        },
-        cancelButtonText: { fontSize: 18, color: colors.textMuted },
-        saveButton: {
-            flex: 2,
-            backgroundColor: colors.greenBg,
-            paddingVertical: 12,
-            borderRadius: R.md,
-            alignItems: 'center',
-            borderWidth: 2,
-            borderColor: colors.greenBorder
-        },
-        saveButtonLoading: { backgroundColor: colors.bgDivider, borderColor: colors.borderSub },
-        saveButtonText: { fontSize: 18, color: colors.accentGreen },
-        saveButtonErrorText: { fontSize: 18, color: colors.accentRed },
-        errorText: { fontSize: 14, color: colors.errorRed, textAlign: 'center' }
+        editingButtons: { flexDirection: 'row', gap: 10 }
     });
 }

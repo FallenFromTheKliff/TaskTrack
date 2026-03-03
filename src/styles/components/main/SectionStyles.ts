@@ -22,6 +22,7 @@ export function makeSectionStyles(colors: ThemeColors, activeIconColor?: string 
         fabActionButton: {
             flexDirection: 'row',
             alignItems: 'center',
+            justifyContent: 'flex-start',
             marginBottom: 4,
             backgroundColor: colors.bgPanel,
             borderRadius: R.xl,

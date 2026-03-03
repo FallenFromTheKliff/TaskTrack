@@ -1,4 +1,4 @@
-import { View, Pressable, Animated, Modal, ScrollView } from 'react-native';
+import { View, Animated, Modal, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { HistoryEvent } from '@/contexts/HistoryContext';
@@ -9,6 +9,8 @@ import { capitalize } from '@/utils/auth/revisionUtils';
 import { STATUS_COLORS, STATUS_ICONS, PRIORITY_LABELS, PRIORITY_COLORS } from '@/utils/shared/constantUtils';
 import { useOverlayAnim } from '@/hooks/animations/useOverlayAnim';
 import { makeTaskDetailsStyles } from '@/styles/modals/TaskDetailsStyles';
+
+import PlayerButton from '@/components/fields/PlayerButton';
 
 type DetailsModalProps = {
     isVisible: boolean;
@@ -95,15 +97,9 @@ export default function TaskDetailsModal({ isVisible, event, statusOverride, onC
                             </View>
                         </ScrollView>
                         <View style={styles.panelFooter}>
-                            <Pressable style={styles.closeButton} onPress={onClose}>
-                                <Ionicons name="close-outline" size={18} color={ic} />
-                                <PlayerText style={styles.closeButtonText}>Close</PlayerText>
-                            </Pressable>
+                            <PlayerButton variant="ghost" label="Close" onPress={onClose} icon="close-outline" iconColor={ic} flex={1} />
                             {onMoveToTrash && (
-                                <Pressable style={styles.trashButton} onPress={onMoveToTrash}>
-                                    <Ionicons name="trash-outline" size={18} color={colors.accentRed} />
-                                    <PlayerText style={styles.trashButtonText}>Move to Trash</PlayerText>
-                                </Pressable>
+                                <PlayerButton variant="danger" label="Move to Trash" onPress={onMoveToTrash} icon="trash-outline" flex={1} />
                             )}
                         </View>
                     </Animated.View>

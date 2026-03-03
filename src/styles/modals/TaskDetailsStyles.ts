@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 import { ThemeColors } from '@/contexts/ThemeContext';
 import { makeModalBaseStyles, makeCardBaseStyles } from '@/styles/shared/common';
-import { R, MAX_WIDTH } from '@/styles/shared/tokens';
+import { MAX_WIDTH } from '@/styles/shared/tokens';
 
 export function makeTaskDetailsStyles(colors: ThemeColors, activeIconColor?: string | null) {
     const modal = makeModalBaseStyles(colors);
@@ -30,27 +30,6 @@ export function makeTaskDetailsStyles(colors: ThemeColors, activeIconColor?: str
         notesValue: { ...card.detailValue, color: ic, fontStyle: 'italic' },
         detailValueEmpty: { ...card.detailValue, fontStyle: 'italic', color: colors.textDisabled },
         deletionValue: { ...card.detailValue, color: colors.accentRed },
-        panelFooter: modal.panelFooter,
-        closeButton: {
-            ...modal.cancelButton,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            paddingVertical: 12,
-            gap: 6
-        },
-        closeButtonText: { fontSize: 16, color: ic },
-        trashButton: {
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            paddingVertical: 12,
-            borderRadius: R.md,
-            borderWidth: 2,
-            borderColor: colors.accentRedLightBorder,
-            backgroundColor: colors.accentRedLight
-        },
-        trashButtonText: { fontSize: 16, color: colors.accentRed }
+        panelFooter: modal.panelFooter
     });
 }

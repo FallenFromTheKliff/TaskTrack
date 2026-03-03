@@ -1,11 +1,12 @@
 import { View, Modal, Pressable, Animated } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
 import { PlayerText } from '@/components/fields/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { useOverlayAnim } from '@/hooks/animations/useOverlayAnim';
 import { makeConfirmStyles } from '@/styles/modals/ConfirmStyles';
+
+import PlayerButton from '@/components/fields/PlayerButton';
 
 type ConfirmModalProps = {
     isVisible: boolean;
@@ -16,6 +17,7 @@ type ConfirmModalProps = {
     yesIcon?: string;
     yesDestructive?: boolean;
     yesPositive?: boolean;
+    yesRestore?: boolean;
     isLoading?: boolean;
     loadingLabel?: string;
     loadingTitle?: string;
@@ -32,6 +34,7 @@ export default function ConfirmModal({
     yesIcon,
     yesDestructive = false,
     yesPositive = false,
+    yesRestore = false,
     isLoading = false,
     loadingLabel,
     loadingTitle,
@@ -39,12 +42,13 @@ export default function ConfirmModal({
     onYes
 }: ConfirmModalProps) {
     const { colors } = useTheme();
-    const loadingText = useLoadingText(loadingLabel ?? 'LOADING', isLoading);
     const { opacity, scale } = useOverlayAnim(isVisible, 'scale');
-    const s = makeConfirmStyles(colors, yesDestructive, yesPositive);
+
+    const s = makeConfirmStyles(colors, yesDestructive, yesPositive, yesRestore);
+    const yesIconColor = yesDestructive ? colors.accentRed : yesRestore ? colors.accentGold : yesPositive ? colors.accentGreen : colors.accentBlue;
 
     const displayTitle = isLoading && loadingTitle ? loadingTitle : title;
-    const yesIconColor = yesDestructive ? '#D08888' : yesPositive ? '#70B880' : '#7AAAD8';
+    const loadingText = useLoadingText(loadingLabel ?? 'LOADING', isLoading);
 
     return (
         <Modal visible={isVisible} transparent animationType="none" onRequestClose={isLoading ? undefined : onNo}>
@@ -58,15 +62,15 @@ export default function ConfirmModal({
                         <>
                             <PlayerText style={s.message}>{message}</PlayerText>
                             <View style={s.actions}>
-                                <Pressable style={s.noButton} onPress={onNo}>
-                                    <PlayerText style={s.noText}>{noLabel}</PlayerText>
-                                </Pressable>
-                                <Pressable style={s.yesButton} onPress={onYes}>
-                                    {yesIcon && (
-                                        <Ionicons name={yesIcon as any} size={18} color={yesIconColor} />
-                                    )}
-                                    <PlayerText style={s.yesText}>{yesLabel}</PlayerText>
-                                </Pressable>
+                                <PlayerButton variant="ghost" label={noLabel} onPress={onNo} flex={1} />
+                                <PlayerButton
+                                    variant={yesDestructive ? 'danger' : yesRestore ? 'restore' : 'primary'}
+                                    label={yesLabel}
+                                    onPress={onYes}
+                                    icon={yesIcon as any}
+                                    iconColor={yesIconColor}
+                                    flex={1}
+                                />
                             </View>
                         </>
                     )}

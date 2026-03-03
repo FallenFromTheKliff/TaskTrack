@@ -21,6 +21,7 @@ import InputField from '@/components/fields/InputField';
 import BirthdayDropdown from '@/components/fields/BirthdayDropdown';
 import GenderSwap from '@/components/fields/GenderSwap';
 import NameRequirements from '@/components/requirements/NameRequirements';
+import PlayerButton from '@/components/fields/PlayerButton';
 import ChangePasswordModal from '@/components/modals/ChangePasswordModal';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 import SelfieCameraModal from '@/components/modals/SelfieCameraModal';
@@ -305,39 +306,30 @@ export default function ProfileSection() {
                     <View style={[styles.actionBar, { zIndex: 150 }]}>
                         {!isEditing ? (
                             <>
-                                <Pressable
-                                    style={errorText ? styles.editButton : [styles.editButton, isSaved && styles.editButtonSaved]}
+                                <PlayerButton
+                                    variant={errorText ? 'danger' : 'primary'}
+                                    label={errorText || (isSaved ? 'SAVED' : 'EDIT PROFILE')}
                                     onPress={() => { if (!errorText && !isSaved) setIsEditing(true); }}
+                                    icon={errorText ? 'alert-circle-outline' : isSaved ? 'checkmark-outline' : 'pencil-outline'}
                                     disabled={isSaved || !!errorText}
-                                >
-                                    <Ionicons
-                                        name={errorText ? 'alert-circle-outline' : isSaved ? 'checkmark-outline' : 'pencil-outline'}
-                                        size={18}
-                                        color={errorText ? colors.accentRed : colors.accentGreen}
-                                    />
-                                    <PlayerText style={errorText ? styles.editButtonErrorText : styles.editButtonText}>
-                                        {errorText || (isSaved ? 'SAVED' : 'EDIT PROFILE')}
-                                    </PlayerText>
-                                </Pressable>
-                                <Pressable style={styles.terminateButton} onPress={() => setIsTerminateVisible(true)}>
-                                    <Ionicons name="skull-outline" size={18} color={colors.accentRed} />
-                                    <PlayerText style={styles.terminateButtonText}>TERMINATE ACCOUNT</PlayerText>
-                                </Pressable>
+                                />
+                                <PlayerButton
+                                    variant="danger"
+                                    label="TERMINATE ACCOUNT"
+                                    onPress={() => setIsTerminateVisible(true)}
+                                    icon="skull-outline"
+                                />
                             </>
                         ) : (
                             <View style={styles.editingButtons}>
-                                <Pressable style={styles.cancelButton} onPress={handleCancelEdit}>
-                                    <PlayerText style={styles.cancelButtonText}>Cancel</PlayerText>
-                                </Pressable>
-                                <Pressable
-                                    style={[errorText ? styles.saveButton : styles.saveButton, isLoading && styles.saveButtonLoading]}
+                                <PlayerButton variant="ghost" label="Cancel" onPress={handleCancelEdit} flex={1} />
+                                <PlayerButton
+                                    variant={errorText ? 'danger' : 'primary'}
+                                    label={isLoading ? loadingText : (errorText || 'Save Changes')}
                                     onPress={handleSubmit(onSubmit)}
                                     disabled={isLoading || !!errorText}
-                                >
-                                    <PlayerText style={errorText ? styles.saveButtonErrorText : styles.saveButtonText}>
-                                        {isLoading ? loadingText : (errorText || 'Save Changes')}
-                                    </PlayerText>
-                                </Pressable>
+                                    flex={2}
+                                />
                             </View>
                         )}
                     </View>
@@ -348,8 +340,8 @@ export default function ProfileSection() {
                 isVisible={isSecurityVisible}
                 title="Important Change(s) Detected."
                 message="Your account had its email or password changed. You will be logged out and must sign back in after saving changes."
-                yesLabel="Understood"
-                noLabel="Cancel"
+                yesLabel="I UNDERSTAND"
+                noLabel="CANCEL"
                 yesIcon="shield-checkmark-outline"
                 yesPositive
                 isLoading={isSecurityLogout}
@@ -362,8 +354,8 @@ export default function ProfileSection() {
                 isVisible={isTerminateVisible}
                 title="Terminate Account?"
                 message="This will permanently delete your account and all your tasks. This action cannot be undone."
-                yesLabel="Terminate"
-                noLabel="Cancel"
+                yesLabel="TERMINATE"
+                noLabel="CANCEL"
                 yesIcon="skull-outline"
                 yesDestructive
                 isLoading={isTerminating}

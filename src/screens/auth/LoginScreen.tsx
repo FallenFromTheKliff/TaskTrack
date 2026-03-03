@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { View, Pressable, Animated, ScrollView } from 'react-native';
+import { View, Animated, ScrollView } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useForm } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,6 +12,7 @@ import { useAuthEntrance } from '@/hooks/auth/useAuthEntrance';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { useTimedMessage } from '@/hooks/auth/useTimedMessage';
 import { makeAuthStyles } from '@/styles/auth/AuthStyles';
+import PlayerButton from '@/components/fields/PlayerButton';
 
 import InputField from '@/components/fields/InputField';
 import LoadingScreen from '@/screens/interlude/LoadingScreen';
@@ -116,18 +117,20 @@ export default function LoginScreen({ navigation }: LoginFormProps) {
                             colorsOverride={NAVY}
                             iconColorOverride={NAVY.accentBlue}
                         />
-                        <Pressable
-                            style={[styles.button, isLoading && { backgroundColor: NAVY.textMuted }]}
+                        <PlayerButton
+                            variant="auth"
+                            label={buttonLabel}
                             onPress={handleSubmit(onSubmit)}
                             disabled={navDisabled}
-                        >
-                            <AuthText style={styles.buttonText}>{buttonLabel}</AuthText>
-                        </Pressable>
+                        />
                         <View style={styles.footer}>
-                            <AuthText style={{ fontSize: 18, color: NAVY.textPrimary }}>Don't have an account?</AuthText>
-                            <Pressable onPress={() => !navDisabled && navigation.navigate('Register')} disabled={navDisabled}>
-                                <AuthText style={[styles.link, navDisabled && { color: NAVY.textDisabled }]}>Create one!</AuthText>
-                            </Pressable>
+                            <AuthText style={{ fontSize: 18, color: NAVY.textPrimary }}>Don't have an account? </AuthText>
+                            <PlayerButton
+                                variant="link"
+                                label="Create one!"
+                                onPress={() => navigation.navigate('Register')}
+                                disabled={navDisabled}
+                            />
                         </View>
                     </Animated.View>
                 </ScrollView>

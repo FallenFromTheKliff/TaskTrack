@@ -18,6 +18,7 @@ import { makeGroupStyles } from '@/styles/cards/GroupStyles';
 
 import SearchFilter from '@/components/layout/SearchFilter';
 import TaskCard from '@/components/cards/TaskCard';
+import PlayerButton from '@/components/fields/PlayerButton';
 import NoContent from '@/components/main/NoContent';
 import SelectionFooter from '@/components/main/SelectionFooter';
 import ConfirmModal from '@/components/modals/ConfirmModal';
@@ -139,16 +140,26 @@ export default function TaskSection({ navigation }: TaskSectionProps) {
             {!selectionMode && (
                 <Animated.View style={[styles.fabContainer, { opacity: fabAnim }]}>
                     <Animated.View style={[styles.fabAction, { transform: [{ translateY: btn2Slide }], opacity: fabToggleAnim }]}>
-                        <Pressable style={styles.fabActionButton} onPress={handleEnterSelectionMode}>
-                            <Ionicons name="trash-outline" size={24} color={colors.accentRed} />
-                            <PlayerText style={styles.fabActionTextRemove}>Move to Trash</PlayerText>
-                        </Pressable>
+                        <PlayerButton
+                            variant="action"
+                            label="MOVE TO TRASH"
+                            onPress={handleEnterSelectionMode}
+                            icon="trash-outline"
+                            iconColor={colors.accentRed}
+                            style={styles.fabActionButton}
+                            textStyle={styles.fabActionTextRemove}
+                        />
                     </Animated.View>
                     <Animated.View style={[styles.fabAction, { transform: [{ translateY: btnSlide }], opacity: fabToggleAnim }]}>
-                        <Pressable style={styles.fabActionButton} onPress={() => { closeFab(); navigation.navigate('Task Details'); }}>
-                            <Ionicons name="add-circle-outline" size={24} color={colors.accentGreen} />
-                            <PlayerText style={styles.fabActionTextCreate}>Create New Task</PlayerText>
-                        </Pressable>
+                        <PlayerButton
+                            variant="action"
+                            label="CREATE NEW TASK"
+                            onPress={() => { closeFab(); navigation.navigate('Task Details'); }}
+                            icon="add-circle-outline"
+                            iconColor={colors.accentGreen}
+                            style={styles.fabActionButton}
+                            textStyle={styles.fabActionTextCreate}
+                        />
                     </Animated.View>
                     <Pressable style={styles.fab} onPress={() => toggleFab()}>
                         <Animated.View style={{ transform: [{ rotate: fabRotation }] }}>

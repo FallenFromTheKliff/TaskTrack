@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { View, Pressable, Image, Modal } from 'react-native';
+import { View, Image, Modal } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -8,6 +8,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { useTimedMessage } from '@/hooks/auth/useTimedMessage';
 import { makeSelfieCameraStyles } from '@/styles/modals/SelfieCameraStyles';
+import PlayerButton from '@/components/fields/PlayerButton';
 
 type SelfieCameraModalProps = {
     isVisible: boolean;
@@ -63,12 +64,16 @@ export default function SelfieCameraModal({ isVisible, onCancel, onCapture }: Se
                     <View style={styles.permissionBox}>
                         <Ionicons name="camera-outline" size={48} color="#4E5D6D" />
                         <PlayerText style={styles.permissionText}>Camera access is required to take a photo!</PlayerText>
-                        <Pressable style={styles.permissionButton} onPress={requestPermission}>
-                            <PlayerText style={styles.permissionButtonText}>Grant Permission</PlayerText>
-                        </Pressable>
-                        <Pressable style={styles.permissionCancel} onPress={handleCancel}>
-                            <PlayerText style={styles.permissionCancelText}>Cancel</PlayerText>
-                        </Pressable>
+                        <PlayerButton
+                            variant="primary"
+                            label="Grant Permission"
+                            onPress={requestPermission}
+                        />
+                        <PlayerButton
+                            variant="ghost"
+                            label="Cancel"
+                            onPress={handleCancel}
+                        />
                     </View>
                 ) : (
                     <View style={styles.container}>
@@ -85,13 +90,20 @@ export default function SelfieCameraModal({ isVisible, onCancel, onCapture }: Se
                             </View>
                         ) : null}
                         <View style={styles.actions}>
-                            <Pressable style={[styles.captureButton, isSaving && styles.captureButtonSaving]} onPress={handleTakePhoto} disabled={isSaving}>
-                                <Ionicons name="camera-outline" size={22} color="#161C24" />
-                                <PlayerText style={styles.captureText}>{isSaving ? savingText : 'Take Photo!'}</PlayerText>
-                            </Pressable>
-                            <Pressable style={[styles.cancelButton, isSaving && { opacity: 0.5 }]} onPress={handleCancel} disabled={isSaving}>
-                                <PlayerText style={styles.cancelText}>Cancel</PlayerText>
-                            </Pressable>
+                            <PlayerButton
+                                variant={isSaving ? 'ghost' : 'primary'}
+                                label={isSaving ? savingText : 'Take Photo!'}
+                                onPress={handleTakePhoto}
+                                icon="camera-outline"
+                                iconSize={22}
+                                disabled={isSaving}
+                            />
+                            <PlayerButton
+                                variant="ghost"
+                                label="Cancel"
+                                onPress={handleCancel}
+                                disabled={isSaving}
+                            />
                         </View>
                     </View>
                 )}

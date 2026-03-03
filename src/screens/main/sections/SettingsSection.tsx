@@ -10,6 +10,7 @@ import { useScreen } from '@/contexts/ScreenContext';
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
 import { makeSettingsStyles } from '@/styles/components/main/SettingsStyles';
 
+import PlayerButton from '@/components/fields/PlayerButton';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 import SettingsDropdown from '@/components/fields/SettingsDropdown';
 
@@ -142,18 +143,26 @@ export default function SettingsSection() {
                 )}
                 {appearanceDirty && (
                     <View style={s.appearanceActions}>
-                        <Animated.View style={[s.revertButton, { backgroundColor: ic.accentRedLight, borderColor: ic.accentRedLightBorder }]}>
-                            <Pressable style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }} onPress={handleRevert}>
-                                <Ionicons name="refresh-outline" size={18} color={colors.accentRed} />
-                                <AnimatedPlayerText style={[s.revertText, { color: ic.accentRed }]}>Revert</AnimatedPlayerText>
-                            </Pressable>
-                        </Animated.View>
-                        <Animated.View style={[s.saveButton, { backgroundColor: ic.greenBg, borderColor: ic.greenBorder }]}>
-                            <Pressable style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }} onPress={handleSave}>
-                                <Ionicons name="checkmark-outline" size={18} color={colors.accentGreen} />
-                                <AnimatedPlayerText style={[s.saveText, { color: ic.accentGreen }]}>Save Changes</AnimatedPlayerText>
-                            </Pressable>
-                        </Animated.View>
+                        <PlayerButton
+                            variant="danger"
+                            label="Revert"
+                            onPress={handleRevert}
+                            icon="refresh-outline"
+                            flex={1}
+                            animatedColors={ic}
+                            animatedTextColor={ic.accentRed}
+                            animatedIconColor={ic.accentRed}
+                        />
+                        <PlayerButton
+                            variant="primary"
+                            label="Save Changes"
+                            onPress={handleSave}
+                            icon="checkmark-outline"
+                            flex={2}
+                            animatedColors={ic}
+                            animatedTextColor={ic.accentGreen}
+                            animatedIconColor={ic.accentGreen}
+                        />
                     </View>
                 )}
                 <AnimatedPlayerText style={[s.sectionTitle, { color: ic.textDisabled }]}>Motion</AnimatedPlayerText>
@@ -181,20 +190,24 @@ export default function SettingsSection() {
                     <AnimatedPlayerText style={[s.blockHint, { color: ic.textMuted }]}>
                         Restores everything to default, permanently erasing tasks and history!
                     </AnimatedPlayerText>
-                    <Animated.View style={[s.dangerButton, { backgroundColor: ic.accentRedLight, borderColor: ic.accentRedLightBorder }]}>
-                        <Pressable style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }} onPress={() => setIsClearCacheVisible(true)}>
-                            <Ionicons name="trash-outline" size={18} color={colors.accentRed} />
-                            <AnimatedPlayerText style={[s.dangerButtonText, { color: ic.accentRed }]}>Clear Cache</AnimatedPlayerText>
-                        </Pressable>
-                    </Animated.View>
+                    <PlayerButton
+                        variant="danger"
+                        label="CLEAR CACHE"
+                        onPress={() => setIsClearCacheVisible(true)}
+                        icon="trash-outline"
+                        animatedColors={ic}
+                        animatedTextColor={ic.accentRed}
+                        animatedIconColor={ic.accentRed}
+                        style={{ borderRadius: 8 }}
+                    />
                 </Animated.View>
             </ScrollView>
             <ConfirmModal
                 isVisible={isClearCacheVisible}
                 title="Clear Cache?"
                 message={`This will reset appearances and permanently delete all tasks and records!`}
-                yesLabel="Clear Cache"
-                noLabel="Cancel"
+                yesLabel="CLEAR CACHE"
+                noLabel="CANCEL"
                 yesIcon="trash-outline"
                 yesDestructive
                 isLoading={isClearingCache}

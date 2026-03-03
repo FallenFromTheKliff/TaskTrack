@@ -2,7 +2,6 @@ import { StyleSheet } from 'react-native';
 
 import { ThemeColors } from '@/contexts/ThemeContext';
 import { makeCardBaseStyles } from '@/styles/shared/common';
-import { R } from '@/styles/shared/tokens';
 
 export function makeRecordCardStyles(colors: ThemeColors, activeIconColor?: string | null) {
     const base = makeCardBaseStyles(colors);
@@ -29,45 +28,6 @@ export function makeRecordCardStyles(colors: ThemeColors, activeIconColor?: stri
         detailLabel: base.detailLabel,
         detailValue: { ...base.detailValue, color: ic },
         cardActions: { flexDirection: 'row', gap: 8 },
-        trashActions: { flexDirection: 'row', gap: 8 },
-        detailsButton: {
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            paddingVertical: 10,
-            borderRadius: R.md,
-            borderWidth: 1,
-            borderColor: colors.borderMid,
-            backgroundColor: colors.bgInputDark
-        },
-        detailsButtonText: { fontSize: 14, color: activeIconColor ?? colors.textMuted },
-        restoreButton: {
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            paddingVertical: 10,
-            borderRadius: R.md,
-            borderWidth: 1,
-            borderColor: colors.accentGold,
-            backgroundColor: colors.bgDeep
-        },
-        restoreButtonText: { fontSize: 14, color: colors.accentGold },
-        deleteButton: {
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            paddingVertical: 10,
-            borderRadius: R.md,
-            borderWidth: 1,
-            borderColor: colors.accentRedLightBorder,
-            backgroundColor: colors.accentRedLight
-        },
-        deleteButtonText: { fontSize: 14, color: colors.accentRed }
+        trashActions: { flexDirection: 'row', gap: 8 }
     });
 }

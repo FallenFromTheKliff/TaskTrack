@@ -12,6 +12,7 @@ import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { makeFormStyles } from '@/styles/components/main/FormStyles';
 
 import Scheduler, { SchedulerHandle, SchedulerValues } from '@/components/main/Scheduler';
+import PlayerButton from '@/components/fields/PlayerButton';
 
 type TaskFormProps = {
     navigation: NativeStackNavigationProp<any>;
@@ -20,7 +21,7 @@ type TaskFormProps = {
 
 export default function TaskFormScreen({ navigation, route }: TaskFormProps) {
     const { createTask, updateTask, recordEditEvent } = useTask();
-    const { colors, activeIconColor } = useTheme();
+    const { colors } = useTheme();
     const { fadeIn } = useAuthEntrance();
 
     const task = route.params?.task;
@@ -32,7 +33,7 @@ export default function TaskFormScreen({ navigation, route }: TaskFormProps) {
     const [isLoading, setIsLoading] = useState(false);
 
     const disabled = !canSubmit || isLoading;
-    const s = makeFormStyles(colors, isEditing, disabled, activeIconColor);
+    const s = makeFormStyles(colors);
 
     const loadingText = useLoadingText(isEditing ? 'UPDATING' : 'CREATING', isLoading);
     const buttonLabel = isLoading ? loadingText : (isEditing ? 'UPDATE TASK' : 'CREATE TASK');
@@ -79,7 +80,7 @@ export default function TaskFormScreen({ navigation, route }: TaskFormProps) {
         } catch {
             setIsLoading(false);
         }
-    }, [isEditing, task, updateTask, recordEditEvent, createTask, navigation]);
+    }, [task, updateTask, recordEditEvent, createTask, navigation]);
 
     const initialValues: Partial<SchedulerValues> | undefined = task ? {
         title: task.title,
@@ -109,14 +110,14 @@ export default function TaskFormScreen({ navigation, route }: TaskFormProps) {
                 />
             </Animated.View>
             <View style={s.footer}>
-                <Pressable style={s.submitButton} onPress={handleSubmitPress} disabled={disabled}>
-                    <Ionicons
-                        name={isEditing ? 'create-outline' : 'checkmark-circle-outline'}
-                        size={22}
-                        color={disabled ? colors.textDisabled : isEditing ? (activeIconColor ?? colors.accentBlue) : colors.accentGreen}
-                    />
-                    <PlayerText style={s.submitText}>{buttonLabel}</PlayerText>
-                </Pressable>
+                <PlayerButton
+                    variant={isEditing ? 'action' : 'primary'}
+                    label={buttonLabel}
+                    onPress={handleSubmitPress}
+                    icon={isEditing ? 'create-outline' : 'checkmark-circle-outline'}
+                    iconSize={22}
+                    disabled={disabled}
+                />
             </View>
         </View>
     );

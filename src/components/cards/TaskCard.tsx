@@ -11,6 +11,7 @@ import { useExpandCard } from '@/hooks/cards/useExpandCard';
 import { PRIORITY_LABELS, PRIORITY_COLORS, PRIORITY_BG, PRIORITY_BORDER } from '@/utils/shared/constantUtils';
 import { makeTaskCardStyles } from '@/styles/cards/TaskCardStyles';
 
+import PlayerButton from '@/components/fields/PlayerButton';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 
 type TaskCardProps = {
@@ -100,27 +101,33 @@ export default function TaskCard({ task, navigation, selectionMode = false, isSe
                                     </PlayerText>
                                 </View>
                                 <View style={s.cardActions}>
-                                    <Pressable
-                                        style={[s.actionButton, task.completed ? s.completeButtonDone : s.completeButton]}
+                                    <PlayerButton
+                                        variant={task.completed ? 'ghost' : 'primary'}
+                                        label={task.completed ? 'COMPLETED' : 'MARK DONE'}
                                         onPress={() => { if (!task.completed) setMarkDoneVisible(true); else handleComplete(); }}
-                                    >
-                                        <Ionicons
-                                            name={task.completed ? 'checkmark-circle' : 'checkmark-circle-outline'}
-                                            size={16}
-                                            color={task.completed ? colors.textDisabled : colors.accentGreen}
-                                        />
-                                        <PlayerText style={[s.actionButtonText, task.completed ? s.completeButtonTextDone : s.completeButtonText]}>
-                                            {task.completed ? 'Completed' : 'Mark Done'}
-                                        </PlayerText>
-                                    </Pressable>
-                                    <Pressable style={[s.actionButton, s.editButton]} onPress={handleEdit}>
-                                        <Ionicons name="pencil-outline" size={16} color={ic} />
-                                        <PlayerText style={s.actionButtonText}>Edit</PlayerText>
-                                    </Pressable>
-                                    <Pressable style={[s.actionButton, s.deleteButton]} onPress={() => setRemoveVisible(true)}>
-                                        <Ionicons name="trash-outline" size={16} color={colors.accentRed} />
-                                        <PlayerText style={[s.actionButtonText, s.deleteButtonText]}>Remove</PlayerText>
-                                    </Pressable>
+                                        icon={task.completed ? 'checkmark-circle' : 'checkmark-circle-outline'}
+                                        style={task.completed ? s.completeButtonDone : s.completeButton}
+                                        textStyle={task.completed ? s.completeButtonTextDone : s.completeButtonText}
+                                        flex={1}
+                                    />
+                                    <PlayerButton
+                                        variant="action"
+                                        label="EDIT"
+                                        onPress={handleEdit}
+                                        icon="pencil-outline"
+                                        style={s.editButton}
+                                        textStyle={s.actionButtonText}
+                                        flex={1}
+                                    />
+                                    <PlayerButton
+                                        variant="danger"
+                                        label="REMOVE"
+                                        onPress={() => setRemoveVisible(true)}
+                                        icon="trash-outline"
+                                        style={s.deleteButton}
+                                        textStyle={s.deleteButtonText}
+                                        flex={1}
+                                    />
                                 </View>
                             </View>
                         </View>
@@ -131,8 +138,8 @@ export default function TaskCard({ task, navigation, selectionMode = false, isSe
                 isVisible={markDoneVisible}
                 title="Mark as Complete?"
                 message={`"${task.title}" will be marked as complete and recorded in your history.`}
-                yesLabel="Complete"
-                noLabel="Cancel"
+                yesLabel="COMPLETE"
+                noLabel="CANCEL"
                 yesIcon="checkmark-circle-outline"
                 yesPositive
                 onNo={() => setMarkDoneVisible(false)}
@@ -142,8 +149,8 @@ export default function TaskCard({ task, navigation, selectionMode = false, isSe
                 isVisible={removeVisible}
                 title="Move to Trash?"
                 message={`"${task.title}" will be moved to the Trash. You have 30 days to restore it before it's permanently deleted.`}
-                yesLabel="Move to Trash"
-                noLabel="Cancel"
+                yesLabel="TRASH"
+                noLabel="CANCEL"
                 yesIcon="trash-outline"
                 yesDestructive
                 onNo={() => setRemoveVisible(false)}

@@ -1,29 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 import { ThemeColors } from '@/contexts/ThemeContext';
-import { R, MAX_WIDTH } from './tokens';
-
-export function makeScreenStyles(colors: ThemeColors) {
-    return StyleSheet.create({
-        container: {
-            flex: 1,
-            backgroundColor: colors.bgDeep,
-            maxWidth: MAX_WIDTH,
-            alignSelf: 'center',
-            width: '100%'
-        }
-    });
-}
-
-export function makeScreenContainer(colors: ThemeColors) {
-    return {
-        flex: 1,
-        backgroundColor: colors.bgDeep,
-        maxWidth: MAX_WIDTH,
-        alignSelf: 'center' as const,
-        width: '100%' as const
-    };
-}
+import { R } from './tokens';
 
 export function makeFieldLabel(colors: ThemeColors, activeIconColor?: string | null) {
     return {
@@ -83,35 +61,6 @@ export function makeModalBaseStyles(colors: ThemeColors) {
             padding: 16,
             borderTopWidth: 2,
             borderTopColor: colors.borderSub
-        },
-        cancelButton: {
-            flex: 1,
-            backgroundColor: colors.bgInputDark,
-            paddingVertical: 14,
-            borderRadius: R.md,
-            alignItems: 'center',
-            borderWidth: 2,
-            borderColor: colors.borderMid
-        },
-        cancelText: {
-            fontSize: 18,
-            color: colors.textMuted
-        },
-        confirmButton: {
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: colors.greenBg,
-            paddingVertical: 14,
-            borderRadius: R.md,
-            borderWidth: 2,
-            borderColor: colors.greenBorder,
-            gap: 8
-        },
-        confirmText: {
-            fontSize: 18,
-            color: colors.accentGreen
         }
     });
 }
