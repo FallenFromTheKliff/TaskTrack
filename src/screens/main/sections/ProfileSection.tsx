@@ -42,6 +42,7 @@ export default function ProfileSection() {
 
     const [isEditing, setIsEditing] = useState(false);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
+
     const [profilePictureUri, setProfilePictureUri] = useState<string | null>(user?.profilePicture ?? null);
 
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -315,7 +316,7 @@ export default function ProfileSection() {
                                         color={errorText ? colors.accentRed : colors.accentGreen}
                                     />
                                     <PlayerText style={errorText ? styles.editButtonErrorText : styles.editButtonText}>
-                                        {errorText || (isSaved ? 'Saved!' : 'Edit Profile')}
+                                        {errorText || (isSaved ? 'SAVED' : 'EDIT PROFILE')}
                                     </PlayerText>
                                 </Pressable>
                                 <Pressable style={styles.terminateButton} onPress={() => setIsTerminateVisible(true)}>

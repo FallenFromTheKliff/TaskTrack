@@ -193,7 +193,7 @@ export default function SettingsSection() {
                 isVisible={isClearCacheVisible}
                 title="Clear Cache?"
                 message={`This will reset appearances and permanently delete all tasks and records!`}
-                yesLabel="Clear Everything"
+                yesLabel="Clear Cache"
                 noLabel="Cancel"
                 yesIcon="trash-outline"
                 yesDestructive

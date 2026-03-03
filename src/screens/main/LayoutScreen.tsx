@@ -42,6 +42,7 @@ export default function LayoutScreen({ navigation }: LayoutScreenProps) {
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isLogoutVisible, setIsLogoutVisible] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     const s = makeLayoutStyles(colors);
 
@@ -50,7 +51,8 @@ export default function LayoutScreen({ navigation }: LayoutScreenProps) {
     }, [activeScreen]);
 
     const handleLogoutConfirm = async () => {
-        setIsLogoutVisible(false);
+        setIsLoggingOut(true);
+        await new Promise(resolve => setTimeout(resolve, 1500));
         setActiveScreen('tasks');
         await logout();
     };
@@ -79,6 +81,9 @@ export default function LayoutScreen({ navigation }: LayoutScreenProps) {
                 noLabel="Cancel"
                 yesIcon="log-out-outline"
                 yesDestructive
+                isLoading={isLoggingOut}
+                loadingLabel="LEAVING"
+                loadingTitle="See you next time!"
                 onNo={() => setIsLogoutVisible(false)}
                 onYes={handleLogoutConfirm}
             />
