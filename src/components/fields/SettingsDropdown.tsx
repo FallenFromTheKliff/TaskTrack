@@ -1,34 +1,39 @@
 import { useState } from 'react';
-import { View, Pressable, ScrollView } from 'react-native';
+import { View, Pressable, ScrollView, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { AnimatedPlayerText } from '@/components/fields/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useThemeTransitionAnim } from '@/hooks/animations/useThemeTransitionAnim';
 import { makeSettingsDropdownStyles } from '@/styles/components/fields/SettingsDropdownStyles';
 
 type SettingsDropdownProps = {
-    label: string;
     value: string;
     options: { label: string; value: string }[];
     onSelect: (val: string) => void;
 };
 
-export default function SettingsDropdown({ label, value, options, onSelect }: SettingsDropdownProps) {
+export default function SettingsDropdown({ value, options, onSelect }: SettingsDropdownProps) {
     const { colors, activeIconColor } = useTheme();
+    const { ic } = useThemeTransitionAnim();
     const [open, setOpen] = useState(false);
-    const s = makeSettingsDropdownStyles(colors, activeIconColor);
+    const s = makeSettingsDropdownStyles(colors);
     const selectedLabel = options.find(o => o.value === value)?.label ?? value;
-    const ic = activeIconColor ?? colors.textMuted;
+    const iconColor = activeIconColor ?? colors.textMuted;
 
     return (
         <View style={[s.wrapper, open && { zIndex: 9999, elevation: 9999 }]}>
-            <PlayerText style={s.fieldLabel}>{label}</PlayerText>
-            <Pressable style={s.button} onPress={() => setOpen(prev => !prev)}>
-                <PlayerText style={s.valueText}>{selectedLabel}</PlayerText>
-                <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={16} color={ic} />
-            </Pressable>
+            <Animated.View style={[s.button, { backgroundColor: ic.fieldBg, borderColor: ic.fieldBorder }]}>
+                <Pressable
+                    style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flex: 1 }}
+                    onPress={() => setOpen(prev => !prev)}
+                >
+                    <AnimatedPlayerText style={[s.valueText, { color: ic.textPrimary }]}>{selectedLabel}</AnimatedPlayerText>
+                    <Ionicons name={open ? 'chevron-up' : 'chevron-down'} size={16} color={iconColor} />
+                </Pressable>
+            </Animated.View>
             {open && (
-                <View style={s.list}>
+                <Animated.View style={[s.list, { backgroundColor: ic.bgPanel, borderColor: ic.borderStrong }]}>
                     <ScrollView style={s.listScroll} nestedScrollEnabled showsVerticalScrollIndicator={false}>
                         {options.map(opt => {
                             const isActive = opt.value === value;
@@ -38,15 +43,15 @@ export default function SettingsDropdown({ label, value, options, onSelect }: Se
                                     style={[s.item, isActive && { backgroundColor: colors.bgDivider }]}
                                     onPress={() => { onSelect(opt.value); setOpen(false); }}
                                 >
-                                    <PlayerText style={[s.itemText, { color: isActive ? colors.textPrimary : (activeIconColor ?? colors.accentBlue) }]}>
+                                    <AnimatedPlayerText style={[s.itemText, { color: isActive ? colors.textPrimary : (activeIconColor ?? colors.accentBlue) }]}>
                                         {opt.label}
-                                    </PlayerText>
-                                    {isActive && <Ionicons name="checkmark" size={16} color={ic} />}
+                                    </AnimatedPlayerText>
+                                    {isActive && <Ionicons name="checkmark" size={16} color={iconColor} />}
                                 </Pressable>
                             );
                         })}
                     </ScrollView>
-                </View>
+                </Animated.View>
             )}
         </View>
     );

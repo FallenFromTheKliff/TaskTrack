@@ -1,6 +1,8 @@
-import { StyleSheet, Text, TextProps, TextInput, TextInputProps } from 'react-native';
+import { StyleSheet, Text, TextProps, TextInput, TextInputProps, Animated } from 'react-native';
 
-import { useTheme, FONT_FAMILIES } from '@/contexts/ThemeContext';
+import { useTheme, FONT_FAMILIES, THEMES } from '@/contexts/ThemeContext';
+
+const NAVY = THEMES.navy;
 
 export function PlayerText({ style, ...props }: TextProps) {
     const { activeFont, activeFontColor, colors } = useTheme();
@@ -18,12 +20,21 @@ export function PlayerText({ style, ...props }: TextProps) {
     );
 }
 
+export function AnimatedPlayerText({ style, ...props }: Animated.AnimatedProps<TextProps>) {
+    const { activeFont } = useTheme();
+    return (
+        <Animated.Text
+            {...props}
+            style={[{ fontFamily: FONT_FAMILIES[activeFont] }, style]}
+        />
+    );
+}
+
 export function AuthText({ style, ...props }: TextProps) {
-    const { colors } = useTheme();
     return (
         <Text
             {...props}
-            style={[{ fontFamily: FONT_FAMILIES.blrrpix, color: colors.textPrimary }, style]}
+            style={[{ fontFamily: FONT_FAMILIES.blrrpix, color: NAVY.textPrimary }, style]}
         />
     );
 }

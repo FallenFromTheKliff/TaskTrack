@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
-import type { ThemeColors } from '@/contexts/ThemeContext';
+
+import { ThemeColors } from '@/contexts/ThemeContext';
 import { R } from '@/styles/shared/tokens';
 
 export function makeGroupStyles(colors: ThemeColors) {
@@ -14,7 +15,7 @@ export function makeGroupStyles(colors: ThemeColors) {
             paddingHorizontal: 10,
             paddingBottom: 4
         },
-        groupLabelRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-        groupLabel: { fontSize: 20, color: colors.textMuted, marginLeft: 2 }
+        groupLabelRow: { alignItems: 'center', marginBottom: 8 },
+        groupLabel: { fontSize: 20, color: colors.textMuted }
     });
 }

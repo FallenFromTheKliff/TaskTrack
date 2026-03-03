@@ -4,9 +4,10 @@ import { ThemeColors } from '@/contexts/ThemeContext';
 import { makeModalBaseStyles, makeCardBaseStyles } from '@/styles/shared/common';
 import { R, MAX_WIDTH } from '@/styles/shared/tokens';
 
-export function makeTaskDetailsStyles(colors: ThemeColors) {
+export function makeTaskDetailsStyles(colors: ThemeColors, activeIconColor?: string | null) {
     const modal = makeModalBaseStyles(colors);
     const card = makeCardBaseStyles(colors);
+    const ic = activeIconColor ?? colors.accentBlue;
     return StyleSheet.create({
         overlay: { flex: 1, backgroundColor: 'transparent', justifyContent: 'center', alignItems: 'center' },
         blur: modal.blur,
@@ -21,12 +22,12 @@ export function makeTaskDetailsStyles(colors: ThemeColors) {
         detailRowGroup: { flexDirection: 'row', gap: 8 },
         flex: { flex: 1 },
         detailLabel: card.detailLabel,
-        detailValue: card.detailValue,
+        detailValue: { ...card.detailValue, color: ic },
         detailValueDue: { ...card.detailValue, color: colors.accentGold },
         descriptionBox: { ...card.detailBox, padding: 10, gap: 6 },
-        descriptionValue: { ...card.detailValue, minHeight: 50 },
+        descriptionValue: { ...card.detailValue, color: ic, minHeight: 50 },
         notesBox: { ...card.detailBox, padding: 10, gap: 6 },
-        notesValue: { ...card.detailValue, fontStyle: 'italic' },
+        notesValue: { ...card.detailValue, color: ic, fontStyle: 'italic' },
         detailValueEmpty: { ...card.detailValue, fontStyle: 'italic', color: colors.textDisabled },
         deletionValue: { ...card.detailValue, color: colors.accentRed },
         panelFooter: modal.panelFooter,
@@ -37,7 +38,7 @@ export function makeTaskDetailsStyles(colors: ThemeColors) {
             paddingVertical: 12,
             gap: 6
         },
-        closeButtonText: { fontSize: 16, color: colors.textMuted },
+        closeButtonText: { fontSize: 16, color: ic },
         trashButton: {
             flex: 1,
             flexDirection: 'row',

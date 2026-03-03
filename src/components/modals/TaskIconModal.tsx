@@ -45,7 +45,7 @@ export default function TaskIconModal({ isVisible, selectedIcon, priority, onSel
                                     style={[styles.cell, isSelected && { borderColor: border, backgroundColor: bg }]}
                                     onPress={() => { onSelect(item); onClose(); }}
                                 >
-                                    <Ionicons name={item as any} size={22} color={isSelected ? color : '#6D8196'} />
+                                    <Ionicons name={item as any} size={22} color={isSelected ? color : colors.textMuted} />
                                     <PlayerText style={[styles.cellLabel, isSelected && { color }]}>
                                         {formatIconName(item)}
                                     </PlayerText>

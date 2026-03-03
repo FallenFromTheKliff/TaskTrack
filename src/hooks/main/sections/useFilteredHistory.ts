@@ -39,8 +39,11 @@ export function useFilteredHistory({
     const { grouped, showGroups } = useMemo(() => {
         if (!withGroups) return { grouped: [] as [string, HistoryEvent[]][], showGroups: false };
         const grouped = sortGroupsDesc(groupByKey(filtered, e => e.updatedAt.slice(0, 10)));
-        return { grouped, showGroups: grouped.length > 1 };
-    }, [filtered, withGroups]);
+        const isRangeMode = !!(selectedDate && selectedEndDate);
+        const isAllDatesMode = !selectedDate;
+        const showGroups = (isAllDatesMode && grouped.length > 1) || isRangeMode;
+        return { grouped, showGroups };
+    }, [filtered, withGroups, selectedDate, selectedEndDate]);
 
     return { filtered, grouped, showGroups };
 }

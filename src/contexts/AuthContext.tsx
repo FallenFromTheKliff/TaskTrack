@@ -48,12 +48,18 @@ interface AuthContextType {
     logout: () => Promise<void>;
 }
 
+type AuthProviderProps = {
+    children: ReactNode;
+    onUserLoaded: (userId: string) => Promise<void>;
+    onUserCleared: () => void;
+};
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const TASKS_KEY = '@tasktrack_tasks';
 const HISTORY_KEY = '@tasktrack_history';
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children, onUserLoaded, onUserCleared }: AuthProviderProps) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const pendingUser = useRef<User | null>(null);
@@ -66,7 +72,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const loadStoredUser = async () => {
         try {
             const storedUser = await AsyncStorage.getItem('currentUser');
-            if (storedUser) setUser(JSON.parse(storedUser));
+            if (storedUser) {
+                const parsed: User = JSON.parse(storedUser);
+                await onUserLoaded(parsed.id);
+                setUser(parsed);
+            }
         } catch (error) {
             console.error('Failed to load stored user:', error);
         } finally {
@@ -82,6 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (!foundUser) return undefined;
         const { password: _, ...userWithoutPassword } = foundUser;
         await AsyncStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
+        await onUserLoaded(userWithoutPassword.id);
         pendingUser.current = userWithoutPassword;
         return userWithoutPassword;
     };
@@ -159,11 +170,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         await AsyncStorage.removeItem(`${TASKS_KEY}_${user.id}`);
         await AsyncStorage.removeItem(`${HISTORY_KEY}_${user.id}`);
         await AsyncStorage.removeItem('currentUser');
+        onUserCleared();
         setUser(null);
     };
 
     const logout = async () => {
         await AsyncStorage.removeItem('currentUser');
+        onUserCleared();
         setUser(null);
     };
 

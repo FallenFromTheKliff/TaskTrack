@@ -23,9 +23,9 @@ type LoginFormProps = { navigation: NativeStackNavigationProp<any>; };
 
 export default function LoginScreen({ navigation }: LoginFormProps) {
     const { login, commitLogin } = useAuth();
-    const [isLoading, setIsLoading]             = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-    const [showLoader, setShowLoader]           = useState(false);
+    const [showLoader, setShowLoader] = useState(false);
 
     const { fadeIn, takeFlight } = useAuthEntrance();
     const loadingText = useLoadingText('SIGNING IN', isLoading);
@@ -36,7 +36,8 @@ export default function LoginScreen({ navigation }: LoginFormProps) {
 
     const { control, handleSubmit, formState: { errors }, reset, watch } = useForm<LoginFormData>({
         defaultValues: { email: '', password: '' },
-        mode: 'onChange',
+        mode: 'onSubmit',
+        reValidateMode: 'onChange',
     });
     const emailValue = watch('email');
 
@@ -51,9 +52,6 @@ export default function LoginScreen({ navigation }: LoginFormProps) {
                 reset();
                 setIsLoading(false);
                 setShowLoader(true);
-            } else {
-                setIsLoading(false);
-                showError('INVALID CREDENTIALS!');
             }
         } catch {
             setIsLoading(false);
@@ -96,6 +94,8 @@ export default function LoginScreen({ navigation }: LoginFormProps) {
                         errors={errors}
                         keyboardType="email-address"
                         editable={!navDisabled}
+                        colorsOverride={NAVY}
+                        iconColorOverride={NAVY.accentBlue}
                     />
                     <InputField
                         control={control}
@@ -107,6 +107,8 @@ export default function LoginScreen({ navigation }: LoginFormProps) {
                         errors={errors}
                         editable={!navDisabled}
                         toggleVisibility={{ isVisible: isPasswordVisible, setIsVisible: setIsPasswordVisible }}
+                        colorsOverride={NAVY}
+                        iconColorOverride={NAVY.accentBlue}
                     />
                     <Pressable
                         style={[styles.button, isLoading && { backgroundColor: NAVY.textMuted }]}

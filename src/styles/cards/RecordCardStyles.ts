@@ -6,6 +6,7 @@ import { R } from '@/styles/shared/tokens';
 
 export function makeRecordCardStyles(colors: ThemeColors, activeIconColor?: string | null) {
     const base = makeCardBaseStyles(colors);
+    const ic = activeIconColor ?? colors.accentBlue;
     return StyleSheet.create({
         card: { ...base.card, marginBottom: 12 },
         cardHeader: base.cardHeader,
@@ -20,13 +21,13 @@ export function makeRecordCardStyles(colors: ThemeColors, activeIconColor?: stri
         descriptionBlock: { gap: 4 },
         descriptionLabel: base.detailLabel,
         descriptionBox: { ...base.detailBox, padding: 10 },
-        descriptionText: base.detailValue,
+        descriptionText: { ...base.detailValue, color: ic },
         detailBox: base.detailBox,
         detailRow: { flexDirection: 'row', gap: 8 },
         detailRowGroup: { flexDirection: 'row', gap: 8 },
         flex: { flex: 1 },
         detailLabel: base.detailLabel,
-        detailValue: base.detailValue,
+        detailValue: { ...base.detailValue, color: ic },
         cardActions: { flexDirection: 'row', gap: 8 },
         trashActions: { flexDirection: 'row', gap: 8 },
         detailsButton: {

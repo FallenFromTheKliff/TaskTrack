@@ -56,7 +56,9 @@ export function makeProfileSectionStyles(colors: ThemeColors, activeIconColor?: 
             paddingVertical: 12,
             gap: 8
         },
+        editButtonSaved: { borderColor: colors.accentGreen },
         editButtonText: { fontSize: 18, color: colors.accentGreen },
+        editButtonErrorText: { fontSize: 18, color: colors.accentRed },
         terminateButton: {
             flexDirection: 'row',
             alignItems: 'center',
@@ -91,7 +93,7 @@ export function makeProfileSectionStyles(colors: ThemeColors, activeIconColor?: 
         },
         saveButtonLoading: { backgroundColor: colors.bgDivider, borderColor: colors.borderSub },
         saveButtonText: { fontSize: 18, color: colors.accentGreen },
-        successText: { fontSize: 14, color: colors.accentGreen, textAlign: 'center' },
+        saveButtonErrorText: { fontSize: 18, color: colors.accentRed },
         errorText: { fontSize: 14, color: colors.errorRed, textAlign: 'center' }
     });
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Modal, Pressable, ScrollView } from 'react-native';
+import { View, Modal, Pressable, ScrollView, Animated } from 'react-native';
 import { useForm } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -8,6 +8,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { validatePasswordWithEmail, validateNewPassword, validatePasswordConfirmation } from '@/utils/auth/validationUtils';
 import { useTimedMessage } from '@/hooks/auth/useTimedMessage';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
+import { usePanelAnim } from '@/hooks/animations/usePanelAnim';
 import { makeChangePasswordStyles } from '@/styles/modals/ChangePasswordStyles';
 
 import InputField from '@/components/fields/InputField';
@@ -18,7 +19,6 @@ type FormData = {
     newPassword: string;
     confirmPassword: string;
 };
-
 type ChangePasswordModalProps = {
     isVisible: boolean;
     onCancel: () => void;
@@ -33,6 +33,7 @@ export default function ChangePasswordModal({ isVisible, onCancel, onConfirm }: 
     const [isConfirmVisible, setIsConfirmVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isPasswordValid, setIsPasswordValid] = useState(false);
+    const [isNewPasswordFocused, setIsNewPasswordFocused] = useState(false);
 
     const { message: errorText, showMessage: showError } = useTimedMessage();
     const loadingText = useLoadingText('SAVING', isLoading);
@@ -43,6 +44,11 @@ export default function ChangePasswordModal({ isVisible, onCancel, onConfirm }: 
     });
     const newPasswordValue = watch('newPassword');
     const canSubmit = isValid && isPasswordValid && !isLoading;
+
+    const { height: reqHeight, opacity: reqOpacity } = usePanelAnim({
+        targetHeight: 210,
+        visible: newPasswordValue.length > 0 && isNewPasswordFocused,
+    });
 
     const s = makeChangePasswordStyles(colors);
 
@@ -92,8 +98,11 @@ export default function ChangePasswordModal({ isVisible, onCancel, onConfirm }: 
                             errors={errors}
                             editable={!isLoading}
                             toggleVisibility={{ isVisible: isNewVisible, setIsVisible: setIsNewVisible }}
+                            onFocusChange={setIsNewPasswordFocused}
                         />
-                        <PasswordRequirements password={newPasswordValue} onValidationChange={setIsPasswordValid} />
+                        <Animated.View style={{ overflow: 'hidden', height: reqHeight, opacity: reqOpacity, marginBottom: 8 }}>
+                            <PasswordRequirements password={newPasswordValue} onValidationChange={setIsPasswordValid} />
+                        </Animated.View>
                         <InputField
                             control={control}
                             name="confirmPassword"

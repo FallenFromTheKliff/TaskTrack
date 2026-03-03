@@ -30,7 +30,7 @@ const NAV_ITEMS: { key: ScreenKey; label: string; icon: string }[] = [
 export default function Sidebar({ isVisible, user, onClose, onLogoutPress }: SidebarProps) {
     const { activeScreen, setActiveScreen } = useScreen();
     const { colors, settings, activeIconColor, activeFont } = useTheme();
-    const s = makeSidebarStyles(colors);
+    const s = makeSidebarStyles(colors, activeIconColor);
 
     const backdropAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(-SIDEBAR_WIDTH)).current;
@@ -55,6 +55,7 @@ export default function Sidebar({ isVisible, user, onClose, onLogoutPress }: Sid
     const handleProfilePress = () => { setActiveScreen('profile'); onClose(); };
     const isProfileActive = activeScreen === 'profile';
     const activeColor = activeIconColor ?? colors.accentBlue;
+    const ic = activeIconColor ?? colors.accentBlue;
 
     return (
         <Modal visible={isVisible} transparent animationType="none" statusBarTranslucent onRequestClose={onClose}>
@@ -85,7 +86,7 @@ export default function Sidebar({ isVisible, user, onClose, onLogoutPress }: Sid
                                 </Text>
                                 <PlayerText style={s.profileEmail} numberOfLines={1}>{user.email}</PlayerText>
                                 <View style={s.profileEditHint}>
-                                    <Ionicons name="pencil-outline" size={11} color={colors.accentBlue} />
+                                    <Ionicons name="pencil-outline" size={11} color={ic} />
                                     <PlayerText style={s.profileEditHintText}>Change Profile Details</PlayerText>
                                 </View>
                             </View>

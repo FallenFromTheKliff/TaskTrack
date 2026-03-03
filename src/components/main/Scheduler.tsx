@@ -196,6 +196,20 @@ const Scheduler = forwardRef<SchedulerHandle, SchedulerProps>(function Scheduler
                     <PlayerText style={s.dateButtonText}>{formatDateDisplay(date)}</PlayerText>
                 </Pressable>
             </View>
+            {durationType === 'timed' && (
+                <View style={s.fieldBlock}>
+                    <PlayerText style={s.fieldLabel}>End Date</PlayerText>
+                    <Pressable
+                        style={[s.dateButton, !endDate && s.dateButtonEmpty]}
+                        onPress={() => setIsEndDatePickerOpen(true)}
+                    >
+                        <Ionicons name="flag-outline" size={18} color={endDate ? colors.textSecondary : colors.textMuted} />
+                        <PlayerText style={[s.dateButtonText, !endDate && s.dateButtonPlaceholder]}>
+                            {endDate ? formatDateDisplay(endDate) : 'Select an end date'}
+                        </PlayerText>
+                    </Pressable>
+                </View>
+            )}
             <View style={s.fieldBlock}>
                 <PlayerText style={s.fieldLabel}>Duration</PlayerText>
                 <View style={s.durationRow}>
@@ -220,25 +234,12 @@ const Scheduler = forwardRef<SchedulerHandle, SchedulerProps>(function Scheduler
                     })}
                 </View>
             </View>
-            {durationType === 'timed' && (
-                <View style={s.fieldBlock}>
-                    <PlayerText style={s.fieldLabel}>End Date</PlayerText>
-                    <Pressable
-                        style={[s.dateButton, !endDate && s.dateButtonEmpty]}
-                        onPress={() => setIsEndDatePickerOpen(true)}
-                    >
-                        <Ionicons name="flag-outline" size={18} color={endDate ? colors.textSecondary : colors.textMuted} />
-                        <PlayerText style={[s.dateButtonText, !endDate && s.dateButtonPlaceholder]}>
-                            {endDate ? formatDateDisplay(endDate) : 'Select an end date'}
-                        </PlayerText>
-                    </Pressable>
-                </View>
-            )}
             <CalendarModal
                 isVisible={isDatePickerOpen}
                 selectedDate={dateTouched ? date : ''}
                 onSelect={d => { handleStartDateChange(d); setIsDatePickerOpen(false); }}
                 onClose={() => setIsDatePickerOpen(false)}
+                blockPast
             />
             <CalendarModal
                 isVisible={isEndDatePickerOpen}

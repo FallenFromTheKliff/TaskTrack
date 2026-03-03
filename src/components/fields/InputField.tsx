@@ -3,7 +3,7 @@ import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
 
 import { PlayerText, PlayerTextInput } from '@/components/fields/PlayerText';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useTheme, ThemeColors } from '@/contexts/ThemeContext';
 import { makeInputFieldStyles } from '@/styles/components/fields/InputFieldStyles';
 
 type InputFieldProps = {
@@ -29,6 +29,8 @@ type InputFieldProps = {
         isVisible: boolean;
         setIsVisible: (value: boolean) => void;
     };
+    colorsOverride?: ThemeColors;
+    iconColorOverride?: string | null;
 };
 
 const filterForKeyboard = (text: string, keyboardType: string) =>
@@ -38,9 +40,12 @@ export default function InputField({
     control, name, label, placeholder, icon, iconSize = 20, validation, errors,
     secureTextEntry = false, keyboardType = 'default', onChangeValue, onFocusChange,
     showRedBorder = false, editable = true, optional = false, multiline = false,
-    maxLength, schedulerStyle = false, toggleVisibility
+    maxLength, schedulerStyle = false, toggleVisibility,
+    colorsOverride, iconColorOverride
 }: InputFieldProps) {
-    const { colors, activeIconColor } = useTheme();
+    const theme = useTheme();
+    const colors = colorsOverride ?? theme.colors;
+    const activeIconColor = iconColorOverride !== undefined ? iconColorOverride : theme.activeIconColor;
     const s = makeInputFieldStyles(colors, activeIconColor);
     const error = errors[name];
     const shouldShowRedBorder = editable && (!!error || showRedBorder);
@@ -134,7 +139,7 @@ export default function InputField({
                             editable={editable}
                             maxLength={maxLength}
                             multiline={multiline}
-                            style={!editable ? { color: colors.textDisabled } : undefined}
+                            style={{ color: editable ? colors.textPrimary : colors.textDisabled }}
                         />
                         {toggleVisibility && editable && (
                             <View onStartShouldSetResponder={() => true}>

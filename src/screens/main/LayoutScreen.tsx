@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import { Animated, View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { PlayerText } from '@/components/fields/PlayerText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useScreen } from '@/contexts/ScreenContext';
+import { AnimatedPlayerText } from '@/components/fields/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useThemeTransitionAnim } from '@/hooks/animations/useThemeTransitionAnim';
 import { getTodayString } from '@/utils/shared/dateUtils';
 import { makeLayoutStyles } from '@/styles/components/main/LayoutStyles';
 
@@ -23,11 +24,7 @@ type LayoutScreenProps = {
 };
 
 const SCREEN_TITLES: Record<string, string> = {
-    profile: 'Profile',
-    tasks: 'Tasks',
-    history: 'History',
-    trash: 'Trash',
-    settings: 'Settings',
+    profile: 'Profile', tasks: 'Tasks', history: 'History', trash: 'Trash', settings: 'Settings',
 };
 const SECTION_NOTES: Record<string, string> = {
     profile: 'Note: Some changes may take a while to update after consecutive edits.',
@@ -40,7 +37,8 @@ const SECTION_NOTES: Record<string, string> = {
 export default function LayoutScreen({ navigation }: LayoutScreenProps) {
     const { user, logout } = useAuth();
     const { activeScreen, setActiveScreen } = useScreen();
-    const { colors, resetAppearance } = useTheme();
+    const { colors } = useTheme();
+    const { ic } = useThemeTransitionAnim();
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isLogoutVisible, setIsLogoutVisible] = useState(false);
@@ -54,7 +52,6 @@ export default function LayoutScreen({ navigation }: LayoutScreenProps) {
     const handleLogoutConfirm = async () => {
         setIsLogoutVisible(false);
         setActiveScreen('tasks');
-        resetAppearance();
         await logout();
     };
 
@@ -62,7 +59,7 @@ export default function LayoutScreen({ navigation }: LayoutScreenProps) {
     if (!user) return null;
 
     return (
-        <View style={s.container}>
+        <Animated.View style={[s.container, { backgroundColor: ic.bgDeep }]}>
             <Header
                 onMenuPress={() => setIsSidebarOpen(true)}
                 activeScreen={activeScreen}
@@ -72,10 +69,7 @@ export default function LayoutScreen({ navigation }: LayoutScreenProps) {
                 isVisible={isSidebarOpen}
                 user={user}
                 onClose={() => setIsSidebarOpen(false)}
-                onLogoutPress={() => {
-                    setIsSidebarOpen(false);
-                    setIsLogoutVisible(true);
-                }}
+                onLogoutPress={() => { setIsSidebarOpen(false); setIsLogoutVisible(true); }}
             />
             <ConfirmModal
                 isVisible={isLogoutVisible}
@@ -96,10 +90,10 @@ export default function LayoutScreen({ navigation }: LayoutScreenProps) {
                 {activeScreen === 'tasks' && <TaskSection navigation={navigation} />}
             </View>
             {noteText && (
-                <View style={s.noteBar}>
-                    <PlayerText style={s.noteText}>{noteText}</PlayerText>
-                </View>
+                <Animated.View style={[s.noteBar, { backgroundColor: ic.bgPanel, borderTopColor: ic.borderSub }]}>
+                    <AnimatedPlayerText style={[s.noteText, { color: ic.textDisabled }]}>{noteText}</AnimatedPlayerText>
+                </Animated.View>
             )}
-        </View>
+        </Animated.View>
     );
 }

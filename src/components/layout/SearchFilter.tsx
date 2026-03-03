@@ -68,7 +68,7 @@ export default function SearchFilter({
     const allowPastDates = variant !== 'tasks';
     const startLabel = selectedDate ? formatDateShort(selectedDate) : 'All Dates';
     const endLabel = selectedEndDate ? formatDateShort(selectedEndDate) : 'Due Date';
-    const endDateMinDate = variant === 'tasks' ? selectedDate : (selectedDate || getTodayString());
+    const endDateMinDate = selectedDate || getTodayString();
     const ic = activeIconColor ?? colors.accentBlue;
 
     const DateRangePickers = () => (
@@ -214,7 +214,7 @@ export default function SearchFilter({
                 selectedDate={selectedDate || ''}
                 onSelect={handleStartDateSelect}
                 onClose={() => setIsStartCalOpen(false)}
-                onReset={selectedDate ? handleResetStartDate : undefined}
+                onReset={handleResetStartDate}
                 allowPastDates={allowPastDates}
             />
             <CalendarModal
@@ -225,7 +225,7 @@ export default function SearchFilter({
                 onReset={selectedEndDate ? handleResetEndDate : undefined}
                 allowPastDates={allowPastDates}
                 minDate={endDateMinDate}
-                blockToday={variant === 'tasks'}
+                blockToday={!selectedDate}
             />
         </View>
     );

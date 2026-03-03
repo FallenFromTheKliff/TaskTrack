@@ -6,6 +6,7 @@ import { R } from '@/styles/shared/tokens';
 
 export function makeTaskCardStyles(colors: ThemeColors, activeIconColor?: string | null) {
     const base = makeCardBaseStyles(colors);
+    const ic = activeIconColor ?? colors.accentBlue;
     return StyleSheet.create({
         cardRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10, width: '100%' },
         checkboxArea: { width: 36, alignItems: 'center', justifyContent: 'center' },
@@ -36,7 +37,7 @@ export function makeTaskCardStyles(colors: ThemeColors, activeIconColor?: string
         cardBody: { ...base.cardBody, gap: 14 },
         descriptionContainer: { ...base.detailBox, padding: 12, gap: 6 },
         descriptionLabel: base.detailLabel,
-        descriptionText: base.detailValue,
+        descriptionText: { ...base.detailValue, color: ic },
         notesContainer: { ...base.detailBox, padding: 12, gap: 6 },
         notesLabel: base.detailLabel,
         notesText: { fontSize: 14, color: colors.textMuted, fontStyle: 'italic', lineHeight: 20 },

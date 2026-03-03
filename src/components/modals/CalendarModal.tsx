@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Modal, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -12,6 +12,7 @@ type CalendarModalProps = {
     selectedDate: string;
     minDate?: string;
     blockToday?: boolean;
+    blockPast?: boolean;
     onSelect: (date: string) => void;
     onClose: () => void;
     onReset?: () => void;
@@ -32,14 +33,24 @@ function getFirstDayOfWeek(year: number, month: number): number {
     return new Date(year, month - 1, 1).getDay();
 }
 
-export default function CalendarModal({ isVisible, selectedDate, minDate, blockToday = false, onSelect, onClose, onReset, allowPastDates }: CalendarModalProps) {
+export default function CalendarModal({ isVisible, selectedDate, minDate, blockToday = false, blockPast = false, onSelect, onClose, onReset, allowPastDates }: CalendarModalProps) {
     const { colors, activeIconColor } = useTheme();
-    const s = makeCalendarStyles(colors);
+    const s = makeCalendarStyles(colors, activeIconColor);
 
-    const today = selectedDate || new Date().toISOString().split('T')[0];
-    const { year: initYear, month: initMonth } = parseYMD(today);
+    const todayString = getTodayString();
+    const baseDate = selectedDate || todayString;
+    const { year: initYear, month: initMonth } = parseYMD(baseDate);
     const [viewYear, setViewYear] = useState(initYear);
     const [viewMonth, setViewMonth] = useState(initMonth);
+
+    useEffect(() => {
+        if (isVisible) {
+            const base = selectedDate || todayString;
+            const { year, month } = parseYMD(base);
+            setViewYear(year);
+            setViewMonth(month);
+        }
+    }, [isVisible]);
 
     const daysInMonth = getDaysInMonth(viewYear, viewMonth);
     const firstDow = getFirstDayOfWeek(viewYear, viewMonth);
@@ -55,9 +66,9 @@ export default function CalendarModal({ isVisible, selectedDate, minDate, blockT
 
     const isDisabled = (day: number) => {
         const dateStr = formatYMD(viewYear, viewMonth, day);
-        if (blockToday && dateStr === getTodayString()) return true;
-        return !!(!allowPastDates && minDate && dateStr < minDate);
-
+        if (blockToday && dateStr === todayString) return true;
+        if (blockPast && dateStr < todayString) return true;
+        return !!(!allowPastDates && minDate && dateStr <= minDate);
     };
 
     const isSelected = (day: number) => selectedDate === formatYMD(viewYear, viewMonth, day);

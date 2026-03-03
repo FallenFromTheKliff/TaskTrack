@@ -81,6 +81,6 @@ export const SEARCH_PLACEHOLDERS: Record<string, string> = {
 };
 export const FILTER_PANEL_HEIGHTS: Record<string, number> = {
     tasks: 240,
-    history: 170,
-    trash: 155
+    history: 165,
+    trash: 165
 };

@@ -3,7 +3,8 @@ import { StyleSheet } from 'react-native';
 import { ThemeColors } from '@/contexts/ThemeContext';
 import { R } from '@/styles/shared/tokens';
 
-export function makeCalendarStyles(colors: ThemeColors) {
+export function makeCalendarStyles(colors: ThemeColors, activeIconColor?: string | null) {
+    const ic = activeIconColor ?? colors.accentBlue;
     return StyleSheet.create({
         modalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent' },
         modalBlur: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.overlay88 },
@@ -43,8 +44,8 @@ export function makeCalendarStyles(colors: ThemeColors) {
         },
         calendarDayEmpty: { width: '13.28%', aspectRatio: 1 },
         calendarDayDisabled: { backgroundColor: colors.bgPanel, opacity: 0.5 },
-        calendarDaySelected: { backgroundColor: colors.borderMid, borderColor: colors.accentBlue, borderWidth: 2 },
-        calendarDayText: { fontSize: 20, color: colors.accentBlue },
+        calendarDaySelected: { backgroundColor: colors.borderMid, borderColor: ic, borderWidth: 2 },
+        calendarDayText: { fontSize: 20, color: ic },
         calendarDayTextDisabled: { color: colors.textDisabled },
         calendarDayTextSelected: { color: colors.textPrimary, fontWeight: 'bold' },
         calendarFooter: {
@@ -58,21 +59,21 @@ export function makeCalendarStyles(colors: ThemeColors) {
         calendarCloseButton: {
             flex: 1,
             flexDirection: 'row',
-            backgroundColor: '#1E2530',
+            backgroundColor: colors.bgInputDark,
             paddingVertical: 8,
             borderRadius: R.md,
             alignItems: 'center',
             justifyContent: 'center',
             borderWidth: 2,
-            borderColor: '#38485A'
+            borderColor: colors.borderMid
         },
-        calendarCloseText: { fontSize: 24, color: '#8BAAC8' },
+        calendarCloseText: { fontSize: 24, color: ic },
         calendarResetButton: {
             flex: 1,
             paddingHorizontal: 4,
-            backgroundColor: '#2A1A1A',
-            borderColor: '#5A2E2E'
+            backgroundColor: colors.accentRedLight,
+            borderColor: colors.accentRedLightBorder
         },
-        calendarResetText: { fontSize: 20, color: '#D08888' }
+        calendarResetText: { fontSize: 20, color: colors.accentRed }
     });
 }

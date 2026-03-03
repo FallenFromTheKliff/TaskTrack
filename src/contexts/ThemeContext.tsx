@@ -1,9 +1,10 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
+import { Animated } from 'react-native';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type ThemeKey = 'navy' | 'citrus' | 'light' | 'dark';
-export type FontKey = 'blrrpix' | 'caveatbrush' | 'geo' | 'macondo' | 'notoserif';
-export type FontColorKey = 'default' | 'white' | 'mint' | 'neon' | 'lavender' | 'lightOrange' | 'black' | 'navyBlue' | 'brown' | 'darkGreen' | 'purple';
+export type FontKey = 'blrrpix' | 'caveatbrush' | 'geo' | 'macondo';
 export type ThemeColors = {
     bgDeep: string; bgPanel: string; bgInput: string; bgInputDark: string;
     bgDivider: string; cardBg: string; cardBorder: string; cardHeaderBg: string;
@@ -15,7 +16,7 @@ export type ThemeColors = {
     errorRed: string; greenBg: string; greenBorder: string; overlay88: string; overlay92: string;
 };
 export type ThemeSettings = {
-    themeKey: ThemeKey; fontKey: FontKey; fontColorKey: FontColorKey; useAnimations: boolean;
+    themeKey: ThemeKey; fontKey: FontKey; useAnimations: boolean;
 };
 
 export const THEMES: Record<ThemeKey, ThemeColors> = {
@@ -69,100 +70,114 @@ export const THEME_LABELS: Record<ThemeKey, string> = {
     navy: 'Navy Blue', citrus: 'Citrus', light: 'Light Mode', dark: 'Dark Mode'
 };
 export const FONT_FAMILIES: Record<FontKey, string> = {
-    blrrpix: 'Blrrpix', caveatbrush: 'CaveatBrush', geo: 'Geo', macondo: 'Macondo', notoserif: 'NotoSerif'
+    blrrpix: 'Blrrpix', caveatbrush: 'CaveatBrush', geo: 'Geo', macondo: 'Macondo'
 };
 export const FONT_LABELS: Record<FontKey, string> = {
-    blrrpix: 'Blrrpix (Default)', caveatbrush: 'Caveat Brush', geo: 'Geo',
-    macondo: 'Macondo', notoserif: 'Noto Serif'
-};
-export const FONT_COLORS: Record<FontColorKey, string> = {
-    default: '',
-    white: '#F0F0F0', mint: '#78C8A8', neon: '#00BFFF',
-    lavender: '#B898D8', lightOrange: '#F4A460',
-    black: '#0A0A0A', navyBlue: '#1E3A5F', brown: '#6B3A2A',
-    darkGreen: '#1A4A2A', purple: '#5B2D8E'
-};
-export const FONT_COLOR_LABELS: Record<FontColorKey, string> = {
-    default: 'Default',
-    white: 'White', mint: 'Mint', neon: 'Deep Sky Blue',
-    lavender: 'Lavender', lightOrange: 'Light Orange',
-    black: 'Black', navyBlue: 'Navy Blue', brown: 'Brown',
-    darkGreen: 'Dark Green', purple: 'Purple'
-};
-
-export const DARK_THEME_FONT_COLOR_KEYS: FontColorKey[] = ['default', 'white', 'mint', 'neon', 'lavender', 'lightOrange'];
-export const LIGHT_THEME_FONT_COLOR_KEYS: FontColorKey[] = ['default', 'black', 'navyBlue', 'brown', 'darkGreen', 'purple'];
-
-export const FONT_COLOR_KEYS_BY_THEME: Record<ThemeKey, FontColorKey[]> = {
-    navy: DARK_THEME_FONT_COLOR_KEYS, dark: DARK_THEME_FONT_COLOR_KEYS,
-    light: LIGHT_THEME_FONT_COLOR_KEYS, citrus: LIGHT_THEME_FONT_COLOR_KEYS
+    blrrpix: 'Blrrpix (Default)', caveatbrush: 'Caveat Brush', geo: 'Geo', macondo: 'Macondo'
 };
 export const DEFAULT_FONT_COLOR_BY_THEME: Record<ThemeKey, string> = {
-    dark: '#F0F0F0', navy: '#8EA7C1', light: '#0A0A0A', citrus: '#6B3A2A'
+    navy: '#8EA7C1', dark: '#F0F0F0', light: '#1E3A5F', citrus: '#6B3A2A'
 };
 
 type ThemeContextType = {
     colors: ThemeColors; activeFont: FontKey; activeFontColor: string | null;
     activeIconColor: string | null; settings: ThemeSettings;
+    themeTransitionAnim: Animated.Value;
+    prevThemeKey: ThemeKey;
+    loadUserSettings: (userId: string) => Promise<void>;
+    clearUserSettings: () => void;
     setTheme: (key: ThemeKey) => void; setFont: (key: FontKey) => void;
-    setAppearance: (themeKey: ThemeKey, fontKey: FontKey, fontColorKey: FontColorKey) => void;
+    setAppearance: (themeKey: ThemeKey, fontKey: FontKey) => void;
     resetAppearance: () => void;
     setUseAnimations: (val: boolean) => void;
     previewTheme: (key: ThemeKey | null) => void; previewFont: (key: FontKey | null) => void;
-    previewFontColor: (key: FontColorKey | null) => void;
 };
 
-const THEME_STORAGE_KEY = '@tasktrack_theme';
-const DEFAULT_SETTINGS: ThemeSettings = {themeKey: 'navy', fontKey: 'blrrpix', fontColorKey: 'default', useAnimations: true};
+const USER_STORAGE_KEY = (userId: string) => `@tasktrack_theme_${userId}`;
+const DEFAULT_SETTINGS: ThemeSettings = { themeKey: 'navy', fontKey: 'blrrpix', useAnimations: true };
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     const [settings, setSettings] = useState<ThemeSettings>(DEFAULT_SETTINGS);
     const [previewThemeKey, setPreviewThemeKey] = useState<ThemeKey | null>(null);
     const [previewFontKey, setPreviewFontKey] = useState<FontKey | null>(null);
-    const [previewFontColorKey, setPreviewFontColorKey] = useState<FontColorKey | null>(null);
 
-    useEffect(() => { loadSettings(); }, []);
+    const currentUserId = useRef<string | null>(null);
+    const themeTransitionAnim = useRef(new Animated.Value(1)).current;
+    const isFirstMount = useRef(true);
+    const prevThemeKeyRef = useRef<ThemeKey>(DEFAULT_SETTINGS.themeKey);
+    const animIdleRef = useRef(true);
 
-    const loadSettings = async () => {
+    const activeThemeKey = previewThemeKey ?? settings.themeKey;
+    const activeFont = previewFontKey ?? settings.fontKey;
+    const activeFontColor = DEFAULT_FONT_COLOR_BY_THEME[activeThemeKey];
+    const activeIconColor = activeFontColor;
+
+    useEffect(() => {
+        if (isFirstMount.current) { isFirstMount.current = false; return; }
+        animIdleRef.current = false;
+        if (!settings.useAnimations) {
+            themeTransitionAnim.setValue(1);
+            animIdleRef.current = true;
+            return;
+        }
+        themeTransitionAnim.setValue(0.4);
+        Animated.timing(themeTransitionAnim, { toValue: 1, duration: 300, useNativeDriver: false })
+            .start(() => { animIdleRef.current = true; });
+    }, [activeThemeKey]);
+
+    const prevThemeKey = prevThemeKeyRef.current;
+    if (animIdleRef.current && prevThemeKeyRef.current !== activeThemeKey) {
+        prevThemeKeyRef.current = activeThemeKey;
+    }
+
+    const loadUserSettings = async (userId: string) => {
+        currentUserId.current = userId;
         try {
-            const stored = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+            const stored = await AsyncStorage.getItem(USER_STORAGE_KEY(userId));
             if (stored) setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(stored) });
-        } catch {}
+            else setSettings(DEFAULT_SETTINGS);
+        } catch { setSettings(DEFAULT_SETTINGS); }
+    };
+
+    const clearUserSettings = () => {
+        currentUserId.current = null;
+        setSettings(DEFAULT_SETTINGS);
+        setPreviewThemeKey(null);
+        setPreviewFontKey(null);
     };
 
     const saveSettings = async (updated: ThemeSettings) => {
         setSettings(updated);
-        try { await AsyncStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(updated)); } catch {}
+        if (!currentUserId.current) return;
+        try { await AsyncStorage.setItem(USER_STORAGE_KEY(currentUserId.current), JSON.stringify(updated)); } catch {}
     };
 
     const setTheme = (key: ThemeKey) => saveSettings({ ...settings, themeKey: key });
-    const setFont  = (key: FontKey)  => saveSettings({ ...settings, fontKey: key });
-    const setAppearance = (themeKey: ThemeKey, fontKey: FontKey, fontColorKey: FontColorKey) =>
-        saveSettings({ ...settings, themeKey, fontKey, fontColorKey });
+    const setFont = (key: FontKey) => saveSettings({ ...settings, fontKey: key });
+    const setAppearance = (themeKey: ThemeKey, fontKey: FontKey) =>
+        saveSettings({ ...settings, themeKey, fontKey });
     const resetAppearance = () => {
         saveSettings(DEFAULT_SETTINGS);
         setPreviewThemeKey(null);
         setPreviewFontKey(null);
-        setPreviewFontColorKey(null);
     };
     const setUseAnimations = (val: boolean) => saveSettings({ ...settings, useAnimations: val });
 
-    const previewTheme = (key: ThemeKey | null) => setPreviewThemeKey(key);
+    const previewTheme = (key: ThemeKey | null) => {
+        prevThemeKeyRef.current = activeThemeKey;
+        animIdleRef.current = false;
+        setPreviewThemeKey(key);
+    };
     const previewFont = (key: FontKey | null) => setPreviewFontKey(key);
-    const previewFontColor = (key: FontColorKey | null) => setPreviewFontColorKey(key);
-
-    const activeThemeKey = previewThemeKey ?? settings.themeKey;
-    const activeFont = previewFontKey  ?? settings.fontKey;
-    const activeFontColorKey = previewFontColorKey ?? settings.fontColorKey;
-    const activeFontColor = activeFontColorKey === 'default' ? DEFAULT_FONT_COLOR_BY_THEME[activeThemeKey] : FONT_COLORS[activeFontColorKey];
-    const activeIconColor = activeFontColor || null;
 
     return (
         <ThemeContext.Provider value={{
             colors: THEMES[activeThemeKey], activeFont, activeFontColor, activeIconColor,
-            settings, setTheme, setFont, setAppearance, resetAppearance, setUseAnimations,
-            previewTheme, previewFont, previewFontColor,
+            settings, themeTransitionAnim, prevThemeKey,
+            loadUserSettings, clearUserSettings,
+            setTheme, setFont, setAppearance, resetAppearance, setUseAnimations,
+            previewTheme, previewFont
         }}>
             {children}
         </ThemeContext.Provider>

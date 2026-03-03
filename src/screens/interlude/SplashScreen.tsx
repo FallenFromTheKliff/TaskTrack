@@ -2,8 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { View, StyleSheet, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { AuthText } from '@/components/fields/PlayerText';
-import { useTheme, THEMES } from '@/contexts/ThemeContext';
+import { useTheme, THEMES, FONT_FAMILIES } from '@/contexts/ThemeContext';
 
 const NAVY = THEMES.navy;
 const styles = StyleSheet.create({
@@ -18,12 +17,15 @@ type SplashScreenProps = {
 };
 
 export default function SplashScreen({ isAuthenticated }: SplashScreenProps) {
-    const { colors, activeIconColor } = useTheme();
-    const bgColor   = isAuthenticated ? colors.bgDeep   : NAVY.bgDeep;
+    const { colors, activeIconColor, activeFont, activeFontColor } = useTheme();
+
+    const bgColor = isAuthenticated ? colors.bgDeep   : NAVY.bgDeep;
     const iconColor = isAuthenticated ? (activeIconColor ?? colors.accentBlue) : NAVY.accentBlue;
+    const fontFamily = isAuthenticated ? FONT_FAMILIES[activeFont] : FONT_FAMILIES.blrrpix;
+    const textColor = isAuthenticated ? (activeFontColor ?? colors.textPrimary) : NAVY.textPrimary;
 
     const scaleAnim = useRef(new Animated.Value(0.6)).current;
-    const fadeAnim  = useRef(new Animated.Value(1)).current;
+    const fadeAnim = useRef(new Animated.Value(1)).current;
 
     const [displayedTitle, setDisplayedTitle] = useState('');
     const projectTitle = "TaskTrack";
@@ -50,7 +52,9 @@ export default function SplashScreen({ isAuthenticated }: SplashScreenProps) {
             <View style={[styles.inner, { backgroundColor: bgColor }]}>
                 <Animated.View style={[styles.splash, { transform: [{ scale: scaleAnim }], opacity: fadeAnim }]}>
                     <Ionicons name="folder-open-sharp" size={56} color={iconColor} />
-                    <AuthText style={styles.title}>{displayedTitle}</AuthText>
+                    <Animated.Text style={[styles.title, { fontFamily, color: textColor }]}>
+                        {displayedTitle}
+                    </Animated.Text>
                 </Animated.View>
             </View>
         </View>

@@ -19,15 +19,17 @@ type DetailsModalProps = {
 };
 
 export default function TaskDetailsModal({ isVisible, event, statusOverride, onClose, onMoveToTrash }: DetailsModalProps) {
-    const { colors } = useTheme();
+    const { colors, activeIconColor } = useTheme();
     const { opacity, scale } = useOverlayAnim(isVisible, 'scale');
-    const styles = makeTaskDetailsStyles(colors);
+    const styles = makeTaskDetailsStyles(colors, activeIconColor);
+    const ic = activeIconColor ?? colors.accentBlue;
 
     const statusColor = STATUS_COLORS[event.status];
     const statusIcon = STATUS_ICONS[event.status];
     const statusLabel = statusOverride ?? capitalize(event.status);
 
     const deletionDate = event.status === 'deleted' ? formatTimestamp(event.updatedAt) : null;
+
     return (
         <Modal visible={isVisible} transparent animationType="none">
             <Animated.View style={[styles.overlay, { opacity }]}>
@@ -60,7 +62,7 @@ export default function TaskDetailsModal({ isVisible, event, statusOverride, onC
                             {event.priority && (
                                 <View style={[styles.detailBox, styles.flex]}>
                                     <PlayerText style={styles.detailLabel}>Priority:</PlayerText>
-                                    <PlayerText style={[styles.detailValue, { color: PRIORITY_COLORS[event.priority] ?? '#8EA7C1' }]}>
+                                    <PlayerText style={[styles.detailValue, { color: PRIORITY_COLORS[event.priority] ?? colors.accentBlue }]}>
                                         {PRIORITY_LABELS[event.priority] ?? event.priority}
                                     </PlayerText>
                                 </View>
@@ -70,18 +72,20 @@ export default function TaskDetailsModal({ isVisible, event, statusOverride, onC
                                     <PlayerText style={styles.detailLabel}>Start Date:</PlayerText>
                                     <PlayerText style={styles.detailValue}>{formatTimestamp(event.createdAt)}</PlayerText>
                                 </View>
-                                <View style={[styles.detailBox, styles.flex]}>
-                                    <PlayerText style={styles.detailLabel}>Last Updated:</PlayerText>
-                                    <PlayerText style={styles.detailValue}>{formatTimestamp(event.updatedAt)}</PlayerText>
-                                </View>
-                            </View>
-                            <View style={styles.detailRowGroup}>
                                 {event.endDate ? (
                                     <View style={[styles.detailBox, styles.flex]}>
                                         <PlayerText style={styles.detailLabel}>Due Until:</PlayerText>
                                         <PlayerText style={[styles.detailValue, styles.detailValueDue]}>{formatDateShort(event.endDate)}</PlayerText>
                                     </View>
                                 ) : null}
+                            </View>
+                            <View style={styles.detailRowGroup}>
+                                <View style={[styles.detailBox, styles.flex]}>
+                                    <PlayerText style={styles.detailLabel}>Last Updated:</PlayerText>
+                                    <PlayerText style={styles.detailValue}>{formatTimestamp(event.updatedAt)}</PlayerText>
+                                </View>
+                            </View>
+                            <View style={styles.detailRowGroup}>
                                 <View style={[styles.detailBox, styles.flex]}>
                                     <PlayerText style={styles.detailLabel}>Deletion Date:</PlayerText>
                                     <PlayerText style={[styles.detailValue, deletionDate ? styles.deletionValue : styles.detailValueEmpty]}>
@@ -92,12 +96,12 @@ export default function TaskDetailsModal({ isVisible, event, statusOverride, onC
                         </ScrollView>
                         <View style={styles.panelFooter}>
                             <Pressable style={styles.closeButton} onPress={onClose}>
-                                <Ionicons name="close-outline" size={18} color="#8BAAC8" />
+                                <Ionicons name="close-outline" size={18} color={ic} />
                                 <PlayerText style={styles.closeButtonText}>Close</PlayerText>
                             </Pressable>
                             {onMoveToTrash && (
                                 <Pressable style={styles.trashButton} onPress={onMoveToTrash}>
-                                    <Ionicons name="trash-outline" size={18} color="#D08888" />
+                                    <Ionicons name="trash-outline" size={18} color={colors.accentRed} />
                                     <PlayerText style={styles.trashButtonText}>Move to Trash</PlayerText>
                                 </Pressable>
                             )}

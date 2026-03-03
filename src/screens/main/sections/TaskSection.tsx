@@ -66,9 +66,9 @@ export default function TaskSection({ navigation }: TaskSectionProps) {
         let result = selectedPriority ? pool.filter(t => t.priority === selectedPriority) : pool;
         result = filterByQuery(result, searchQuery, ['title', 'description']);
         if (taskDisplayCount > 0) result = result.slice(0, taskDisplayCount);
-        const wantsGroups = allDatesMode || (!!selectedEndDate && selectedEndDate !== selectedDate);
-        const grouped = wantsGroups ? sortGroupsAsc(groupByKey(result, t => t.date)) : [];
-        const showGroups = wantsGroups && grouped.length > 1;
+        const grouped = sortGroupsAsc(groupByKey(result, t => t.date));
+        const isRangeMode = !!selectedEndDate;
+        const showGroups = (allDatesMode && grouped.length > 1) || isRangeMode;
         return { filteredTasks: result, grouped, showGroups };
     }, [tasks, getTasksByDate, getTasksInRange, selectedDate, selectedEndDate, selectedPriority, searchQuery, taskDisplayCount]);
     const noTasks = filteredTasks.length === 0;

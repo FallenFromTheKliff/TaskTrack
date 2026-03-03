@@ -34,11 +34,11 @@ type ProfileFormData = {
 
 export default function ProfileSection() {
     const { user, updateProfile, deleteUser, verifyAndChangePassword, logout } = useAuth();
-    const { colors, activeIconColor } = useTheme();
+    const { colors, activeIconColor, resetAppearance } = useTheme();
     const { setActiveScreen } = useScreen();
-    const { setAppearance } = useTheme();
     const styles = makeProfileSectionStyles(colors, activeIconColor);
     const [isLoading, setIsLoading] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
 
     const [isEditing, setIsEditing] = useState(false);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
@@ -53,7 +53,6 @@ export default function ProfileSection() {
     const [isSecurityVisible, setIsSecurityVisible] = useState(false);
     const pendingSubmitData = useRef<ProfileFormData | null>(null);
 
-    const { message: successText, showMessage: showSuccess } = useTimedMessage(2000);
     const { message: errorText, showMessage: showError } = useTimedMessage(2000);
 
     const dob = parseBirthday(user?.dateOfBirth);
@@ -63,15 +62,16 @@ export default function ProfileSection() {
     const [gender, setGender] = useState(user?.gender || '');
     const [fullNameValue, setFullNameValue] = useState(user?.fullName || '');
     const [isFullNameValid, setIsFullNameValid] = useState(false);
+    const [isFullNameFocused, setIsFullNameFocused] = useState(false);
 
     const [nameRequirementsShown, setNameRequirementsShown] = useState(false);
     const showNameRequirements = isEditing && nameRequirementsShown;
     const { height: nameRequirementsHeight, opacity: nameRequirementsOpacity } = usePanelAnim({
         targetHeight: 180,
-        visible: showNameRequirements
+        visible: showNameRequirements && isFullNameFocused
     });
 
-    const { control, handleSubmit, formState: { errors }, reset } = useForm<ProfileFormData>({
+    const { control, handleSubmit, formState: { errors }, reset, setValue } = useForm<ProfileFormData>({
         defaultValues: {
             userName: user?.userName || '',
             fullName: user?.fullName || '',
@@ -87,6 +87,7 @@ export default function ProfileSection() {
     const handleCancelEdit = () => {
         setIsEditing(false);
         setNameRequirementsShown(false);
+        setIsFullNameFocused(false);
         reset({
             userName: user?.userName || '',
             fullName: user?.fullName || '',
@@ -107,12 +108,20 @@ export default function ProfileSection() {
         if (!nameRequirementsShown && value.length > 0) setNameRequirementsShown(true);
     };
 
+    const handleFullNameFocusChange = (isFocused: boolean) => {
+        setIsFullNameFocused(isFocused);
+        if (!isFocused && fullNameValue.length > 0) {
+            const formatted = capitalizeFullName(fullNameValue);
+            setFullNameValue(formatted);
+            setValue('fullName', formatted);
+        }
+    };
+
     const handlePasswordChange = async (currentPassword: string, newPassword: string) => {
         try {
             await verifyAndChangePassword(currentPassword, newPassword);
             passwordChanged.current = true;
             setIsPasswordModalOpen(false);
-            showSuccess('Password updated.');
         } catch (err: any) {
             throw err;
         }
@@ -148,8 +157,10 @@ export default function ProfileSection() {
             });
             setIsEditing(false);
             setNameRequirementsShown(false);
+            setIsFullNameFocused(false);
             passwordChanged.current = false;
-            showSuccess('Profile saved!');
+            setIsSaved(true);
+            setTimeout(() => setIsSaved(false), 1500);
         } catch {
             showError('Failed to save. Please try again.');
         } finally {
@@ -162,7 +173,6 @@ export default function ProfileSection() {
             setIsSecurityLogout(true);
             await new Promise(resolve => setTimeout(resolve, 3000));
             setActiveScreen('tasks');
-            setAppearance('navy', 'blrrpix', 'default');
             await doSave(pendingSubmitData.current);
             await logout();
         }
@@ -173,7 +183,7 @@ export default function ProfileSection() {
             setIsTerminating(true);
             await new Promise(resolve => setTimeout(resolve, 3000));
             setActiveScreen('tasks');
-            setAppearance('navy', 'blrrpix', 'default');
+            resetAppearance();
             await deleteUser();
         } catch {
             setIsTerminating(false);
@@ -236,7 +246,8 @@ export default function ProfileSection() {
                             errors={errors}
                             editable={isEditing}
                             onChangeValue={handleFullNameChange}
-                            showRedBorder={showNameRequirements && !isFullNameValid}
+                            onFocusChange={handleFullNameFocusChange}
+                            showRedBorder={showNameRequirements && isFullNameFocused && !isFullNameValid}
                         />
                         <Animated.View style={{ overflow: 'hidden', height: nameRequirementsHeight, opacity: nameRequirementsOpacity }}>
                             <NameRequirements fullName={fullNameValue} onValidationChange={setIsFullNameValid} />
@@ -272,8 +283,8 @@ export default function ProfileSection() {
                             <PlayerText style={[styles.fieldLabel, !isEditing && { color: colors.textDisabled }]}>Date of Birth</PlayerText>
                             <View style={styles.birthdayRow}>
                                 <BirthdayDropdown label="Month" value={birthdayMonth} options={MONTH_NAMES_FULL} isEditable={isEditing} onSelect={setBirthdayMonth} />
-                                <BirthdayDropdown label="Day" value={birthdayDay} options={DAYS} isEditable={isEditing} onSelect={setBirthdayDay} />
-                                <BirthdayDropdown label="Year" value={birthdayYear} options={YEARS} isEditable={isEditing} onSelect={setBirthdayYear} />
+                                <BirthdayDropdown label="Day" value={birthdayDay}   options={DAYS} isEditable={isEditing} onSelect={setBirthdayDay} />
+                                <BirthdayDropdown label="Year" value={birthdayYear}  options={YEARS} isEditable={isEditing} onSelect={setBirthdayYear} />
                             </View>
                         </View>
                         <View style={[styles.fieldBlock, { zIndex: 1 }]}>
@@ -291,13 +302,21 @@ export default function ProfileSection() {
                         </View>
                     </View>
                     <View style={[styles.actionBar, { zIndex: 150 }]}>
-                        {successText ? <PlayerText style={styles.successText}>{successText}</PlayerText> : null}
-                        {errorText ? <PlayerText style={styles.errorText}>{errorText}</PlayerText> : null}
                         {!isEditing ? (
                             <>
-                                <Pressable style={styles.editButton} onPress={() => setIsEditing(true)}>
-                                    <Ionicons name="pencil-outline" size={18} color={ic} />
-                                    <PlayerText style={styles.editButtonText}>Edit Profile</PlayerText>
+                                <Pressable
+                                    style={errorText ? styles.editButton : [styles.editButton, isSaved && styles.editButtonSaved]}
+                                    onPress={() => { if (!errorText && !isSaved) setIsEditing(true); }}
+                                    disabled={isSaved || !!errorText}
+                                >
+                                    <Ionicons
+                                        name={errorText ? 'alert-circle-outline' : isSaved ? 'checkmark-outline' : 'pencil-outline'}
+                                        size={18}
+                                        color={errorText ? colors.accentRed : colors.accentGreen}
+                                    />
+                                    <PlayerText style={errorText ? styles.editButtonErrorText : styles.editButtonText}>
+                                        {errorText || (isSaved ? 'Saved!' : 'Edit Profile')}
+                                    </PlayerText>
                                 </Pressable>
                                 <Pressable style={styles.terminateButton} onPress={() => setIsTerminateVisible(true)}>
                                     <Ionicons name="skull-outline" size={18} color={colors.accentRed} />
@@ -309,8 +328,14 @@ export default function ProfileSection() {
                                 <Pressable style={styles.cancelButton} onPress={handleCancelEdit}>
                                     <PlayerText style={styles.cancelButtonText}>Cancel</PlayerText>
                                 </Pressable>
-                                <Pressable style={[styles.saveButton, isLoading && styles.saveButtonLoading]} onPress={handleSubmit(onSubmit)} disabled={isLoading}>
-                                    <PlayerText style={styles.saveButtonText}>{isLoading ? loadingText : 'Save Changes'}</PlayerText>
+                                <Pressable
+                                    style={[errorText ? styles.saveButton : styles.saveButton, isLoading && styles.saveButtonLoading]}
+                                    onPress={handleSubmit(onSubmit)}
+                                    disabled={isLoading || !!errorText}
+                                >
+                                    <PlayerText style={errorText ? styles.saveButtonErrorText : styles.saveButtonText}>
+                                        {isLoading ? loadingText : (errorText || 'Save Changes')}
+                                    </PlayerText>
                                 </Pressable>
                             </View>
                         )}

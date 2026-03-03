@@ -1,8 +1,9 @@
 import { useRef, useEffect } from 'react';
 import { View, Animated } from 'react-native';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { AnimatedPlayerText } from '@/components/fields/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useThemeTransitionAnim } from '@/hooks/animations/useThemeTransitionAnim';
 import { ScreenKey } from '@/contexts/ScreenContext';
 import { useTask } from '@/contexts/TaskContext';
 import { makeHeaderMessageStyles } from '@/styles/components/layout/HeaderMessageStyles';
@@ -32,6 +33,7 @@ function getQuadrantAngles(percent: number) {
 
 function ProgressCircle({ completed, total }: { completed: number; total: number }) {
     const { colors, activeIconColor } = useTheme();
+    const { ic } = useThemeTransitionAnim();
     const s = makeHeaderMessageStyles(colors);
     const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
     const allDone = total > 0 && completed === total;
@@ -53,11 +55,11 @@ function ProgressCircle({ completed, total }: { completed: number; total: number
 
     const makeRotation = (anim: Animated.Value) =>
         anim.interpolate({ inputRange: [0, 90], outputRange: ['0deg', '90deg'] });
-    const ringColor = allDone ? (activeIconColor ?? colors.accentBlue) : colors.accentBlue;
+    const ringColor = activeIconColor ?? colors.accentBlue;
 
     return (
         <View style={s.circleWrapper}>
-            <View style={s.circleBackground} />
+            <Animated.View style={[s.circleBackground, { borderColor: ic.borderMid }]} />
             <View style={[s.quadrant, s.quadrantNE]}>
                 <Animated.View style={[s.quadrantInner, s.quadrantInnerNE, { borderColor: ringColor, transform: [{ rotate: makeRotation(neAnim) }] }]} />
             </View>
@@ -70,15 +72,16 @@ function ProgressCircle({ completed, total }: { completed: number; total: number
             <View style={[s.quadrant, s.quadrantNW]}>
                 <Animated.View style={[s.quadrantInner, s.quadrantInnerNW, { borderColor: ringColor, transform: [{ rotate: makeRotation(nwAnim) }] }]} />
             </View>
-            <PlayerText style={[s.percentText, allDone && { color: activeIconColor ?? colors.accentBlue }]}>
+            <AnimatedPlayerText style={[s.percentText, { color: allDone ? ringColor : ic.textPrimary }]}>
                 {percent}%
-            </PlayerText>
+            </AnimatedPlayerText>
         </View>
     );
 }
 
 export default function HeaderMessage({ activeScreen, selectedDate }: HeaderMessageProps) {
     const { colors } = useTheme();
+    const { ic } = useThemeTransitionAnim();
     const { getTasksByDate } = useTask();
     const s = makeHeaderMessageStyles(colors);
 
@@ -88,9 +91,9 @@ export default function HeaderMessage({ activeScreen, selectedDate }: HeaderMess
 
     return (
         <View style={s.container}>
-            <PlayerText style={s.message} numberOfLines={1}>
+            <AnimatedPlayerText style={[s.message, { color: ic.textMuted }]} numberOfLines={1}>
                 {MESSAGES[activeScreen]}
-            </PlayerText>
+            </AnimatedPlayerText>
             {activeScreen === 'tasks' && (
                 <ProgressCircle completed={completed} total={total} />
             )}

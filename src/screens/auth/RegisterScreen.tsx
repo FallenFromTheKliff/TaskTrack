@@ -35,15 +35,17 @@ type RegisterFormProps = { navigation: NativeStackNavigationProp<any>; };
 export default function RegisterScreen({ navigation }: RegisterFormProps) {
     const { register } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-    const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
+
     const [profilePictureUri, setProfilePictureUri] = useState<string | null>(null);
-    const [passwordValue, setPasswordValue] = useState('');
-    const [isPasswordValid, setIsPasswordValid] = useState(false);
-    const [isPasswordFocused, setIsPasswordFocused] = useState(false);
     const [fullNameValue, setFullNameValue] = useState('');
     const [isFullNameValid, setIsFullNameValid] = useState(false);
     const [isFullNameFocused, setIsFullNameFocused] = useState(false);
+
+    const [passwordValue, setPasswordValue] = useState('');
+    const [isPasswordValid, setIsPasswordValid] = useState(false);
+    const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
     const { fadeIn, takeFlight } = useAuthEntrance();
     const loadingText = useLoadingText('CREATING ACCOUNT', isLoading);
@@ -66,11 +68,21 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
         if (uri) setProfilePictureUri(uri);
     };
 
-    const { control, handleSubmit, formState: { errors }, watch } = useForm<RegisterFormData>({
+    const { control, handleSubmit, formState: { errors }, watch, setValue } = useForm<RegisterFormData>({
         defaultValues: { userName: '', fullName: '', email: '', phoneNumber: '', password: '', confirmPassword: '' },
-        mode: "onChange"
+        mode: 'onSubmit',
+        reValidateMode: 'onChange',
     });
     const password = watch('password');
+
+    const handleFullNameFocusChange = (isFocused: boolean) => {
+        setIsFullNameFocused(isFocused);
+        if (!isFocused && fullNameValue.length > 0) {
+            const formatted = capitalizeFullName(fullNameValue);
+            setFullNameValue(formatted);
+            setValue('fullName', formatted);
+        }
+    };
 
     const onSubmit = async (data: RegisterFormData) => {
         if (isLoading) return;
@@ -134,6 +146,8 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                         validation={validateUsername}
                         errors={errors}
                         editable={!navDisabled}
+                        colorsOverride={NAVY}
+                        iconColorOverride={NAVY.accentBlue}
                     />
                     <InputField
                         control={control}
@@ -144,9 +158,11 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                         validation={validateFullName}
                         errors={errors}
                         onChangeValue={setFullNameValue}
-                        onFocusChange={setIsFullNameFocused}
+                        onFocusChange={handleFullNameFocusChange}
                         showRedBorder={fullNameValue.length > 0 && !isFullNameValid}
                         editable={!navDisabled}
+                        colorsOverride={NAVY}
+                        iconColorOverride={NAVY.accentBlue}
                     />
                     <Animated.View style={{ overflow: 'hidden', height: nameRequirementsHeight, opacity: nameRequirementsLight }}>
                         <NameRequirements fullName={fullNameValue} onValidationChange={setIsFullNameValid} />
@@ -161,6 +177,8 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                         errors={errors}
                         keyboardType="email-address"
                         editable={!navDisabled}
+                        colorsOverride={NAVY}
+                        iconColorOverride={NAVY.accentBlue}
                     />
                     <InputField
                         control={control}
@@ -173,6 +191,8 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                         errors={errors}
                         keyboardType="phone-pad"
                         editable={!navDisabled}
+                        colorsOverride={NAVY}
+                        iconColorOverride={NAVY.accentBlue}
                     />
                     <InputField
                         control={control}
@@ -187,6 +207,8 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                         showRedBorder={passwordValue.length > 0 && !isPasswordValid}
                         editable={!navDisabled}
                         toggleVisibility={{ isVisible: isPasswordVisible, setIsVisible: setIsPasswordVisible }}
+                        colorsOverride={NAVY}
+                        iconColorOverride={NAVY.accentBlue}
                     />
                     <Animated.View style={{ overflow: 'hidden', height: passRequirementsHeight, opacity: passRequirementsLight }}>
                         <PasswordRequirements password={passwordValue} onValidationChange={setIsPasswordValid} />
@@ -201,6 +223,8 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                         errors={errors}
                         editable={!navDisabled}
                         toggleVisibility={{ isVisible: isConfirmPasswordVisible, setIsVisible: setIsConfirmPasswordVisible }}
+                        colorsOverride={NAVY}
+                        iconColorOverride={NAVY.accentBlue}
                     />
                     <Pressable
                         style={[styles.button, isLoading && { backgroundColor: NAVY.textMuted }]}

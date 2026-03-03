@@ -6,7 +6,6 @@ import { R } from '@/styles/shared/tokens';
 export function makeSettingsDropdownStyles(colors: ThemeColors) {
     return StyleSheet.create({
         wrapper: { position: 'relative', marginBottom: 12 },
-        fieldLabel: { fontSize: 14, color: colors.accentBlue, marginBottom: 6, marginLeft: 2 },
         button: {
             flexDirection: 'row',
             alignItems: 'center',
@@ -21,9 +20,7 @@ export function makeSettingsDropdownStyles(colors: ThemeColors) {
         valueText: { fontSize: 16, color: colors.textPrimary },
         list: {
             position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
+            top: '100%', left: 0, right: 0,
             backgroundColor: colors.bgPanel,
             borderRadius: R.md,
             borderWidth: 2,

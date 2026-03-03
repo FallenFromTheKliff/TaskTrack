@@ -6,8 +6,9 @@ import { R, MAX_WIDTH } from '@/styles/shared/tokens';
 
 export const SIDEBAR_WIDTH = 320;
 
-export function makeSidebarStyles(colors: ThemeColors) {
+export function makeSidebarStyles(colors: ThemeColors, activeIconColor?: string | null) {
     const modal = makeModalBaseStyles(colors);
+    const ic = activeIconColor ?? colors.accentBlue;
     return StyleSheet.create({
         modalOuter: { flex: 1, backgroundColor: 'transparent', justifyContent: 'center', alignItems: 'center' },
         modalInner: { flex: 1, width: '100%', maxWidth: MAX_WIDTH, position: 'relative', overflow: 'hidden' },
@@ -30,7 +31,7 @@ export function makeSidebarStyles(colors: ThemeColors) {
             marginBottom: 20,
             paddingBottom: 20,
             borderBottomWidth: 2,
-            borderBottomColor: colors.borderSub
+            borderBottomColor: colors.borderMid
         },
         logoText: { fontSize: 36, marginLeft: 10, color: colors.textPrimary },
         profileCard: {
@@ -47,7 +48,7 @@ export function makeSidebarStyles(colors: ThemeColors) {
         profileCardActive: { borderWidth: 2, backgroundColor: colors.bgInputDark },
         profilePicture: { width: 46, height: 46, borderRadius: R.xl, borderWidth: 2, borderColor: colors.borderMid },
         profileInfo: { flex: 1, gap: 3 },
-        profileUsername: { fontSize: 18, color: colors.textPrimary },
+        profileUsername: { fontSize: 18, color: ic },
         profileEmail: { fontSize: 14, color: colors.textDisabled },
         profileEditHint: {
             flexDirection: 'row',
@@ -62,7 +63,7 @@ export function makeSidebarStyles(colors: ThemeColors) {
             paddingHorizontal: 7,
             alignSelf: 'flex-start'
         },
-        profileEditHintText: { fontSize: 11, color: colors.accentBlue },
+        profileEditHintText: { fontSize: 11, color: ic },
         navItem: {
             flexDirection: 'row',
             alignItems: 'center',
