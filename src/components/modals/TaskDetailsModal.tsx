@@ -2,15 +2,15 @@ import { View, Animated, Modal, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { HistoryEvent } from '@/contexts/HistoryContext';
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { formatTimestamp, formatDateShort } from '@/utils/shared/dateUtils';
 import { capitalize } from '@/utils/auth/revisionUtils';
 import { STATUS_COLORS, STATUS_ICONS, PRIORITY_LABELS, PRIORITY_COLORS } from '@/utils/shared/constantUtils';
 import { useOverlayAnim } from '@/hooks/animations/useOverlayAnim';
-import { makeTaskDetailsStyles } from '@/styles/modals/TaskDetailsStyles';
+import { makeTaskDetailsStyles } from '@/styles/components/modals/TaskDetailsStyles';
 
-import PlayerButton from '@/components/fields/PlayerButton';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
 
 type DetailsModalProps = {
     isVisible: boolean;

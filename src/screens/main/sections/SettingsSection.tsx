@@ -2,17 +2,17 @@ import { useState, useEffect, useRef } from 'react';
 import { View, Pressable, ScrollView, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText, AnimatedPlayerText } from '@/components/fields/PlayerText';
+import { PlayerText, AnimatedPlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme, THEME_LABELS, FONT_LABELS, ThemeKey, FontKey } from '@/contexts/ThemeContext';
 import { useThemeTransitionAnim } from '@/hooks/animations/useThemeTransitionAnim';
 import { useTask } from '@/contexts/TaskContext';
 import { useScreen } from '@/contexts/ScreenContext';
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
-import { makeSettingsStyles } from '@/styles/components/main/SettingsStyles';
+import { makeSettingsStyles } from '@/styles/screens/sections/SettingsStyles';
 
-import PlayerButton from '@/components/fields/PlayerButton';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
 import ConfirmModal from '@/components/modals/ConfirmModal';
-import SettingsDropdown from '@/components/fields/SettingsDropdown';
+import SettingsDropdown from '@/components/fields/common/SettingsDropdown';
 
 const THEME_KEYS: ThemeKey[] = ['navy', 'citrus', 'light', 'dark'];
 const FONT_KEYS: FontKey[] = ['blrrpix', 'caveatbrush', 'geo', 'macondo'];

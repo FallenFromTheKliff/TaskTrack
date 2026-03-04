@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import { View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { reviseFullName } from '@/utils/auth/revisionUtils';
-import { makeRequirementStyles } from '@/styles/components/content/RequirementStyles';
+import { makeRequirementStyles } from '@/styles/components/requirements/RequirementStyles';
 
 type NameRequirementsProps = {
     fullName: string;

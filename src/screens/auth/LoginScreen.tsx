@@ -4,7 +4,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useForm } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
 
-import { AuthText } from '@/components/fields/PlayerText';
+import { AuthText } from '@/components/fields/forms/PlayerText';
 import { useAuth } from '@/contexts/AuthContext';
 import { THEMES } from '@/contexts/ThemeContext';
 import { validateEmailLogin, validatePasswordWithEmail } from '@/utils/auth/validationUtils';
@@ -12,9 +12,9 @@ import { useAuthEntrance } from '@/hooks/auth/useAuthEntrance';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { useTimedMessage } from '@/hooks/auth/useTimedMessage';
 import { makeAuthStyles } from '@/styles/auth/AuthStyles';
-import PlayerButton from '@/components/fields/PlayerButton';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
 
-import InputField from '@/components/fields/InputField';
+import InputField from '@/components/fields/forms/InputField';
 import LoadingScreen from '@/screens/interlude/LoadingScreen';
 
 const NAVY = THEMES.navy;

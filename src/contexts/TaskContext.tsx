@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useAuth } from './AuthContext';
 import { useHistory } from './HistoryContext';
-import { generateId, getLocalDateString } from '@/utils/shared/contextUtils';
+import { generateId, getLocalDateString, TASKS_STORAGE_KEY } from '@/utils/shared/contextUtils';
 
 export type Task = {
     id: string;
@@ -39,7 +39,6 @@ type TaskContextType = {
 };
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
-const TASKS_STORAGE_KEY = '@tasktrack_tasks';
 
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const { user } = useAuth();

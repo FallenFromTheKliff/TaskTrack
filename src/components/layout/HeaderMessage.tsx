@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { View, Animated } from 'react-native';
 
-import { AnimatedPlayerText } from '@/components/fields/PlayerText';
+import { AnimatedPlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useThemeTransitionAnim } from '@/hooks/animations/useThemeTransitionAnim';
 import { ScreenKey } from '@/contexts/ScreenContext';

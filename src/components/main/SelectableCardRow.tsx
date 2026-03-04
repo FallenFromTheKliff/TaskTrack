@@ -3,7 +3,7 @@ import { View, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useTheme } from '@/contexts/ThemeContext';
-import { makeSelectableCardRowStyles } from '@/styles/components/content/SelectableCardRowStyles';
+import { makeSelectableCardRowStyles } from '@/styles/components/main/SelectableCardRowStyles';
 
 type SelectableCardRowProps = {
     id: string;

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, Pressable, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { HistoryEvent } from '@/contexts/HistoryContext';
 import { getHistoryDateFields } from '@/utils/shared/dateUtils';
@@ -11,7 +11,7 @@ import { capitalize } from '@/utils/auth/revisionUtils';
 import { STATUS_COLORS, STATUS_ICONS } from '@/utils/shared/constantUtils';
 import { makeRecordCardStyles } from '@/styles/cards/RecordCardStyles';
 
-import PlayerButton from '@/components/fields/PlayerButton';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 import TaskDetailsModal from '@/components/modals/TaskDetailsModal';
 

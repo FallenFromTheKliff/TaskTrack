@@ -13,8 +13,8 @@ import { Task } from '@/contexts/TaskContext';
 import SplashScreen from '@/screens/interlude/SplashScreen';
 import LoginScreen from '@/screens/auth/LoginScreen';
 import RegisterScreen from '@/screens/auth/RegisterScreen';
-import LayoutScreen from '@/screens/main/LayoutScreen';
-import TaskFormScreen from '@/screens/main/TaskFormScreen';
+import LayoutScreen from '@/screens/main/generic/LayoutScreen';
+import TaskFormScreen from '@/screens/main/generic/TaskFormScreen';
 
 export type RootStackParamList = {
     Home: undefined;

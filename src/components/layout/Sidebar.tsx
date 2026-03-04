@@ -2,7 +2,7 @@ import { useRef, useEffect } from 'react';
 import { View, Pressable, Animated, Modal, Image, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useScreen, ScreenKey } from '@/contexts/ScreenContext';
 import { useTheme, FONT_FAMILIES } from '@/contexts/ThemeContext';
 import { getProfileImageSource } from '@/utils/auth/imageUtils';

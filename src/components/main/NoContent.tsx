@@ -1,9 +1,9 @@
 import { View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
-import { makeNoContentStyles } from '@/styles/components/layout/NoContentStyles';
+import { makeNoContentStyles } from '@/styles/components/main/NoContentStyles';
 
 type NoContentProps = {
     icon: string;

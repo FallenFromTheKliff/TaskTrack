@@ -3,7 +3,7 @@ import { View, ScrollView, Pressable, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { Task, useTask } from '@/contexts/TaskContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { formatDateShort } from '@/utils/shared/dateUtils';
@@ -13,12 +13,12 @@ import { useSelectionMode } from '@/hooks/main/sections/useSelectionMode';
 import { useToggleAnim } from '@/hooks/animations/useToggleAnim';
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
 import { useBulkAction } from '@/hooks/main/useBulkAction';
-import { makeSectionStyles } from '@/styles/components/main/SectionStyles';
+import { makeSectionStyles } from '@/styles/screens/sections/SectionStyles';
 import { makeGroupStyles } from '@/styles/cards/GroupStyles';
 
 import SearchFilter from '@/components/layout/SearchFilter';
 import TaskCard from '@/components/cards/TaskCard';
-import PlayerButton from '@/components/fields/PlayerButton';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
 import NoContent from '@/components/main/NoContent';
 import SelectionFooter from '@/components/main/SelectionFooter';
 import ConfirmModal from '@/components/modals/ConfirmModal';

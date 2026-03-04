@@ -1,27 +1,28 @@
 import { useState, useRef } from 'react';
-import { View, Pressable, ScrollView, Image, Animated } from 'react-native';
+import { View, ScrollView, Animated } from 'react-native';
 import { useForm } from 'react-hook-form';
-import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText } from '@/components/fields/PlayerText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useScreen } from '@/contexts/ScreenContext';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { validateUsername, validateFullName, validateEmail, validatePhoneNumber } from '@/utils/auth/validationUtils';
 import { capitalizeFullName } from '@/utils/auth/revisionUtils';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { useTimedMessage } from '@/hooks/auth/useTimedMessage';
 import { usePanelAnim } from '@/hooks/animations/usePanelAnim';
 import { parseBirthday, composeBirthday, MONTH_NAMES_FULL, DAYS, YEARS } from '@/utils/shared/dateUtils';
-import { getProfileImageSource, pickImageFromLibrary } from '@/utils/auth/imageUtils';
+import { pickImageFromLibrary } from '@/utils/auth/imageUtils';
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
-import { makeProfileSectionStyles } from '@/styles/components/main/ProfileSectionStyles';
+import { makeProfileSectionStyles } from '@/styles/screens/sections/ProfileSectionStyles';
 
-import InputField from '@/components/fields/InputField';
-import BirthdayDropdown from '@/components/fields/BirthdayDropdown';
-import GenderSwap from '@/components/fields/GenderSwap';
+import InputField from '@/components/fields/forms/InputField';
+import BirthdayDropdown from '@/components/fields/common/BirthdayDropdown';
+import GenderSwap from '@/components/fields/common/GenderSwap';
+import ProfileAvatar from '@/components/fields/common/ProfileAvatar';
+import PasswordField from '@/components/fields/common/PasswordField';
 import NameRequirements from '@/components/requirements/NameRequirements';
-import PlayerButton from '@/components/fields/PlayerButton';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
 import ChangePasswordModal from '@/components/modals/ChangePasswordModal';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 import SelfieCameraModal from '@/components/modals/SelfieCameraModal';
@@ -40,15 +41,11 @@ export default function ProfileSection() {
     const styles = makeProfileSectionStyles(colors, activeIconColor);
     const [isLoading, setIsLoading] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
-
     const [isEditing, setIsEditing] = useState(false);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
-
     const [profilePictureUri, setProfilePictureUri] = useState<string | null>(user?.profilePicture ?? null);
-
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
     const passwordChanged = useRef(false);
-
     const [isTerminating, setIsTerminating] = useState(false);
     const [isSecurityLogout, setIsSecurityLogout] = useState(false);
     const [isTerminateVisible, setIsTerminateVisible] = useState(false);
@@ -65,51 +62,33 @@ export default function ProfileSection() {
     const [fullNameValue, setFullNameValue] = useState(user?.fullName || '');
     const [isFullNameValid, setIsFullNameValid] = useState(false);
     const [isFullNameFocused, setIsFullNameFocused] = useState(false);
-
     const [nameRequirementsShown, setNameRequirementsShown] = useState(false);
+
     const showNameRequirements = isEditing && nameRequirementsShown;
     const { height: nameRequirementsHeight, opacity: nameRequirementsOpacity } = usePanelAnim({
         targetHeight: 180,
         visible: showNameRequirements && isFullNameFocused
     });
 
+    const formDefaults = {
+        userName: user?.userName || '',
+        fullName: user?.fullName || '',
+        email: user?.email || '',
+        phoneNumber: user?.phoneNumber || ''
+    };
+
     const { control, handleSubmit, formState: { errors }, reset, setValue } = useForm<ProfileFormData>({
-        defaultValues: {
-            userName: user?.userName || '',
-            fullName: user?.fullName || '',
-            email: user?.email || '',
-            phoneNumber: user?.phoneNumber || ''
-        },
+        defaultValues: formDefaults,
         mode: 'onChange'
     });
 
     const loadingText = useLoadingText('SAVING', isLoading);
     const { translateY, opacity } = useEntranceAnim();
 
-    const handleCancelEdit = () => {
-        setIsEditing(false);
-        setNameRequirementsShown(false);
-        setIsFullNameFocused(false);
-        reset({
-            userName: user?.userName || '',
-            fullName: user?.fullName || '',
-            email: user?.email || '',
-            phoneNumber: user?.phoneNumber || ''
-        });
-        setProfilePictureUri(user?.profilePicture ?? null);
-        setFullNameValue(user?.fullName || '');
-        setBirthdayMonth(dob.month);
-        setBirthdayDay(dob.day);
-        setBirthdayYear(dob.year);
-        setGender(user?.gender || '');
-        passwordChanged.current = false;
-    };
-
     const handleFullNameChange = (value: string) => {
         setFullNameValue(value);
         if (!nameRequirementsShown && value.length > 0) setNameRequirementsShown(true);
     };
-
     const handleFullNameFocusChange = (isFocused: boolean) => {
         setIsFullNameFocused(isFocused);
         if (!isFocused && fullNameValue.length > 0) {
@@ -118,15 +97,10 @@ export default function ProfileSection() {
             setValue('fullName', formatted);
         }
     };
-
     const handlePasswordChange = async (currentPassword: string, newPassword: string) => {
-        try {
-            await verifyAndChangePassword(currentPassword, newPassword);
-            passwordChanged.current = true;
-            setIsPasswordModalOpen(false);
-        } catch (err: any) {
-            throw err;
-        }
+        await verifyAndChangePassword(currentPassword, newPassword);
+        passwordChanged.current = true;
+        setIsPasswordModalOpen(false);
     };
 
     const pickExistingPhoto = async () => {
@@ -135,17 +109,15 @@ export default function ProfileSection() {
     };
 
     const onSubmit = async (data: ProfileFormData) => {
-        const hasEmailChange = data.email !== user?.email;
-        const hasSecurityChange = hasEmailChange || passwordChanged.current;
+        const hasSecurityChange = data.email !== user?.email || passwordChanged.current;
         if (hasSecurityChange) {
             pendingSubmitData.current = data;
             setIsSecurityVisible(true);
             return;
         }
-        await doSave(data);
+        await onSave(data);
     };
-
-    const doSave = async (data: ProfileFormData) => {
+    const onSave = async (data: ProfileFormData) => {
         setIsLoading(true);
         try {
             await updateProfile({
@@ -169,17 +141,29 @@ export default function ProfileSection() {
             setIsLoading(false);
         }
     };
+    const handleCancelEdit = () => {
+        setIsEditing(false);
+        setNameRequirementsShown(false);
+        setIsFullNameFocused(false);
+        reset(formDefaults);
+        setProfilePictureUri(user?.profilePicture ?? null);
+        setFullNameValue(user?.fullName || '');
+        setBirthdayMonth(dob.month);
+        setBirthdayDay(dob.day);
+        setBirthdayYear(dob.year);
+        setGender(user?.gender || '');
+        passwordChanged.current = false;
+    };
 
     const handleSecurityConfirm = async () => {
         if (pendingSubmitData.current) {
             setIsSecurityLogout(true);
             await new Promise(resolve => setTimeout(resolve, 3000));
             setActiveScreen('tasks');
-            await doSave(pendingSubmitData.current);
+            await onSave(pendingSubmitData.current);
             await logout();
         }
     };
-
     const handleTerminateConfirm = async () => {
         try {
             setIsTerminating(true);
@@ -194,39 +178,19 @@ export default function ProfileSection() {
         }
     };
 
-    const ic = activeIconColor ?? colors.accentBlue;
-    const icMuted = activeIconColor ?? colors.textMuted;
-
     return (
         <View style={styles.container}>
             <Animated.View style={{ flex: 1, transform: [{ translateY }], opacity }}>
                 <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-                    <View style={styles.avatarSection}>
-                        {isEditing ? (
-                            <Pressable onPress={pickExistingPhoto}>
-                                <View style={{ position: 'relative' }}>
-                                    <Image source={getProfileImageSource(profilePictureUri)} style={styles.avatar} />
-                                    <View style={styles.avatarBomb}>
-                                        <Ionicons name="camera" size={16} color={colors.bgDeep} />
-                                    </View>
-                                </View>
-                            </Pressable>
-                        ) : (
-                            <View style={styles.avatarWrapper}>
-                                <Image source={getProfileImageSource(profilePictureUri)} style={styles.avatar} />
-                            </View>
-                        )}
-                        <View style={styles.photoActionRow}>
-                            {isEditing ? (
-                                <Pressable style={styles.photoActionButton} onPress={() => setIsCameraOpen(true)}>
-                                    <Ionicons name="camera-outline" size={16} color={ic} />
-                                    <PlayerText style={styles.photoActionText}>Take a Picture</PlayerText>
-                                </Pressable>
-                            ) : (
-                                <PlayerText style={styles.photoActionText}>Display Picture</PlayerText>
-                            )}
-                        </View>
-                    </View>
+                    <ProfileAvatar
+                        profilePictureUri={profilePictureUri}
+                        onPickPhoto={pickExistingPhoto}
+                        disabled={!isEditing}
+                        renderBottom={() => isEditing
+                            ? <PlayerButton variant="action" label="Take a Picture" onPress={() => setIsCameraOpen(true)} icon="camera-outline" iconSize={16} />
+                            : <PlayerText style={{ fontSize: 13, color: activeIconColor ?? colors.accentBlue }}>Display Picture</PlayerText>
+                        }
+                    />
                     <View style={styles.form}>
                         <InputField
                             control={control}
@@ -285,23 +249,11 @@ export default function ProfileSection() {
                             <PlayerText style={[styles.fieldLabel, !isEditing && { color: colors.textDisabled }]}>Date of Birth</PlayerText>
                             <View style={styles.birthdayRow}>
                                 <BirthdayDropdown label="Month" value={birthdayMonth} options={MONTH_NAMES_FULL} isEditable={isEditing} onSelect={setBirthdayMonth} />
-                                <BirthdayDropdown label="Day" value={birthdayDay}   options={DAYS} isEditable={isEditing} onSelect={setBirthdayDay} />
-                                <BirthdayDropdown label="Year" value={birthdayYear}  options={YEARS} isEditable={isEditing} onSelect={setBirthdayYear} />
+                                <BirthdayDropdown label="Day" value={birthdayDay} options={DAYS} isEditable={isEditing} onSelect={setBirthdayDay} />
+                                <BirthdayDropdown label="Year" value={birthdayYear} options={YEARS} isEditable={isEditing} onSelect={setBirthdayYear} />
                             </View>
                         </View>
-                        <View style={[styles.fieldBlock, { zIndex: 1 }]}>
-                            <PlayerText style={[styles.fieldLabel, !isEditing && { color: colors.textDisabled }]}>Password</PlayerText>
-                            <Pressable
-                                style={[styles.passwordButton, !isEditing && styles.passwordButtonDisabled]}
-                                onPress={() => { if (isEditing) setIsPasswordModalOpen(true); }}
-                            >
-                                <Ionicons name="lock-closed-outline" size={20} color={isEditing ? ic : colors.textDisabled} style={{ marginRight: 10 }} />
-                                <PlayerText style={[styles.passwordButtonText, !isEditing && styles.passwordButtonTextDisabled]}>
-                                    {isEditing ? 'Change Password...' : '••••••••'}
-                                </PlayerText>
-                                {isEditing && <Ionicons name="chevron-forward" size={16} color={icMuted} style={{ marginLeft: 'auto' }} />}
-                            </Pressable>
-                        </View>
+                        <PasswordField isEditing={isEditing} onPress={() => setIsPasswordModalOpen(true)} />
                     </View>
                     <View style={[styles.actionBar, { zIndex: 150 }]}>
                         {!isEditing ? (

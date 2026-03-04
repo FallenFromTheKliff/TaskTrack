@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 
 import { useTheme } from '@/contexts/ThemeContext';
-import PlayerButton from '@/components/fields/PlayerButton';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
 
 type SelectionFooterProps = {
     selectedCount: number;

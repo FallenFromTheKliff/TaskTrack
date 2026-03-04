@@ -3,7 +3,7 @@ import { View, Pressable, Animated } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTask, Task } from '@/contexts/TaskContext';
 import { formatDateShort } from '@/utils/shared/dateUtils';
@@ -11,7 +11,7 @@ import { useExpandCard } from '@/hooks/cards/useExpandCard';
 import { PRIORITY_LABELS, PRIORITY_COLORS, PRIORITY_BG, PRIORITY_BORDER } from '@/utils/shared/constantUtils';
 import { makeTaskCardStyles } from '@/styles/cards/TaskCardStyles';
 
-import PlayerButton from '@/components/fields/PlayerButton';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 
 type TaskCardProps = {

@@ -22,7 +22,6 @@ export function makeRecordCardStyles(colors: ThemeColors, activeIconColor?: stri
         descriptionBox: { ...base.detailBox, padding: 10 },
         descriptionText: { ...base.detailValue, color: ic },
         detailBox: base.detailBox,
-        detailRow: { flexDirection: 'row', gap: 8 },
         detailRowGroup: { flexDirection: 'row', gap: 8 },
         flex: { flex: 1 },
         detailLabel: base.detailLabel,

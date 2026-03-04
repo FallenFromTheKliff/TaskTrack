@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { View, Pressable, ScrollView, Animated, Image } from 'react-native';
+import { View, ScrollView, Animated } from 'react-native';
 import { useForm } from 'react-hook-form';
-import { Ionicons } from "@expo/vector-icons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { useAuth } from '@/contexts/AuthContext';
-import { AuthText } from '@/components/fields/PlayerText';
+import { AuthText } from '@/components/fields/forms/PlayerText';
 import { THEMES } from '@/contexts/ThemeContext';
 import { validateUsername, validateFullName, validateEmailRegister, validatePassword, validatePasswordConfirmation, validatePhoneNumber } from '@/utils/auth/validationUtils';
 import { capitalizeFullName } from '@/utils/auth/revisionUtils';
@@ -13,11 +12,12 @@ import { useAuthEntrance } from '@/hooks/auth/useAuthEntrance';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { useTimedMessage } from '@/hooks/auth/useTimedMessage';
 import { usePanelAnim } from '@/hooks/animations/usePanelAnim';
-import { getProfileImageSource, pickImageFromLibrary } from "@/utils/auth/imageUtils";
+import { pickImageFromLibrary } from '@/utils/auth/imageUtils';
 import { makeAuthStyles } from '@/styles/auth/AuthStyles';
 
-import InputField from '@/components/fields/InputField';
-import PlayerButton from '@/components/fields/PlayerButton';
+import InputField from '@/components/fields/forms/InputField';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
+import ProfileAvatar from '@/components/fields/common/ProfileAvatar';
 import NameRequirements from '@/components/requirements/NameRequirements';
 import PasswordRequirements from '@/components/requirements/PasswordRequirements';
 
@@ -36,8 +36,8 @@ type RegisterFormProps = { navigation: NativeStackNavigationProp<any>; };
 export default function RegisterScreen({ navigation }: RegisterFormProps) {
     const { register } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
-
     const [profilePictureUri, setProfilePictureUri] = useState<string | null>(null);
+
     const [fullNameValue, setFullNameValue] = useState('');
     const [isFullNameValid, setIsFullNameValid] = useState(false);
     const [isFullNameFocused, setIsFullNameFocused] = useState(false);
@@ -125,19 +125,18 @@ export default function RegisterScreen({ navigation }: RegisterFormProps) {
                     <AuthText style={{ fontSize: 42, color: NAVY.textPrimary }}>Join the community!</AuthText>
                 </Animated.View>
                 <Animated.View style={[styles.form, { opacity: fadeIn }]}>
-                    <View style={{ alignItems: 'center', marginBottom: 20 }}>
-                        <Pressable onPress={pickImage} disabled={navDisabled}>
-                            <View style={{ position: 'relative' }}>
-                                <Image source={getProfileImageSource(profilePictureUri)} style={styles.pictureFrame} />
-                                <View style={styles.pictureBomb}>
-                                    <Ionicons name="camera" size={16} color="#313B46" />
-                                </View>
-                            </View>
-                        </Pressable>
-                        <AuthText style={{ fontSize: 12, color: NAVY.textMuted, marginTop: 8 }}>
-                            Tap to upload a profile picture!
-                        </AuthText>
-                    </View>
+                    <ProfileAvatar
+                        profilePictureUri={profilePictureUri}
+                        onPickPhoto={pickImage}
+                        disabled={navDisabled}
+                        avatarStyle={styles.pictureFrame}
+                        badgeIconColor="#313B46"
+                        renderBottom={() => (
+                            <AuthText style={{ fontSize: 12, color: NAVY.textMuted }}>
+                                Tap to upload a profile picture!
+                            </AuthText>
+                        )}
+                    />
                     <InputField
                         control={control}
                         name="userName"

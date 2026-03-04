@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { View, Modal, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { MONTH_NAMES_FULL, DAY_NAMES, getTodayString } from '@/utils/shared/dateUtils';
-import { makeCalendarStyles } from '@/styles/modals/CalendarStyles';
+import { makeCalendarStyles } from '@/styles/components/modals/CalendarStyles';
 
-import PlayerButton from '@/components/fields/PlayerButton';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
 
 type CalendarModalProps = {
     isVisible: boolean;

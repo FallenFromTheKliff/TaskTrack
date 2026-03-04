@@ -1,11 +1,11 @@
 import { View, Pressable, Animated, FlatList, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useOverlayAnim } from '@/hooks/animations/useOverlayAnim';
 import { TASK_ICONS, PRIORITY_COLORS, PRIORITY_BG, PRIORITY_BORDER } from '@/utils/shared/constantUtils';
-import { makeTaskIconStyles } from '@/styles/modals/TaskIconStyles';
+import { makeTaskIconStyles } from '@/styles/components/modals/TaskIconStyles';
 
 export const formatIconName = (icon: string) =>
     icon.replace('-outline', '').split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');

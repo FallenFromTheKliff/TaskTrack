@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, Pressable, ScrollView, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { AnimatedPlayerText } from '@/components/fields/PlayerText';
+import { AnimatedPlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useThemeTransitionAnim } from '@/hooks/animations/useThemeTransitionAnim';
 import { makeSettingsDropdownStyles } from '@/styles/components/fields/SettingsDropdownStyles';

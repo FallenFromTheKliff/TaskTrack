@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { View, Pressable, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText, PlayerTextInput } from '@/components/fields/PlayerText';
+import { PlayerText, PlayerTextInput } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { formatDateShort, getTodayString } from '@/utils/shared/dateUtils';
 import {

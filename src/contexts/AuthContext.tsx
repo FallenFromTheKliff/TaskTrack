@@ -2,6 +2,7 @@ import { ReactNode, createContext, useContext, useState, useEffect, useRef } fro
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { hashPassword } from '@/utils/auth/revisionUtils';
+import { TASKS_STORAGE_KEY, HISTORY_STORAGE_KEY } from '@/utils/shared/contextUtils';
 
 interface User {
     id: string;
@@ -55,9 +56,6 @@ type AuthProviderProps = {
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const TASKS_KEY = '@tasktrack_tasks';
-const HISTORY_KEY = '@tasktrack_history';
 
 export const AuthProvider = ({ children, onUserLoaded, onUserCleared }: AuthProviderProps) => {
     const [user, setUser] = useState<User | null>(null);
@@ -167,8 +165,8 @@ export const AuthProvider = ({ children, onUserLoaded, onUserCleared }: AuthProv
         const usersJSON = await AsyncStorage.getItem('users');
         const users: StoredUser[] = usersJSON ? JSON.parse(usersJSON) : [];
         await AsyncStorage.setItem('users', JSON.stringify(users.filter(u => u.id !== user.id)));
-        await AsyncStorage.removeItem(`${TASKS_KEY}_${user.id}`);
-        await AsyncStorage.removeItem(`${HISTORY_KEY}_${user.id}`);
+        await AsyncStorage.removeItem(`${TASKS_STORAGE_KEY}_${user.id}`);
+        await AsyncStorage.removeItem(`${HISTORY_STORAGE_KEY}_${user.id}`);
         await AsyncStorage.removeItem('currentUser');
         onUserCleared();
         setUser(null);

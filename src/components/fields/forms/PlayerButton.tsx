@@ -1,7 +1,7 @@
 import { Pressable, Animated, StyleSheet, StyleProp, ViewStyle, TextStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText, AnimatedPlayerText, AuthText } from '@/components/fields/PlayerText';
+import { PlayerText, AnimatedPlayerText, AuthText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { InterpolatedColors } from '@/hooks/animations/useThemeTransitionAnim';
 import { R } from '@/styles/shared/tokens';

@@ -1,16 +1,11 @@
 import { StyleSheet } from 'react-native';
 
 import { ThemeColors } from '@/contexts/ThemeContext';
+import { makeScreenContainer } from '@/styles/shared/common';
 
 export function makeAuthStyles(colors: ThemeColors) {
     return StyleSheet.create({
-        container: {
-            flex: 1,
-            backgroundColor: colors.bgDeep,
-            maxWidth: 450,
-            alignSelf: 'center',
-            width: '100%'
-        },
+        container: makeScreenContainer(colors),
         scrollContent: {
             flexGrow: 1,
             justifyContent: 'center',
@@ -25,19 +20,6 @@ export function makeAuthStyles(colors: ThemeColors) {
             borderRadius: 50,
             borderWidth: 3,
             borderColor: colors.borderStrong
-        },
-        pictureBomb: {
-            position: 'absolute',
-            bottom: 0,
-            right: 0,
-            backgroundColor: colors.accentBlue,
-            borderRadius: 15,
-            width: 30,
-            height: 30,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderWidth: 2,
-            borderColor: colors.borderSub
         },
         form: { width: '100%', maxWidth: 350, alignSelf: 'center' },
         footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 40 }

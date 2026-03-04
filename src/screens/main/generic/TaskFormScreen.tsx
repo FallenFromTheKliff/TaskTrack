@@ -4,15 +4,15 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useTask, Task } from '@/contexts/TaskContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuthEntrance } from '@/hooks/auth/useAuthEntrance';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
-import { makeFormStyles } from '@/styles/components/main/FormStyles';
+import { makeFormStyles } from '@/styles/screens/generic/FormStyles';
 
 import Scheduler, { SchedulerHandle, SchedulerValues } from '@/components/main/Scheduler';
-import PlayerButton from '@/components/fields/PlayerButton';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
 
 type TaskFormProps = {
     navigation: NativeStackNavigationProp<any>;

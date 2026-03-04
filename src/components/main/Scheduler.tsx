@@ -3,15 +3,15 @@ import { View, ScrollView, Pressable } from 'react-native';
 import { useForm } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Task } from '@/contexts/TaskContext';
 import { getTodayString, formatDateDisplay } from '@/utils/shared/dateUtils';
 import { validateTitle, validateDescription, validateNotes } from '@/utils/auth/validationUtils';
 import { PRIORITY_LABELS, PRIORITY_COLORS, PRIORITY_BG, PRIORITY_BORDER, PRIORITY_ICON_NAMES, DEFAULT_TASK_ICON } from '@/utils/shared/constantUtils';
-import { makeSchedulerStyles } from '@/styles/components/main/SchedulerStyles';
+import { makeSchedulerStyles } from '@/styles/screens/sections/SchedulerStyles';
 
-import InputField from '@/components/fields/InputField';
+import InputField from '@/components/fields/forms/InputField';
 import CalendarModal from '@/components/modals/CalendarModal';
 import TaskIconModal, { formatIconName } from '@/components/modals/TaskIconModal';
 

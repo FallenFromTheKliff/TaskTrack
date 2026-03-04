@@ -18,7 +18,6 @@ export function makeTaskDetailsStyles(colors: ThemeColors, activeIconColor?: str
         panelTitle: { flex: 1, fontSize: 18, color: colors.textPrimary },
         scrollContent: { padding: 16, gap: 12 },
         detailBox: card.detailBox,
-        detailRow: { flexDirection: 'row', gap: 8 },
         detailRowGroup: { flexDirection: 'row', gap: 8 },
         flex: { flex: 1 },
         detailLabel: card.detailLabel,

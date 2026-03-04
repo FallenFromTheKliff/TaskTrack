@@ -1,16 +1,17 @@
 import { StyleSheet } from 'react-native';
 
 import { ThemeColors } from '@/contexts/ThemeContext';
+import { makeModalBaseStyles } from '@/styles/shared/common';
 import { R } from '@/styles/shared/tokens';
 
 export function makeConfirmStyles(colors: ThemeColors, yesDestructive: boolean, yesPositive: boolean, yesRestore: boolean) {
     const yesBg = yesDestructive ? colors.accentRedLight : yesRestore ? colors.bgDeep : colors.greenBg;
     const yesBorder = yesDestructive ? colors.accentRedLightBorder : yesRestore ? colors.accentGold : colors.greenBorder;
     const yesColor = yesDestructive ? colors.accentRed : yesRestore ? colors.accentGold : colors.accentGreen;
-
+    const modal = makeModalBaseStyles(colors);
     return StyleSheet.create({
-        modalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent' },
-        modalBlur: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.overlay88 },
+        modalOverlay: modal.overlay,
+        modalBlur: modal.blur,
         container: {
             backgroundColor: colors.bgPanel,
             borderRadius: R.xl,

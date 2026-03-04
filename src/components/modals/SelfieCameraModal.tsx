@@ -3,12 +3,12 @@ import { View, Image, Modal } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { useTimedMessage } from '@/hooks/auth/useTimedMessage';
-import { makeSelfieCameraStyles } from '@/styles/modals/SelfieCameraStyles';
-import PlayerButton from '@/components/fields/PlayerButton';
+import { makeSelfieCameraStyles } from '@/styles/components/modals/SelfieCameraStyles';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
 
 type SelfieCameraModalProps = {
     isVisible: boolean;

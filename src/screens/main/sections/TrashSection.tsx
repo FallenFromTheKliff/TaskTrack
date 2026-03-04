@@ -10,7 +10,7 @@ import { useFabScroll } from '@/hooks/main/sections/useFabScroll';
 import { useSelectionMode } from '@/hooks/main/sections/useSelectionMode';
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
 import { useBulkAction } from '@/hooks/main/useBulkAction';
-import { makeSectionStyles } from '@/styles/components/main/SectionStyles';
+import { makeSectionStyles } from '@/styles/screens/sections/SectionStyles';
 
 import RecordCard from '@/components/cards/RecordCard';
 import SearchFilter from '@/components/layout/SearchFilter';

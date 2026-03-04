@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext, useState, useEffect, useCallback 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useAuth } from './AuthContext';
-import { generateId, getLocalDateString } from '@/utils/shared/contextUtils';
+import { generateId, getLocalDateString, HISTORY_STORAGE_KEY } from '@/utils/shared/contextUtils';
 import { Task } from './TaskContext';
 
 export type HistoryEventType = 'created' | 'edited' | 'completed' | 'deleted' | 'unfinished' | 'trashed';
@@ -32,7 +32,6 @@ type HistoryContextType = {
 };
 
 const HistoryContext = createContext<HistoryContextType | undefined>(undefined);
-const HISTORY_STORAGE_KEY = '@tasktrack_history';
 const TRASH_RETENTION_DAYS = 30;
 
 const isOlderThanDays = (isoString: string, days: number): boolean => {
@@ -137,10 +136,8 @@ export const HistoryProvider = ({ children }: { children: ReactNode }) => {
     }, [user]);
 
     const clearAllHistory = useCallback(async () => {
-        if (!user) return;
-        await AsyncStorage.setItem(`${HISTORY_STORAGE_KEY}_${user.id}`, JSON.stringify([]));
-        setHistory([]);
-    }, [user]);
+        await saveHistory([]);
+    }, [saveHistory]);
 
     return (
         <HistoryContext.Provider value={{ history, addHistoryEvent, deleteHistoryEvent, permanentlyDeleteEvent, restoreTaskFromTrash, reconcileUnfinished, clearAllHistory }}>

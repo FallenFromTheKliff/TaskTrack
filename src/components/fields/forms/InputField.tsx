@@ -2,7 +2,7 @@ import { View, Pressable } from 'react-native';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { Ionicons } from '@expo/vector-icons';
 
-import { PlayerText, PlayerTextInput } from '@/components/fields/PlayerText';
+import { PlayerText, PlayerTextInput } from '@/components/fields/forms/PlayerText';
 import { useTheme, ThemeColors } from '@/contexts/ThemeContext';
 import { makeInputFieldStyles } from '@/styles/components/fields/InputFieldStyles';
 

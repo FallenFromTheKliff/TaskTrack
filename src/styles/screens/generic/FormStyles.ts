@@ -1,17 +1,11 @@
 import { StyleSheet } from 'react-native';
 
 import { ThemeColors } from '@/contexts/ThemeContext';
-import { MAX_WIDTH } from '@/styles/shared/tokens';
+import { makeScreenContainer } from '@/styles/shared/common';
 
 export function makeFormStyles(colors: ThemeColors) {
     return StyleSheet.create({
-        container: {
-            flex: 1,
-            backgroundColor: colors.bgDeep,
-            maxWidth: MAX_WIDTH,
-            alignSelf: 'center',
-            width: '100%'
-        },
+        container: makeScreenContainer(colors),
         topBar: {
             flexDirection: 'row',
             alignItems: 'center',

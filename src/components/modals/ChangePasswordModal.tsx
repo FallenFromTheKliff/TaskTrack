@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { View, Modal, Pressable, ScrollView, Animated } from 'react-native';
 import { useForm } from 'react-hook-form';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { validatePasswordWithEmail, validateNewPassword, validatePasswordConfirmation } from '@/utils/auth/validationUtils';
 import { useTimedMessage } from '@/hooks/auth/useTimedMessage';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { usePanelAnim } from '@/hooks/animations/usePanelAnim';
-import { makeChangePasswordStyles } from '@/styles/modals/ChangePasswordStyles';
+import { makeChangePasswordStyles } from '@/styles/components/modals/ChangePasswordStyles';
 
-import InputField from '@/components/fields/InputField';
-import PlayerButton from '@/components/fields/PlayerButton';
+import InputField from '@/components/fields/forms/InputField';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
 import PasswordRequirements from '@/components/requirements/PasswordRequirements';
 
 type FormData = {
@@ -121,17 +121,15 @@ export default function ChangePasswordModal({ isVisible, onCancel, onConfirm }: 
                         ) : null}
                     </ScrollView>
                     <View style={s.actions}>
-                        <View style={s.actions}>
-                            <PlayerButton variant="ghost" label="CANCEL" onPress={handleClose} disabled={isLoading} flex={1} />
-                            <PlayerButton
-                                variant="primary"
-                                label={isLoading ? loadingText : 'SAVE PASSWORD'}
-                                onPress={handleSubmit(onSubmit)}
-                                icon="checkmark-outline"
-                                disabled={!canSubmit}
-                                flex={1}
-                            />
-                        </View>
+                        <PlayerButton variant="ghost" label="CANCEL" onPress={handleClose} disabled={isLoading} flex={1} />
+                        <PlayerButton
+                            variant="primary"
+                            label={isLoading ? loadingText : 'SAVE PASSWORD'}
+                            onPress={handleSubmit(onSubmit)}
+                            icon="checkmark-outline"
+                            disabled={!canSubmit}
+                            flex={1}
+                        />
                     </View>
                 </View>
             </View>

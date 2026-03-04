@@ -1,12 +1,12 @@
 import { View, Modal, Pressable, Animated } from 'react-native';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLoadingText } from '@/hooks/main/useLoadingText';
 import { useOverlayAnim } from '@/hooks/animations/useOverlayAnim';
-import { makeConfirmStyles } from '@/styles/modals/ConfirmStyles';
+import { makeConfirmStyles } from '@/styles/components/modals/ConfirmStyles';
 
-import PlayerButton from '@/components/fields/PlayerButton';
+import PlayerButton from '@/components/fields/forms/PlayerButton';
 
 type ConfirmModalProps = {
     isVisible: boolean;

@@ -1,7 +1,17 @@
 import { StyleSheet } from 'react-native';
 
 import { ThemeColors } from '@/contexts/ThemeContext';
-import { R } from './tokens';
+import { R, MAX_WIDTH } from './tokens';
+
+export function makeScreenContainer(colors: ThemeColors) {
+    return {
+        flex: 1 as const,
+        backgroundColor: colors.bgDeep,
+        maxWidth: MAX_WIDTH,
+        alignSelf: 'center' as const,
+        width: '100%' as const
+    };
+}
 
 export function makeFieldLabel(colors: ThemeColors, activeIconColor?: string | null) {
     return {

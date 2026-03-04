@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 import { ThemeColors } from '@/contexts/ThemeContext';
+import { makeFieldLabel } from '@/styles/shared/common';
 import { R } from '@/styles/shared/tokens';
 
 export function makeSchedulerStyles(colors: ThemeColors, activeIconColor?: string | null) {
@@ -8,7 +9,7 @@ export function makeSchedulerStyles(colors: ThemeColors, activeIconColor?: strin
         scrollView: { flex: 1 },
         scrollContent: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 30 },
         fieldBlock: { marginBottom: 16 },
-        fieldLabel: { fontSize: 18, color: activeIconColor ?? colors.accentBlue, marginBottom: 6, marginLeft: 4 },
+        fieldLabel: makeFieldLabel(colors, activeIconColor),
         iconPickerButton: {
             flexDirection: 'row',
             alignItems: 'center',
@@ -32,9 +33,9 @@ export function makeSchedulerStyles(colors: ThemeColors, activeIconColor?: strin
         priorityRow: { flexDirection: 'row', gap: 8 },
         priorityButton: {
             flex: 1,
-            flexDirection: 'row' as const,
-            alignItems: 'center' as const,
-            justifyContent: 'center' as const,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
             paddingVertical: 12,
             borderRadius: R.md,
             borderWidth: 2,
@@ -58,9 +59,9 @@ export function makeSchedulerStyles(colors: ThemeColors, activeIconColor?: strin
         durationRow: { flexDirection: 'row', gap: 8 },
         durationButton: {
             flex: 1,
-            flexDirection: 'row' as const,
-            alignItems: 'center' as const,
-            justifyContent: 'center' as const,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
             paddingVertical: 12,
             borderRadius: R.md,
             borderWidth: 2,

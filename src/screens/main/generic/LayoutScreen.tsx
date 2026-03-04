@@ -4,11 +4,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useScreen } from '@/contexts/ScreenContext';
-import { AnimatedPlayerText } from '@/components/fields/PlayerText';
+import { AnimatedPlayerText } from '@/components/fields/forms/PlayerText';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useThemeTransitionAnim } from '@/hooks/animations/useThemeTransitionAnim';
 import { getTodayString } from '@/utils/shared/dateUtils';
-import { makeLayoutStyles } from '@/styles/components/main/LayoutStyles';
+import { makeLayoutStyles } from '@/styles/screens/generic/LayoutStyles';
 
 import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';

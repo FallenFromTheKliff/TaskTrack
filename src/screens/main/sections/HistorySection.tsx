@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { View, ScrollView, Animated } from 'react-native';
 
-import { PlayerText } from '@/components/fields/PlayerText';
+import { PlayerText } from '@/components/fields/forms/PlayerText';
 import { useHistory } from '@/contexts/HistoryContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useEntranceAnim } from '@/hooks/animations/useEntranceAnim';
 import { useFilteredHistory } from '@/hooks/main/sections/useFilteredHistory';
 import { formatDateShort } from '@/utils/shared/dateUtils';
-import { makeSectionStyles } from '@/styles/components/main/SectionStyles';
+import { makeSectionStyles } from '@/styles/screens/sections/SectionStyles';
 import { makeGroupStyles } from '@/styles/cards/GroupStyles';
 
 import RecordCard from '@/components/cards/RecordCard';
